@@ -1,9 +1,9 @@
 ---
-title: About
-author: Tao He
+title: 關於我
+author: Yee Chen
 date: 2022-02-04
 category: Jekyll
 layout: post
 ---
 
-This is an about page.
+一個正在學習ruby、javascript的好學生
