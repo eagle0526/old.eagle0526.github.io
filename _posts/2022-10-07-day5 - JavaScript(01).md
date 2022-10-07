@@ -194,28 +194,25 @@ const 設定常數
 >   
 > **const vs. let vs. var**
 >  
-> 1、寫JS 選擇上使用順序 const > let > var
-> 2、var也可以用，不過範圍大了一點
-> 3、千萬不要沒宣告就使用，會造成很多全域污染
+> 1、寫JS 選擇上使用順序 const > let > var  
+> 2、var也可以用，不過範圍大了一點  
+> 3、千萬不要沒宣告就使用，會造成很多全域污染  
 >
-> const 和 let與var的差異是，const是用來設定常數的(不可re-assign)
-> 而 let 和 var 的差異是，var因為設計漏洞的關係，會造成 **變數提升**
-> 發生變數提升會讓後指派的 var 變數，console出來會變成 undefined，而不是not defined
+> const 和 let與var的差異是，const是用來設定常數的(不可re-assign)  
+> 而 let 和 var 的差異是，var因為設計漏洞的關係，會造成 **變數提升**  
+> 發生變數提升會讓後指派的 var 變數，console出來會變成 undefined，而不是not defined  
 >
-> ex. console.log(a);   # undefined
->     var a = 1;
+> ex. console.log(a);   # undefined  
+>     var a = 1;  
 >
-> **undefine 和 not define 的差異在於，undefined是一個值，not define是啥都沒有**
-> 而let就是解決變數提升的問題
->
-> ex. console.log(b);    # not define
->     let b = 1;
+> **undefine 和 not define 的差異在於，undefined是一個值，not define是啥都沒有**  
+> 而let就是解決變數提升的問題  
+>  
+> ex. console.log(b);    # not define  
+>     let b = 1;  
 >
 {: .block-warning}
 
-
-
-**typeof -> JS確認型別的語法**
 
 
 原始型別 vs 物件型別
@@ -224,7 +221,7 @@ const 設定常數
 **原始型別**  
 數字、字串、真假值、之類的  
 
-**物件型別**
+**物件型別**  
 大括號、中括號、函數、物件之類的
 
 
@@ -248,3 +245,221 @@ a++ vs ++a
 > console.log(++b)        # 2   -> 先執行++，再印出b
 > console.log(b)          # 2
 ```
+
+***
+
+
+字串顯示
+------
+
+```markdown
+> let num = 123  
+>   
+> console.log("aaa")           # aaa  
+> console.log('aaa')           # aaa  
+> console.log(`aa${num}a`)     # aa123a -> 這種顯示方式可以塞變數在裡面  
+>
+> console.log(`she said: "hi"`)# she said: "hi" -> 要在字串裡顯示""，要記得用``  
+> console.log(" she said: \"hi\" ")                或是用跳脫字元\  
+```
+
+***
+
+
+改變型別、確認型別
+------
+
+typeof 運算子會傳回一個字串值, 指出未經運算 (unevaluated) 的運算元所代表的型別。
+
+
+```markdown
+>
+> let a = 2;  
+> console.log(typeof a)          #Number  
+>   
+> let b = String(b)  
+> console.log(typeof b)          #String  
+>
+> console.log(typeof(typeof(a))) #String -> 真實樣式是這樣 typeof(Number)
+>
+```
+
+
+> **NaN介紹 - NaN = Not a Number**
+> console.log(2/"c")               #NaN
+> 
+> console.log(typeof NaN);         #number  -> NaN是一個數字，不過他代表不是數字  
+>                                              就像Null他存在，不過他代表不存在  
+>  
+> console.log(NaN === NaN);        #false   -> JS唯一一個自己不等於自己的
+>
+{: .block-warning}
+
+
+***
+
+流程控制 Flow Control
+------
+
+```markdown
+>
+> let age = 20  
+> if (age >= 18) {  
+>  console.log("已成年"`)      
+> } else if ( age > 10 && age < 18 ) {        # &&而且、||或  
+>  console.log("青少年")  
+> } else {  
+>   console.log("未成年")     
+> }  
+>
+>
+```
+
+三元運算子
+------
+
+```markdown
+age >= 18 ? console.log("已成年") : console.log("未成年")
+判斷age是否大於18歲，如果成立 "已成年" 否則 "未成年"
+
+
+let result = age >= 18 ? "已成年" : "未成年"
+console.log(result)                          #另一種三元運算子
+
+
+> if (a>1) {
+> 
+>   if (b>2) {
+>       // A
+>    } else {
+>        // B
+>    }
+>   else {
+>    // c
+>   } 
+>
+> }
+> 
+> 
+> 三元運算子呈現 -> (a>1) ? (b>2) ? A : B : c
+```
+
+
+> **一些一外情況 -> falsy 比較**
+> 
+> var age = 16
+> if (age = 20) {               # 如果這邊是用= ， 這塊會變成True
+>     console.log("成年")        # 成年 -> 這一串結果會印出成年
+> } else {
+>     console.log("未成年")
+> }
+> 
+> 
+> [falsy表](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)
+{: .block-tip}
+
+
+
+***
+
+
+switch - if else另外一種寫法
+------
+
+```markdown
+> 
+> let gender = 0
+> switch(gender) {
+>     case 1:
+>         console.log(1);
+>         break;
+> 
+>     case 2:
+>         console.log(2);
+>         break
+> 
+>     default:
+>         console.log(3);         # 3  -> 因為gender值為0，因此印出預設值
+>         break
+> }
+```
+
+
+
+prompt使用
+------
+
+**prompt("請輸入......")**
+
+```markdown
+> ##### 判斷是平年還是閏年
+>
+> 被4整除 閏年   被100整除 平年   被400整除 閏年
+>        平年            閏年            平年
+>
+> let year = Number(prompt("請輸入年份"));
+> 
+> if (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0 ) {
+>     console.log("閏年");
+> } else {
+>     console.log("平年");
+> }
+```
+
+***
+
+
+for迴圈 
+------
+
+**for(起始值; 滿足條件; 每回合做的事情)**
+
+```markdown
+> for (var a = 0; a < 10; a = a + 1) {  
+>    console.log(a);                    # 0~9  -> 印出0~9的數字  
+> }  
+>   
+> 情境題 -> 今天想印出 0~100 的所有奇數  
+> for (let n = 0; n<=100; n++) {  
+>     if (n % 2 !== 0) {  
+>         console.log(n);               # 0~100 的奇數 -> 先用for迴圈設定0~100  
+>     }                                   再用if判斷這些數字中哪些是奇數  
+> }  
+>  
+```
+
+
+while 迴圈
+------
+
+```markdown
+> while (true) {                       # 如果()中為true，就一直做下去  
+>     console.log("......")  
+> }  
+>  
+> 情境題 -> 今天想印出 0~100 的所有奇數  
+> let n = 0  
+>  while (n<=100) {  
+>    if (n % 2 !== 0) {  
+>        console.log(n);  
+>    }  
+>    n++  
+>  }
+>
+> 情境題 -> 印出 **你好5、你好3、你好1**
+> let n = 5
+> 
+> while (n >= 0) {
+> 
+>     if (n%2 !== 0) {
+>        console.log(`你好${n}`);
+>    }
+>    n--
+>}
+>
+```
+
+
+
+
+
