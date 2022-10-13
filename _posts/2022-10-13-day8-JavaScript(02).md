@@ -56,13 +56,13 @@ sayHi(1, 2)                         -> 1
 ```
 
 #### 幫某個參數設定預設值
-```javascript
-function sayHi(name, age = 18) {    -> 預設為18
-    console.log(name)
-    console.log(age)
-}
-
-sayHi("kk")                         ->  印出"kk"、18
+```markdown
+> function sayHi(name, age = 18) {    -> 預設為18
+>     console.log(name)
+>     console.log(age)
+> }
+> 
+> sayHi("kk")                         ->  印出"kk"、18
 ```
 
 
@@ -70,50 +70,48 @@ sayHi("kk")                         ->  印出"kk"、18
 
 常數設定 + 函數設定融合 (後面function整段叫做匿名函數)
 
-```javascript
-const sayMyName = function ccc(name) {    -> 裡面ccc可寫可不寫，因為ccc出function範圍就沒有意義
-    console.log(name);
-};
-
-隱藏寫法
-const sayMyName = function (name) {       -> 裡面ccc可寫可不寫，因為ccc出function範圍就沒有意義
-    console.log(name);
-};
+```markdown
+> const sayMyName = function ccc(name) {    -> 裡面ccc可寫可不寫，因為ccc出function範圍就沒有意義
+>     console.log(name);
+> };
+> 
+> 隱藏寫法
+> const sayMyName = function (name) {       -> 裡面ccc可寫可不寫，因為ccc出function範圍就沒有意義
+>     console.log(name);
+> };
 ```
 
 #### 函數定義寫在前面 - 是可以執行的
 
-```javascript
-
-sayHi("kk")                         ->  印出"kk"、18
-
-function sayHi(name, age = 18) {    -> 預設為18
-    console.log(name)
-    console.log(age)
-}
-
-
+```markdown
+> sayHi("kk")                         ->  印出"kk"、18
+> 
+> function sayHi(name, age = 18) {    -> 預設為18
+>     console.log(name)
+>     console.log(age)
+> }
 ```
 
 #### 變數宣告函數寫在前面 - 無法執行(會噴出ReferenceError)
 
-```javascript
-say("kk")                         ->  噴錯 ReferenceError
-
-let say = function sayHi(name, age = 18) {
-        console.log(name)
-        console.log(age)
-}
+```markdown
+> say("kk")                         ->  噴錯 ReferenceError
+> 
+> let say = function sayHi(name, age = 18) {
+>         console.log(name)
+>         console.log(age)
+> }
 ```
 
-> ---  
-> undefined() 呼叫，會造成typeErroe
-> ---
+> --  
+> undefined() 呼叫，會造成typeErroe  
+> --  
 {: .block-tip}
 
-### 變數提升
+變數提升
+------
 
-#### 宣告的時候發生了什麼事
+### 宣告的時候發生了什麼事
 
 **JS分兩階段運作**
  - 第一輪是掃瞄 - 建立期
