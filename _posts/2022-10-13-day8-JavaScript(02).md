@@ -312,22 +312,21 @@ window.alert("123")
 但是，如果今天在網站上宣告一個 let ddd = 123  
 這個變數ddd **不會** 存進window裡面  
 
-> -  
+> --  
 > 簡單的說var宣告會造成全域物件的污染  
-> -  
-{: .block-tips}
+> --  
+{: .block-tip}
 
 
 
-> -  
+> --  
 > **那如果我們直接使用賦值 -> age = 20 呢**  
-> -    
+> --    
 > 假設window裡面原本沒有age這個變數  
 > age = 20 這個動作會直接生出一個 變數age 丟在window環境裡面  
-> 
 >
 > 這樣會造成很多問題，所以千萬不要輕易的宣告全域變數
-> -  
+> --  
 {: .block-warning}
 
 
@@ -418,9 +417,9 @@ let/const vs var
 
 
 
-> -  
+> --  
 > 箭頭函數不單只是function的簡寫  
-> -  
+> --  
 {: .block-tip}
 
 
@@ -445,13 +444,13 @@ let/const vs var
 > console.log(isAdult(20))       -> 用return後，在外部呼叫記得
 ```
 
-> -  
+> --  
 > 在function裡面要有回傳值，一定要加一個 return ，要不然外面呼叫函數的話，會是undefined  
-> -  
+> --  
 {: .block-warning}
 
 
-> -  
+> --  
 > REPL 是一種環境 -> 輸入一串程式碼，會自動幫你把東西印出來(ex. 瀏覽器、irb)  
 > read evaluate print loop  
 >   
@@ -459,7 +458,7 @@ let/const vs var
 > 會印出 "123"、undefined  
 >   
 > 後面那個undefined就是REPL幫你印出來的，因為console沒有回傳值  
-> -  
+> --  
 {: .block-tips}
 
 
@@ -506,19 +505,17 @@ Ps. 記得Math.round只會四捨五入取到整數位，所以如果想取到小
 
 ### 陣列語法
 
-#### 陣列裡面可以放各種形態
-let data = [123, ["2","233"], "kfs"]
+```markdown
+> #### 陣列裡面可以放各種形態
+> let data = [123, ["2","233"], "kfs"]
 
+> #### 印出陣列的長度
+> data.length    -> 3
 
-#### 印出陣列的長度
-data.length    -> 3
-
-
-#### 取陣列最後一個元素
-console.log(data[data.length - 1]);
-
-Ps. 先算整個陣列長度，在-1，就可以取到最後一個數
-
+> #### 取陣列最後一個元素
+> console.log(data[data.length - 1]);
+> Ps. 先算整個陣列長度，在-1，就可以取到最後一個數
+```
 
 
 
