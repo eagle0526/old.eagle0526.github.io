@@ -183,7 +183,7 @@ JS 的 hello world
 ```
 
 ### const vs. let vs. var
-
+> -  
 > 1、寫JS 選擇上使用順序 const > let > var  
 > 2、var也可以用，不過範圍大了一點  
 > 3、千萬不要沒宣告就使用，會造成很多全域污染  
@@ -200,7 +200,7 @@ JS 的 hello world
 >  
 > ex. console.log(b);    # not define  
 >     let b = 1;  
->
+> -  
 {: .block-warning}
 
 
