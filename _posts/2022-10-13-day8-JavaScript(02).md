@@ -23,36 +23,36 @@ x -> 參數 parameter
 
 ### function helloworld
 ```markdown
-// name -> 參數parameter
-function sayMyName(name) {
-    console.log("hi222222");
-    console.log(name);
-}
+> // name -> 參數parameter
+> function sayMyName(name) {
+>     console.log("hi222222");
+>     console.log(name);
+> }
 
-// "Yeeeeee" -> 引數argument
-// () -> 呼叫、使用、啟動
-sayMyName("Yeeeeee")
+> // "Yeeeeee" -> 引數argument
+> // () -> 呼叫、使用、啟動
+> sayMyName("Yeeeeee")
 ```
 
 
 
 #### 如果函數有一個參數，但是如果飲用的時候啥都沒給，最後會給你undefined
 ```markdown
-function sayHi(name) {
-    console.log(name)
-}
-
-sayHi()                              -> undefined
+> function sayHi(name) {
+>     console.log(name)
+> }
+> 
+> sayHi()                              -> undefined
 ```
 
 
 #### 參數給一個，引數給兩個，最後會給你第一個
 ```markdown
-function sayHi(name) {
-    console.log(name)
-}
-
-sayHi(1, 2)                         -> 1
+> function sayHi(name) {
+>     console.log(name)
+> }
+> 
+> sayHi(1, 2)                         -> 1
 ```
 
 #### 幫某個參數設定預設值
@@ -326,6 +326,7 @@ window.alert("123")
 > age = 20 這個動作會直接生出一個 變數age 丟在window環境裡面  
 >
 > 這樣會造成很多問題，所以千萬不要輕易的宣告全域變數
+> ----
 > --  
 {: .block-warning}
 
@@ -525,10 +526,15 @@ Ps. 記得Math.round只會四捨五入取到整數位，所以如果想取到小
 ```markdown
 #### push 語法 - 陣列尾部新增
 
+> console.log(data)                      # [123, ["2","233"], "kfs"] - 原始陣列值
+
 > data.push("x")                        -> 在最後面塞一個值
 > console.log(data)                      # [123, ["2","233"], "kfs", "x"]
-> 
-> Ps. push方法的回傳值是給一個length，要注意
+```
+
+```markdown
+> **push方法的回傳值是給新值加進去後的length，要注意**
+> console.log(data.push("x"))            # 4 (回傳 data.length) 
 ```
 
 ```markdown
@@ -565,17 +571,36 @@ Ps. 記得Math.round只會四捨五入取到整數位，所以如果想取到小
 > - 第一個是起始值  
 > - 第二個是想要刪除的數量  
 > - 第三個以後是想要在刪除值的地方塞進哪些值  
+```
+```markdown
+> data = [123, "帥哥", "kfs", 324]
+```
 
-> console.log(data)                      # [123, "帥哥", "kfs"] => 原始data陣列中的值
-
-> data.splice(1)                         -> 取從指定索引值後面的所有元素
-> console.log(data)                      # ["帥哥", "kfs"]
+```markdown
+> --第一個參數使用--
+> reuslt = data.splice(1)                    -> 回傳值 = 取從指定索引值後面的所有元素
+> console.log(result)                        # ["帥哥", "kfs", 324]
 > 
-> data.slice(1, 2)                       -> 從指定索引值後，刪除指定元素數量
-> console.log(data)                      -> [123]
+> **原始陣列值**
+> console.log(data)                          # [123]
+```
 
-> data.slice(1, 0, "xx", "孫悟空")        -> 在指定刪除的地方，加上新增指定的items    
-> console.log(data)                      -> [123, "xx", "孫悟空"]
+```markdown
+> --第二個參數使用--
+> result = data.slice(1, 2)                  -> 回傳值 = 從指定索引值後，刪除指定元素數量
+> console.log(result)                        # ["帥哥", "kfs"]
+> 
+> **原始陣列值**
+> console.log(data)                          # [123, 324]
+```
+
+```markdown
+> --第三個參數使用--
+> result = data.slice(1, 2, "xx", "孫悟空")   -> 回傳值 = 從指定索引值後，刪除指定元素數量
+> console.log(result)                        # ["帥哥", "kfs"]
+> 
+> **原始陣列值**
+> console.log(data)                          # [[123, "xx", "孫悟空", 324]
 ```
 
 
