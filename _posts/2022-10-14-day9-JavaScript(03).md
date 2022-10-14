@@ -122,7 +122,7 @@ find = find() 方法會 **回傳第一個** 滿足所提供之測試函式的元
 > const list = [1, 2, 3, 4, 5]
 > const result =[];               -> 用 forEach，要先在外部宣告一個變數，這樣裡面取用的時候才能用
 > list.forEach((item) => {
->     result,push(item*2)            # [2,4,6,8,10]
+>     result.push(item*2)            # [2,4,6,8,10]
 > })
 ```
 
@@ -204,6 +204,7 @@ reduce() 方法將一個累加器及陣列中每項元素（由左至右）傳�
 ```
 
 
+
 #### 用 reduce 取最大值 - 正常不會用這個方法取最大值
 
 用 reduce 的特性，reduce 照著陣列順序 2 個 2 個抓出來，然後用 if 來比較兩個數字
@@ -222,9 +223,449 @@ reduce() 方法將一個累加器及陣列中每項元素（由左至右）傳�
 
 
 
-何謂高階函數 higher-order function
- - 可以把 fn 當作參數傳入另一個 fn
- - 可以回傳 fn
+> --
+> 何謂高階函數 higher-order function
+>  1、可以把 function 當作參數傳入另一個 function
+>  2、可以回傳 function
+>  
+>  只要符合上面其中一點，就可以說是高階函數
+> --
+{: .block-tip}
+
+
+
+物件 Object
+------
+
+物件 = 一個東西 = 屬性 + 行為
+
+這個是一個物件 aa   
+ - key = a,b,c   
+ - value = 123,333,"ddd"  
+  
+```markdown
+> const aa = {
+>     a: 123,
+>     b: 333,    
+>     c: "ddd",
+>     attack: function() {
+>         console.log("hi")
+>     }
+> }
+```
+
+
+### 拿取key中的值 - 下面兩種方法都可以
+```markdown
+> console.log(aa["c"])    # ddd
+> console.log(aa.c)       # ddd
+
+> 什麼時候只能用[]拿取值 - 變數字數是組合的方式，就一定要用此種方式
+> const myKey = "na" + "me"
+> console.log(aa["myKey"])
+```
+
+### 呼叫物件的function
+```markdown
+> aa.attack()              # hi
+```
+
+
+### 物件的 CRUD
+
+```markdown
+#### C - 新增物件中的值，把key塞進物件中
+
+> aa.test = "fff"         
+> console.log(aa)          # { a: 123, b: 333, c: 'ddd', attack: [Function: attack], test: 'fff' }
+```
+
+```markdown
+#### R - 讀取指定key的value
+
+> console.log(aa.b)        # 333
+```
+
+```markdown
+#### U - 更新物件的key
+
+> aa.a = "no"
+> console.log(aa)          # { a: "no", b: 333, c: 'ddd', attack: [Function: attack], test: 'fff' }
+```
+
+```markdown
+#### D - 刪除值物件中的值
+
+> delete aa.b;
+```
+
+### 如果今天key值是數字，要怎麼取value
+
+```markdown
+> const hero = {
+>     0: "a",
+>     1: "b",
+>     2: "c"
+> }
+> 
+> console.log(hero[1])         # b
+```
+
+***
+
+
+DOM 文件物件模型
+------
+
+HTML不是物件，為了方便操作，瀏覽器會根據HTML結構，轉成一個一個物件
+
+DOM是 瀏覽器把HTML物件化後的結果
+HTML不是DOM元素
+
+JS 無法直接取用 HTML
+中間有一層瀏覽器
+Js 會操作瀏覽器 來更改瀏覽器的介面(但是HTML 的 code 不會被動到)
+
+
+
+
+
+如果有連續id 會抓到第一個
+------
+
+```markdown
+> 我先給五個同id的div
+
+> <div id="test">1</div>
+> <div id="test">2</div>
+> <div id="test">3</div>
+> <div id="test">4</div>
+> <div id="test">5</div>
+
+> 抓 id 為 test 的元素
+const newId = document.querySelector("#test")
+
+> 把剛剛抓到的元素，點到他會印出"123"
+> newId.addEventListener("click", () => {
+>     console.log("123");
+> })
+
+> 這樣最後在瀏覽器那邊會發現，只有點到第一個元素，可以觸發這個console.log
+```
+
+***
+
+> --
+> 如果印出來的結果是 null
+> 有可能 <script src="dom.js"></script> 在太前面
+> 導致物件化過程比較慢
+
+```markdown
+> 解決方法
+> 法一 : 把scrit放在抓取物件的後面
+>     <div id="abc">hi</div>
+>     <script src="dom.js"></script>
+
+
+> 法二 : 直接加一個defer
+> <script src="dom.js" defer></script>
+> 
+> defer 是延遲執行的意思，這個加上可以讓JS等HTML執行完再執行
+```
+
+
+***
+
+抓取id的兩種方法
+------
+
+```HTML
+<div id="abc">123</div>
+```
+
+```markdown
+> #### 舊方法 - getElementById
+> const mydiv = document.getElementById("abc")
+
+> #### 新方法 - querySelector
+> 這個方法比較好用，因為後面是使用選取器
+> const mydiv2 = document.querySelector("#abc");
+```
+
+
+
+### 實際應用 - 選取器
+```markdown
+> HTML
+> <ul>
+>     <li></li>
+>     <li></li>   -> 我要抓這個
+>     <li></li>
+> </ul>
+```
+```markdown
+> 用nth-child來抓指定標籤
+> const mydiv2 = document.querySelector("ul li:nth-child(2)");
+```
+
+> --
+> 用 querySelector 抓元素，可以用任何 css 選取器的方法
+> --
+{: .block-tip}
+
+
+
+
+### 一次抓取多個元素
+```markdown
+
+先在HTML設定li的class
+> HTML
+
+> <ul>
+>     <li class="list"></li>
+>     <li class="list"></li>
+>     <li class="list"></li>
+> </ul>
+```
+
+用兩種方法抓取所有元素
+```markdown
+> JavaScript
+
+> 方法一
+> getElementsByClassName
+> const lists = document.getElementsByClassName("list")
+
+> 方法二
+> querySelectorAll
+> const lists2 = document.querySelectorAll(".list")
+```
+
+
+### HTMLCollection vs NodeList
+> --
+> 兩種抓取ID的方法 - 抓到的東西不同
+> 
+> #### HTMLCollection  
+> getElementsByClassName 抓到的是一個物件，裡面包著所有東西  
+> 如果想要把物件裡面的東西印出來，只能用for迴圈印出來  
+> 
+> 
+> #### NodeList - 多了forEach功能  
+> querySelectorAll 抓到的是一個物件，也包著所有東西  
+> 但是想要把裡面東西抓出來的話，可以用forEach拿法  
+> --
+{: .block-tip}
+
+***
+
+
+
+### textContent - 更改文字
+
+剛剛抓到指定元素後，可以使用textContent來更改元素的文字
+
+```markdown
+> 先設定一個div id
+> <div id="abc">hi</div>
+```
+
+```markdown
+> 抓到 id = "abc" 的 div後
+> const mydiv = document.getElementById("abc")
+
+> 把這個物件裡面的值，改成 "aaa"
+> mydiv.textContent = "aaa"
+```
+
+
+
+### innerHTML - 渲染HTML
+
+```HTML
+<div id="test">hi</div>
+```
+
+```markdown
+> 先抓到 id = test 的 div
+> const mydiv = document.querySelector("test")
+
+> 把該元素變成 h1 元素
+> mydiv.innerHTML = "<h1>dsf</h1>"
+```
+
+
+
+### classList 類別元素
+
+用 classList 可以修改抓取元素的 class
+
+```HTML
+<style>
+    .red {
+        font-size: 20px;
+        color: red;
+    }
+    .green {
+        font-size: 30px;
+        color: green;
+    }
+</style>
+```
+
+```markdown
+> 把元素的class，修改class為.red的屬性
+> mydiv.classList.add("red")
+
+> 把元素的class，修改class為.green的屬性
+> mydiv.classList.add("green")
+```
+
+
+
+
+事件監聽器 addEventListener
+------
+
+什麼時候會有 **事件** 發生？網頁只要有任何變動，都會有事件發生  
+加一個事件監聽器，這個可以解決 <script src="dom.js"></script> 被晚寫的狀況  
+為整個網頁會先執行完後，再來執行這些事件  
+
+
+像下面這樣寫，就可以解決script先後讀取的問題
+
+```markdown
+> 舊寫法 - 使用DOMContentLoaded 
+> document.addEventListener("DOMContentLoaded", () => {
+>     const mydiv = document.querySelector("#test");
+>     mydiv.innerHTML = "<h1>dsf</h1>";
+> });
+ 
+> 
+> 新寫法 - 加一個difer，讓js晚一點執行 -> 推薦這個
+><script src="dom.js" defer></script>
+```
+
+
+
+
+
+### callback function 回呼函數
+```markdown
+> myDiv.addEventListener("click", (e) => {
+>     console.log(123);
+>     console.log(e);                     => 這個稱為 callback function
+> })
+```
+
+
+
+
+重複使用監聽元素
+------
+
+先設定兩個 div
+```HTML
+<div id="test">hi</div>
+<div id="test2">goodby</div>
+```
+
+抓取後，在用addEventListener監聽器，重複觸發中間段設計的監聽函數
+```markdown
+> const myDiv = document.querySelector("#abc");
+> const youDiv = document.querySelector("#xyz);
+> 
+> const clickHandler = (e) => {
+>     console.log(234)
+>     console.log(e.target);        -> 可寫可不寫, 這一行只是提醒你 那個 e 會傳下來
+> }
+> 
+> myDiv.addEventListener("click", clickHandler);
+> youDiv.addEventListener("click", clickHandler);
+```
+
+
+各自點擊元素後，會印出下面
+```markdown
+> 點擊 id = "test2" 的div
+> byeybe
+> <div id="test2">goodby</div>
+ 
+> 點擊 id = "test2" 的div
+> byebye
+> <div id="test">hi</div>
+```
+
+
+
+
+預設行為 - preventDefault
+------
+
+很多標籤都有預設行為，像是超連結 or 表單，我們可以利用 preventDefault 來先暫停，這些預設行為
+
+設定一個a標籤
+```HTML
+<a href="google.com">Google</a>
+```
+
+抓到此標籤後，把a標籤的預設行為關掉
+```javascript
+const link = document.querySelector("a")
+
+link.addEventListener("click", (e) => {
+    e.preventDefault();
+    console.log("clicked");
+})
+```
+
+
+
+
+實戰 - 練習寫一個計數器 (減法的值不可以 < 1)
+------
+
+```markdown
+> HTML
+> button id="minus">-</button>
+> input type="number" id="counter" value="1">
+> button id="plus">+</button>
+```
+
+```markdown
+> JavaScript
+> / 抓中間的顯示器
+> onst counter = document.querySelector("#counter")
+> 
+> / 抓 + 號
+> onst plusBtn = document.querySelector("#plus")
+> lusBtn.addEventListener("click", () => {
+>    counter.value = Number(counter.value) + 1
+> )
+> 
+> 
+> / 抓 - 號
+> onst minusBtn = document.querySelector("#minus")
+> inusBtn.addEventListener("click", () => {
+>    const value = Number(counter.value)
+>    if (value > 1) {
+>        counter.value = value - 1    
+>    } 
+> )
+> 
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
