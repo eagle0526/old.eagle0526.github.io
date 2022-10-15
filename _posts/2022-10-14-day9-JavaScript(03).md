@@ -106,8 +106,6 @@ find = find() 方法會 **回傳第一個** 滿足所提供之測試函式的元
 ```markdown
 > const lstNum = [1,2,3,4,5,6,7,8,9,10]
 > const newLst = lstNum.find((x)=>{
-> 
-> 
 >     return (x > 6 && x % 2 === 0)  ;
 > })
 > console.log(newLst);
@@ -228,7 +226,8 @@ reduce() 方法將一個累加器及陣列中每項元素（由左至右）傳�
 >  1、可以把 function 當作參數傳入另一個 function  
 >  2、可以回傳 function  
 >    
->  只要符合上面其中一點，就可以說是高階函數  
+> **只要符合上面其中一點，就可以說是高階函數** 
+>  
 > --  
 {: .block-tip}
 
@@ -239,9 +238,9 @@ reduce() 方法將一個累加器及陣列中每項元素（由左至右）傳�
 
 物件 = 一個東西 = 屬性 + 行為
 
-這個是一個物件 aa   
- - key = a,b,c   
- - value = 123,333,"ddd"  
+有一個物件 aa   
+ - key = a, b, c, attack  
+ - value = 123, 333, "ddd", function  
   
 ```markdown
 > const aa = {
@@ -322,8 +321,8 @@ DOM 文件物件模型
 - HTML不是DOM元素  
 
 > --  
-> JS無法直接取用 HTML，中間有一層瀏覽器  
-> Js 會操作瀏覽器 來更改瀏覽器的介面(但是HTML 的 code 不會被動到)  
+> JS 無法直接取用 HTML，中間有一層瀏覽器  
+> JS 會操作瀏覽器來更改瀏覽器的介面(但是HTML 的 code 不會被動到)  
 > --  
 {: .block-tip}
 
@@ -356,7 +355,7 @@ DOM 文件物件模型
 
 > --  
 > 如果印出來的結果是 null  
-> 有可能 <script src="dom.js"></script> 在太前面  
+> 有可能是寫在HTML的 script src 寫在太前面  
 > 導致物件化過程比較慢  
 > --  
 {: .block-warning}
@@ -381,10 +380,12 @@ DOM 文件物件模型
 抓取id的兩種方法
 ------
 
+先給一個DIV
 ```HTML
 <div id="abc">123</div>
 ```
 
+並用兩種語法來抓取div的id
 ```markdown
 > #### 舊方法 - getElementById
 > const mydiv = document.getElementById("abc")
@@ -411,7 +412,8 @@ DOM 文件物件模型
 ```
 
 > --  
-> 用 querySelector 抓元素，可以用任何 css 選取器的方法
+> 用 querySelector 抓元素，可以用任何 css 選取器的方法  
+>   
 > --  
 {: .block-tip}
 
@@ -419,11 +421,10 @@ DOM 文件物件模型
 
 
 ### 一次抓取多個元素
-```markdown
 
 先在HTML設定li的class
+```markdown
 > HTML
-
 > <ul>
 >     <li class="list"></li>
 >     <li class="list"></li>
@@ -496,12 +497,15 @@ DOM 文件物件模型
 
 剛剛抓到指定元素後，可以使用textContent來更改元素的文字
 
+先設定一個div id
 ```markdown
-> 先設定一個div id
+> HTML
 > <div id="abc">hi</div>
 ```
 
+
 ```markdown
+> javascript
 > 抓到 id = "abc" 的 div後
 > const mydiv = document.getElementById("abc")
 
@@ -516,7 +520,6 @@ DOM 文件物件模型
 
 ```markdown
 > HTML
-
 > <div class="aa">1</div>
 > <div class="aa">2</div>
 > <div class="aa">3</div>
@@ -599,7 +602,7 @@ DOM 文件物件模型
 ------
 
 什麼時候會有 **事件** 發生？網頁只要有任何變動，都會有事件發生  
-加一個事件監聽器，這個可以解決 <script src="dom.js"></script> 被晚寫的狀況  
+加一個事件監聽器，這個可以解決 script scr 被晚寫的狀況  
 為整個網頁會先執行完後，再來執行這些事件  
 
 
@@ -677,20 +680,21 @@ DOM 文件物件模型
 ------
 
 很多標籤都有預設行為，像是超連結 or 表單，我們可以利用 preventDefault 來先暫停，這些預設行為
-
+  
+  
 設定一個a標籤
 ```HTML
 <a href="google.com">Google</a>
 ```
 
 抓到此標籤後，把a標籤的預設行為關掉
-```javascript
-const link = document.querySelector("a")
-
-link.addEventListener("click", (e) => {
-    e.preventDefault();
-    console.log("clicked");
-})
+```markdown
+> const link = document.querySelector("a")
+> 
+> link.addEventListener("click", (e) => {
+>     e.preventDefault();
+>     console.log("clicked");
+> })
 ```
 
 
