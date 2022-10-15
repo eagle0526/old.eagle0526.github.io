@@ -223,13 +223,13 @@ reduce() 方法將一個累加器及陣列中每項元素（由左至右）傳�
 
 
 
-> --
-> 何謂高階函數 higher-order function
->  1、可以把 function 當作參數傳入另一個 function
->  2、可以回傳 function
->  
->  只要符合上面其中一點，就可以說是高階函數
-> --
+> --  
+> 何謂高階函數 higher-order function  
+>  1、可以把 function 當作參數傳入另一個 function  
+>  2、可以回傳 function  
+>    
+>  只要符合上面其中一點，就可以說是高階函數  
+> --  
 {: .block-tip}
 
 
@@ -317,15 +317,15 @@ reduce() 方法將一個累加器及陣列中每項元素（由左至右）傳�
 DOM 文件物件模型
 ------
 
-HTML不是物件，為了方便操作，瀏覽器會根據HTML結構，轉成一個一個物件
+- HTML不是物件，為了方便操作，瀏覽器會根據HTML結構，轉成一個一個物件  
+- DOM是瀏覽器把HTML物件化後的結果  
+- HTML不是DOM元素  
 
-DOM是 瀏覽器把HTML物件化後的結果
-HTML不是DOM元素
-
-JS 無法直接取用 HTML
-中間有一層瀏覽器
-Js 會操作瀏覽器 來更改瀏覽器的介面(但是HTML 的 code 不會被動到)
-
+> --  
+> JS無法直接取用 HTML，中間有一層瀏覽器  
+> Js 會操作瀏覽器 來更改瀏覽器的介面(但是HTML 的 code 不會被動到)  
+> --  
+{: .block-tip}
 
 
 
@@ -343,7 +343,7 @@ Js 會操作瀏覽器 來更改瀏覽器的介面(但是HTML 的 code 不會被�
 > <div id="test">5</div>
 
 > 抓 id 為 test 的元素
-const newId = document.querySelector("#test")
+> const newId = document.querySelector("#test")
 
 > 把剛剛抓到的元素，點到他會印出"123"
 > newId.addEventListener("click", () => {
@@ -353,12 +353,14 @@ const newId = document.querySelector("#test")
 > 這樣最後在瀏覽器那邊會發現，只有點到第一個元素，可以觸發這個console.log
 ```
 
-***
 
-> --
-> 如果印出來的結果是 null
-> 有可能 <script src="dom.js"></script> 在太前面
-> 導致物件化過程比較慢
+> --  
+> 如果印出來的結果是 null  
+> 有可能 <script src="dom.js"></script> 在太前面  
+> 導致物件化過程比較慢  
+> --  
+{: .block-warning}
+
 
 ```markdown
 > 解決方法
@@ -408,9 +410,9 @@ const newId = document.querySelector("#test")
 > const mydiv2 = document.querySelector("ul li:nth-child(2)");
 ```
 
-> --
+> --  
 > 用 querySelector 抓元素，可以用任何 css 選取器的方法
-> --
+> --  
 {: .block-tip}
 
 
@@ -431,32 +433,60 @@ const newId = document.querySelector("#test")
 
 用兩種方法抓取所有元素
 ```markdown
-> JavaScript
-
 > 方法一
 > getElementsByClassName
 > const lists = document.getElementsByClassName("list")
 
+> console.log(lists)                  # HTMLCollection(3) [li.list, li.list, li.list]
+```
+
+```markdown
 > 方法二
 > querySelectorAll
 > const lists2 = document.querySelectorAll(".list")
+
+> console.log(list2)                  # NodeList(3) [li.list, li.list, li.list]
 ```
 
 
+
 ### HTMLCollection vs NodeList
-> --
-> 兩種抓取ID的方法 - 抓到的東西不同
-> 
+
+兩種抓取ID的方法 - 抓到的東西不同
+
+- getElementsByClassName 抓到的是HTMLCollection，要把裡面東西印出來只能用for迴圈
+- querySelectorAll 抓到的是NodeList，可以使用forEach把裡面東西印出來
+
+```markdown  
 > #### HTMLCollection  
 > getElementsByClassName 抓到的是一個物件，裡面包著所有東西  
 > 如果想要把物件裡面的東西印出來，只能用for迴圈印出來  
-> 
-> 
+  
+> for(let i = 0; i < oldBlock.length; i++) {
+>     console.log(oldBlock[i]);
+> }
+
+> 上面的 for迴圈，會把剛剛抓到的區塊，全部印出來
+> <li class="list"></li>
+> <li class="list"></li>
+> <li class="list"></li>
+```
+
+```markdown
 > #### NodeList - 多了forEach功能  
 > querySelectorAll 抓到的是一個物件，也包著所有東西  
 > 但是想要把裡面東西抓出來的話，可以用forEach拿法  
-> --
-{: .block-tip}
+ 
+> newBlock.forEach((item) => {
+>     console.log(item);
+> })
+
+> 用forEach把內容物全部印出來
+> <li class="list"></li>
+> <li class="list"></li>
+> <li class="list"></li>
+```
+
 
 ***
 
@@ -478,6 +508,46 @@ const newId = document.querySelector("#test")
 > 把這個物件裡面的值，改成 "aaa"
 > mydiv.textContent = "aaa"
 ```
+
+
+### 實戰練習 querySelectorAll + textContent
+
+利用 querySelectorAll 一次抓相同class的物件，並用 textContent 更改文字
+
+```markdown
+> HTML
+
+> <div class="aa">1</div>
+> <div class="aa">2</div>
+> <div class="aa">3</div>
+> <div class="aa">4</div>
+> <div class="aa">5</div>
+```
+
+
+```markdown
+> javascript
+> #### 使用 forEach + textContent
+
+> sinBlock.forEach((e) => {
+>     e.textContent = "帥哥"              # 這可以把HTML的五個div文字都改成帥哥
+> })  
+```
+
+
+
+```markdown
+> javascript
+> #### 使用 for 迴圈 + textContent
+
+> for(let i = 0; i < sinBlock.length; i++ ) {
+>     sinBlock[i].textContent = "帥哥"    # 這可以把HTML的五個div文字都改成帥哥
+> }
+
+```
+
+
+***
 
 
 
@@ -533,7 +603,7 @@ const newId = document.querySelector("#test")
 為整個網頁會先執行完後，再來執行這些事件  
 
 
-像下面這樣寫，就可以解決script先後讀取的問題
+像下面這樣寫，就可以解決script先後讀取的問題  
 
 ```markdown
 > 舊寫法 - 使用DOMContentLoaded 
@@ -542,11 +612,9 @@ const newId = document.querySelector("#test")
 >     mydiv.innerHTML = "<h1>dsf</h1>";
 > });
  
-> 
 > 新寫法 - 加一個difer，讓js晚一點執行 -> 推薦這個
 ><script src="dom.js" defer></script>
 ```
-
 
 
 
@@ -557,6 +625,10 @@ const newId = document.querySelector("#test")
 >     console.log(123);
 >     console.log(e);                     => 這個稱為 callback function
 > })
+
+> 上面兩個log分別會印出下面這兩個
+> 123
+> PointerEvent {isTrusted: true, pointerId: 1, width: 1, height: 1, pressure: 0, …}
 ```
 
 
@@ -586,7 +658,8 @@ const newId = document.querySelector("#test")
 ```
 
 
-各自點擊元素後，會印出下面
+
+各自點擊元素後，會印出下面訊息
 ```markdown
 > 點擊 id = "test2" 的div
 > byeybe
