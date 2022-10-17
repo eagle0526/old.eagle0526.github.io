@@ -538,7 +538,7 @@ Ps. 記得Math.round只會四捨五入取到整數位，所以如果想取到小
 ```
 
 ```markdown
-#### unshift 語法 - 陣列尾部新增
+#### unshift 語法 - 陣列頭部新增
 
 > data.unshift(1)                        -> 在最前面塞一個值
 > console.log(data)                      # [1, 123, ["2","233"], "kfs", "x"]
