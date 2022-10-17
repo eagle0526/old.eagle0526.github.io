@@ -624,9 +624,9 @@ DOM 文件物件模型
 
 ### callback function 回呼函數
 ```markdown
-> myDiv.addEventListener("click", (e) => {
+> myDiv.addEventListener("click", (e) => {           => 這個 e 稱為 callback function
 >     console.log(123);
->     console.log(e);                     => 這個稱為 callback function
+>     console.log(e);                    
 > })
 
 > 上面兩個log分別會印出下面這兩個
@@ -634,7 +634,10 @@ DOM 文件物件模型
 > PointerEvent {isTrusted: true, pointerId: 1, width: 1, height: 1, pressure: 0, …}
 ```
 
-
+> -- 
+> 回傳函數的功用 -> 把函數當作引數在傳
+> --
+{: .block-top}
 
 
 重複使用監聽元素
