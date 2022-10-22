@@ -1,5 +1,5 @@
 ---
-title: ASTRO Camp Day9 - JavaScript(04)
+title: ASTRO Camp Day12 - JavaScript(04)
 author: YeeChen
 date: 2022-10-20
 category: JavaScript
