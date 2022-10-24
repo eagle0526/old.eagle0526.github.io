@@ -7,7 +7,7 @@ layout: post
 ---
 
 
-事件循環 EventLoop
+Stack 是什麼
 ------
 
 ```markdown
@@ -26,9 +26,11 @@ memory allocation   execution context
 - heap是記憶體，就是進行記憶體分配的地方
 - call stack是一種資料結構，他能夠紀錄幾種情況下，我們在程式中的哪些位置，比如說有一段函式，我們呼叫/使用他，這一段函示會被存放到stack裡面，有很多組函示的話，就會一層一層照執行順序堆疊到stack上，當回傳完函示裡面的東西後，該函式就會從stack裡被移除(依照先進後出的順序)
 
-
-但是!
-如果今天你用setTimeout 或是 DOM 或是 HTTP 並不會在這
+> --  
+> 但是!  
+> 如果今天你用setTimeout 或是 DOM 或是 HTTP 並不會在這  
+> --  
+{: .block-warning}
 
 
 
@@ -40,14 +42,13 @@ memory allocation   execution context
 ex. 你執行了一段while很長的迴圈，while迴圈後面還有其他程式，不過那些程式都要等到while迴圈跑完，才會執行，這邊這個有點塞住的狀況，就是blocking
 
 
-那要如何解決blocking呢？JS使用到了Async Callback方法，後面會提到
+Ps. 那要如何解決blocking呢？JS使用到了 **Async Callback** 方法，後面會提到
 
 > --  
 > one thread == one call back == one thing at a time  
 > 單執行序 = 一次只有一個call = 一次只做一件事  
 > --  
 {: .block-tip}
-
 
 
 
