@@ -36,7 +36,7 @@ x -> 參數 parameter
 
 
 
-#### 如果函數有一個參數，但是如果飲用的時候啥都沒給，最後會給你undefined
+#### 如果函數有一個參數，但是如果引用的時候啥都沒給，最後會給你undefined
 ```markdown
 > function sayHi(name) {
 >     console.log(name)
@@ -105,7 +105,7 @@ x -> 參數 parameter
 ```
 
 > --  
-> undefined() 呼叫，會造成typeErroe  
+> undefined() 呼叫，會造成typeError  
 > --  
 {: .block-tip}
 

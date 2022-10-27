@@ -50,7 +50,7 @@ const addNumber = () => {
 >     name: "悟空",
 >     age,                
 >     attack,             
->     location: "地球"
+>     location: "地球",
 > }
 ```
 
@@ -126,23 +126,26 @@ const addNumber = () => {
 ### 用函數也可以用解構
 
 ```markdown
+> // 印出悟空、18
 > function printUser({name, age}) {
 >     console.log(name),
->     concole.log(name),
+>     concole.log(age),
 > }
 > 
+> //有一個物件，裡面有兩個key
 > const user = {
 >     name: "悟空",
 >     age: 18,
 > }
 > 
+> 把物件帶進上面的函數
 > printUser(user)
 ```
 
 
 
 
-點點點
+點點點...
 ------
 
 兩個陣列結合，可以使用concat結合在一起
@@ -169,7 +172,7 @@ const addNumber = () => {
 
 
 ```markdown
->                       這個d以自己取名(這個動作就是把剩下的函數包起來)
+>                       下面的d可以自己取名(這個動作就是把剩下的函數包起來)
 > function hi(a, b, c, ...d) {
 >     console.log(a, b, c)
 >     console.log(d)       -> 這個會印出剩下所有的數，包成一個陣列
@@ -204,22 +207,22 @@ const addNumber = () => {
 
 ### 陣列解構
   
-給一個陣列
+1. 給一個陣列
 ```markdown
 > const list = [1, 2, 3]
 ```
   
-解構此陣列
+2. 解構此陣列
 ```markdown
 > const [ first, second, last ] = list
 ```
   
-如果今天不想要拿中間第二個，可以用底線來代替
+3. 如果今天不想要拿中間第二個，可以用底線來代替
 ```markdown
 > const [ first, _, last ] = list     > 這個會印出1, 3
 ```
   
-...也可以用在陣列解構
+4. ...也可以用在陣列解構
 ```markdown
 > const [first, ...rest] = list
 > 
