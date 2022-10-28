@@ -596,83 +596,94 @@ this - 一種代名詞
 ------
 
 ### 1. 誰呼叫，誰就是this
-
-const hero = {
-    hi: function() {
-        console.log(this)   -> 這個this就是hero
-    }
-}
-hero.hi()
-
+```md
+> const hero = {
+>     hi: function() {
+>         console.log(this)   -> 這個this就是hero
+>     }
+> }
+> hero.hi()
+```
 
 
 
 另一種狀況
-fuction hi() {
-    function hey() {
-        const hero = {
-            name: "kk"
-            action: function () {
-                console.log(this.name)   -> 這個this 是 hero
-            }
-        }
-        
-    }
-    hero.action()
-}
-
-hi()
+```md
+> fuction hi() {
+>     function hey() {
+>         const hero = {
+>             name: "kk"
+>             action: function () {
+>                 console.log(this.name)   -> 這個this 是 hero
+>             }
+>         }
+>         
+>     }
+>     hero.action()
+> }
+> hi()
+```
 
 ### 2. 沒人呼叫
-
-fuction hi() {
-    console.log(this)       -> 這個this會變成全域物件
-}
-
-hi()
-
+```md
+> fuction hi() {
+>     console.log(this)       -> 這個this會變成全域物件
+> }
+> 
+> hi()
+```
 
 
 另一種狀況
-fuction hi() {
-    function hey() {
-        console.log(this)       -> 這個this也是全域物件
-    }
-    hey()                        
-}
-
-hi()
-
-
-
-
+```md
+> fuction hi() {
+>     function hey() {
+>         console.log(this)       -> 這個this也是全域物件
+>     }
+>     hey()                        
+> }
+> 
+> hi()
+```
 
 
-### 3. 箭頭函式沒有自己的this -> 16:38 的影片，記得把整段code打下來試試
 
-const btn = document.querySelector("#btn")
 
-btn.addEventListener("click", ()=>{           
-    console.log(this)                   -> 這個this因為箭頭函式，所以全域物件
-})
 
+### 3. 箭頭函式沒有自己的this 
+
+範例一
+```md
+> const hey = {} => {}
+```
+
+範例二
+```md
+> const btn = document.querySelector("#btn")
+> 
+> btn.addEventListener("click", ()=>{           
+>     console.log(this)                   -> 這個this因為箭頭函式，所以全域物件
+> })
+```
 
 
 
 ### 4. 是否有使用 new
 
-function hi(age) {
-    
-    this.age = age  -> this會直接在全域產生一個 age 變數
-}
+如果今天想要創造新物件，但是沒有使用new
+```md
+> function hi(age) {    
+>     this.age = age      -> this會直接在全域產生一個 age 變數
+> }
+> 
+> const h = hi(18)        -> 今天沒有使用 new
+```
+```md
+> console.log(h)         # undefined   ---> 如果今天有加new "會印出hi { age: 18 }"
+> console.log(age)       # 18 
 
-
-const h = hi(18)   -> 如果今天沒有使用 new
-console.log(h)
-console.log(age)   -> 這裡會直接可以印出 18 
-
-**不過這很可怕，要記得加上new
-
+> **不過這很可怕，一定要記得加上new
+```
 
 
 

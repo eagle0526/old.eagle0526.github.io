@@ -50,14 +50,13 @@ layout: post
 
 
 ### 6. 是否為嚴格模式 use strict
+不是嚴格模式的情況下，在 fc 裡面使用this，會變成全域變數，嚴格模式下會變成undefined
 ```md
 > function hi() {
 >     `use strict`
 >     console.log(this) -> undefined
 > }
 ```
-不是嚴格模式的情況下，在 fc 裡面使用this，會變成全域變數，嚴格模式下會變成undefined
-
 
 
 > --  
@@ -194,13 +193,11 @@ return hey 的時候，會做一個閉包把要用的參數傳出去
 
 
 
-如果今天太多JS、CS檔案，要在index.html連結其他檔案的時候，該怎麼辦？
+
+parcel 打包檔案 - parcel是一個上線過程的“打包器”  
 ------
 
-市面上有很多打包工具，可以把一大堆的JS、css壓縮成一包小東西，
-npm -> 前端世界專門安裝套件的東西 (npm有點慢)
-yarn -> facebook做的，誕生原因是因為 npm 有點慢
-( yarn 比較快的原因，是因為yarn可以平行下載，一次下載多個檔案 )
+### 如果今天太多JS、CS檔案，要在index.html連結其他檔案的時候，該怎麼辦？
 
 ```md
 > 現在有3個js檔案，我想把這三個壓成一個JS檔案 -> webpack、parcel可以做到
@@ -209,35 +206,47 @@ yarn -> facebook做的，誕生原因是因為 npm 有點慢
 > <script src="house.js"></script>
 ```
 
+> --  
+> 市面上有很多打包工具，可以把一大堆的JS、css壓縮成一包小東西  
+> npm -> 前端世界專門安裝套件的東西 (npm有點慢)  
+> yarn -> facebook做的，誕生原因是因為 npm 有點慢  
+> ( yarn 比較快的原因，是因為yarn可以平行下載，一次下載多個檔案 )  
+> --  
+{: .block-tip}
 
 
-parcel 打包檔案 - parcel是一個上線過程的“打包器”  
-------
+### 實際執行
 
+在專案終端機輸入
 ```md
 > yarn init
 ```
 
-會誕生一個json檔案
-package.json
-{
-  "name": "day17",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",        -> 此專案的授權來源
-}
-
-MIT是麻省理工
-BSD是柏克萊
-這兩間授權的話，基本上都可以免費使用
-
-GPL也是一種開源的受援，不過你今天用GPL的lincese寫一份專案，你那一份專案也要開源
-
-
-
-可以在這個json加上一些東西
-1. sctipts -> 這個很常是前端工程師，加入自己很常用的語法
+會誕生一個json檔案 => package.json
 ```md
+> {
+>   "name": "day17",
+>   "version": "1.0.0",
+>   "main": "index.js",
+>   "license": "MIT",        -> 此專案的授權來源
+> }
+```
+> --  
+> MIT是麻省理工  
+> BSD是柏克萊  
+> 這兩間授權的話，基本上都可以免費使用  
+>   
+> GPL也是一種開源的受援，不過你今天用GPL的lincese寫一份專案，你那一份專案也要開源  
+> 
+> --  
+{: .block-tip}
+
+
+
+1. 接著在json檔上的scripts加一些code
+```md
+> scripts -> 這個很常是前端工程師，加入自己很常用的語法
+
 > "scripts": {
 >     "hi": "echo 123",
 >     "hey": "echo 456"
@@ -247,63 +256,63 @@ GPL也是一種開源的受援，不過你今天用GPL的lincese寫一份專案�
 > yarn run hey           # 456 
 ```
 
-
-parcel是一個上線過程的“打包器”  
-
-安裝 parcle  
+2. 安裝 parcle  
 ```md
-> yarn add --dev parcel  
+> yarn add --dev parcel 
+
+> 輸入後，會直接下載一大堆檔案，包在一個資料夾(node_modules)裡面 
 ```
-會直接下載一大堆檔案，包在一個字料夾裡面
-node_modules
-
-並歸到這邊
-"devDependencies": {
-"parcel": "^2.7.0"
-}
 
 
-dev是開發的意思
-devDependencies
-
-
-如果不小心刪掉node_modules
-再打上yarn就會回覆
-
-
-
-接著到.json檔的scripts裡面，新增一段
+並會在json檔生成一個多幾行程式
 ```md
+> "devDependencies": {
+> "parcel": "^2.7.0"
+> }
+
+> dev是開發的意思 - devDependencies
+```
+
+
+> --  
+> 如果不小心刪掉node_modules  
+> 再打上yarn install就會回覆   
+> --  
+{: .block-tip}
+
+
+3. 接著到.json檔的scripts裡面，新增一段
+```md
+> 下面這一行的指令，就跟 rails s 一樣，就是啟動server
+
 > "scripts": {
 >     "dev": "yarn parcel index.html"  ->  加在這邊的關係，是因為我之後想重複只用 dev 這個指令
 > },                                       要注意那個index.html，如果今天沒有把script包在index裡面
 >                                          就要yarn parcel src="this_test.js"
 ```
-接著直接呼叫
+
+4. 接著直接呼叫
 ```md
 > yarn run dev
 ```
+
 如果今天沒有加上dev那一條，可以直接這樣
 ```md
 > yarn run "yarn parcel index.html"
 ```
 
-
-把type="module" 寫進script裡面
+5. 最後把type="module" 寫進script裡面
 ```md
 > <script src="app.js" defer type="module"></script>
 ```
 
 這樣寫後，開啟環境，並開後台會發現 scr: "一長串的姓名.js"  
-以前的時代，瀏覽器會進行快取，所以index 有為每個檔案取名一長串得符號，如果內容物改變的話，名字究會改變  
-
-
+以前的時代，瀏覽器會進行快取，所以index 有為每個檔案取名一長串得符號，如果內容物改變的話，名字究會改變   
 
 
 
 es modules 如果今天想要引用別人的模組 
 ------
-
 
 ## 引用自己寫的套件
 
@@ -382,7 +391,7 @@ function add() {
 
 
 
-JS測試
+JS測試 jest
 ------
 
 TDD測試驅動開發
