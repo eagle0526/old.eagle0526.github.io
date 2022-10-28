@@ -205,10 +205,10 @@ let state = "stop"
 
 
 > --  
-> 但是像上面這樣寫會遇到一個狀況，假設現在有h1, h2, h3，都用heroCreator生成，這樣會三個新物件，都會有同樣的  
-> attack函式，因為記憶體存量的關係，如果我們把這個fc抽出來，可以大大的減少記憶體消耗  
->   
-> ex.以遊戲子彈為例，每一個子彈都是一個物件，如果每一個子彈都獨立出一個fc，這樣消耗太多記憶體  
+> 但是像上面這樣寫會遇到一個狀況，假設現在有h1, h2, h3，都用heroCreator生成，這樣會三個新物件，都會有同樣的attack函式，因為記憶體存量的關係，如果我們把這個fc抽出來，可以大大的減少記憶體消耗  
+>  
+> ex.以遊戲子彈為例，每一個子彈都是一個物件，如果每一個子彈都獨立出一個fc，這樣消耗太多記憶體
+>     
 > --  
 {: .block-tip}
 
@@ -682,70 +682,82 @@ console.log(age)   -> 這裡會直接可以印出 18
 
 ### 5. 是否有使用 apply, call, bind
 
-const hero = {
-    name: "kk"
-    action: function() {
-        console.log(this.name);    -> 這會印出 kk
-    }
-}
-hero.action()
+先給一個物件
+```md
+> const hero = {
+>     name: "kk"
+>     action: function() {
+>         console.log(this.name);    -> 這會印出 kk
+>     }
+> }
+> #### 呼叫物件中的函式
+> hero.action()
+```
+
+
+用.call來呼叫
+```md
+> const hero = {
+>     name: "kk"
+>     action: function() {
+>         console.log(this.name);    -> 這個this會變成 cc 
+>     }
+> }
+> 
+> const cc = { name: "cc" }
+> hero.action.call(cc)   -> 會印出 "cc"
+```
+
+
+.call呼叫方法可以帶參數，回傳進去呼叫的物件裡面
+```md
+> const hero = {
+>     name: "kk"
+>     action: function(n, m) {
+>         console.log(this.name, n, m);    ->  印出 cc, 1, 2
+>     }
+> }
+> 
+> const cc = {name: "cc"}
+> hero.action.call(cc, 1, 2)   -> 這1, 2 會傳上去function裡面
+```
+
+> --  
+> **call 跟 apply 的差異**  
+> call後面參數是接多個數字  
+> apply後面是接陣列  
+> --
+{: .block-tip}
 
 
 
+### call物件實際案例
 
-
-換個方法呼叫
-const hero = {
-    name: "kk"
-    action: function() {
-        console.log(this.name);    -> 這個this會變成 cc 
-    }
-}
-
-const cc = {name: "cc"}
-hero.action.call(cc)   -> 會印出 "cc"
-
-
-
-
-const hero = {
-    name: "kk"
-    action: function(n, m) {
-        console.log(this.name, n, m);    ->  印出 cc, 1, 2
-    }
-}
-
-const cc = {name: "cc"}
-hero.action.call(cc, 1, 2)   -> 這1, 2 會傳上去function裡面
-
-
-
-call 跟 apply 的差異
-call後面參數是接多個數字
-apply後面是接陣列
-
-
-
-const hero = {
-    hp: 100,
-    mp: 20,
-    attack: function() {
-        console.log("attack!!!!!")
-    }
-}
-const mage = {
-    hp: 70,
-    mp: 80,
-    attack: function() {
-        console.log("attack!!!!!")
-    }
-    heal: function() {
-        this.hp += 30  -> this 會依照下面的方法更改對象(call方法)
-    }
-}
-
-mage.heal.call(hero)   -> 這樣寫可以幫英雄補血，因為call可以改變傳進來技能的指向
-
+```md
+> 先生成一個戰士物件
+>
+> const hero = {
+>     hp: 100,
+>     mp: 20,
+>     attack: function() {
+>         console.log("attack!!!!!")
+>     }
+> }
+>
+> 再生成一個法師物件，多一個補血技能，用call方法可以幫戰士補血
+> const mage = {
+>     hp: 70,
+>     mp: 80,
+>     attack: function() {
+>         console.log("attack!!!!!")
+>     }
+>     heal: function() {
+>         this.hp += 30  -> this 會依照下面的方法更改對象(call方法)
+>     }
+> }
+> 
+> mage.heal.call(hero)   -> 這樣寫可以幫英雄補血，因為call可以改變傳進來技能的指向
+```
 
 
 
