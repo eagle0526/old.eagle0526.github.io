@@ -12,15 +12,13 @@ layout: post
 
 ### 5. 是否有使用 apply, call, bind
 
-- bind 跟 apply、call 的差異是， bind 會比較晚觸發(你去主動執行的時候才會觸發)
+bind 跟 apply、call 的差異是， bind 會比較晚觸發(你去主動執行的時候才會觸發)
 
-> --  
 > #### bind方法  
 > 該bind()方法創建一個新函式，該函式被呼叫時，會將 this 關鍵字設為給定的參數，並在呼叫時，帶有提供之前給定順序的參數。
 >   
 > #### 回傳值  
 > 他會回傳一個新的 fc，並且會把傳進去的東西東做this的初始值
-> --  
 {: .block-tip}
 
 
@@ -29,25 +27,25 @@ layout: post
 
 先給一個fc，印出this
 ```md
-function hi() {
-    console.log(this)   -> 這個this是全域變數
-}
-
-hi()
+> unction hi() {
+>    console.log(this)   -> 這個this是全域變數
+> 
+> 
+> i()
 ```
 
 創建一個新變數，並用hi.bind([])會發生什麼事
 ```md
-function hi() {
-    console.log(this)   # [Number: 123]    -> 這個this是bind傳進來的數字 
-}
-
-const newHi = hi.bind(123)    -> 這個 newHi 因為 bind 的關係，是一個fc
+> function hi() {
+>     console.log(this)   # [Number: 123]    -> 這個this是bind傳進來的數字 
+> }
+> 
+> const newHi = hi.bind(123)    -> 這個 newHi 因為 bind 的關係，是一個fc
 ```
 
 也因為newHi是一個新的fc，所以在主動呼叫之前，他不會發動
 ```md
-newHi()   -> 主動發動
+> newHi()   -> 主動發動
 ```
 
 #### bind舉個例子更好懂 - 物件舉例
@@ -56,41 +54,41 @@ newHi()   -> 主動發動
   
 創建一個ironMan物件
 ```md
-const ironMan = {name: "ironMan"}
+> const ironMan = {name: "ironMan"}
 ```
 
 把這個ironMan換成剛剛bind裡面的123
 ```md
-const newHi = hi.bind(ironMan)
+> const newHi = hi.bind(ironMan)
 ```
 
 這時候呼叫newHi，就會跑出ironMan物件了
 ```md
-newHi()         # {name: "ironMan"}
-
-ps. 會印出來是因為前面的hi()，我有寫console.log(this)喔！不要忘記
+> newHi()         # {name: "ironMan"}
+> 
+> ps. 會印出來是因為前面的hi()，我有寫console.log(this)喔！不要忘記
 ```
   
   
 **不過目前還看不出好處在哪對不對，我把整段code更改一下**
 ```md
-1. 一樣給一個fc，然後帶兩個參數
-function hello(n, m) {
-    console.log(this)    # {name: "ironMan"}  -> 在fc執行前，物件被修改了
-    console.log(n, m)    # (1, 2)             -> fc 可以帶參數進來
-}
-  
-2. 一樣有一個ironMan物件
-const ironMan = {name: "ironMan"}
-  
-3. 一樣用bind做出一個新物件，並帶入ironMan
-const newHello = hello.bind(ironMan)
-  
-4. **不一樣的來了，我們在執行前，先改變 ironMan 的值**
-ironMan.name = "ironHeart"
-  
-5. 執行，並帶一些參數給newHello
-newHello(1, 2)
+> 1. 一樣給一個fc，然後帶兩個參數
+> function hello(n, m) {
+>     console.log(this)    # {name: "ironMan"}  -> 在fc執行前，物件被修改了
+>     console.log(n, m)    # (1, 2)             -> fc 可以帶參數進來
+> }
+>   
+> 2. 一樣有一個ironMan物件
+> const ironMan = {name: "ironMan"}
+>   
+> 3. 一樣用bind做出一個新物件，並帶入ironMan
+> const newHello = hello.bind(ironMan)
+>   
+> 4. **不一樣的來了，我們在執行前，先改變 ironMan 的值**
+> ironMan.name = "ironHeart"
+>   
+> 5. 執行，並帶一些參數給newHello
+> newHello(1, 2)
 ```
   
 > --  
@@ -154,49 +152,75 @@ newHello(1, 2)
 
 
 
-### Cloure 閉包 - 以 setTimeout 舉例
+### Closure 閉包 - 以 setTimeout 舉例
 
-10-28
-11.12 -> 修改筆記
-非同步回調的問題
-for(var i = 0; i < 3; i++) {
-    setTimeout(function() => {
-        console.log(i)
-    }, 1000 * i)
-}
+#### 完成的 code 可以看closure那邊文章
 
+假設今天想要印出 1 -> 2 -> 3 (每過一秒印出 1++)
+```md
+> for(var i = 0; i < 3; i++) {
+>     setTimeout(()=>{
+>         console.log(i)        # 3 -> 3 -> 3 (每隔一秒印出一個3)
+>     }, 1000 * i)
+> }
+```
 
-let 離開 for 迴圈就會失去作用
-var 會一直作用
-所以
-
-
-把上面 for 迴圈中的 var 改成 let 會正常運作 
-為什麼改成 let 就可以執行，是因為閉包的概念
-var的話就算離開for迴圈還可以存活
-所以最後 i 就會讀取 迴圈最後結束的值
-
-如果改成let的話，離開迴圈就無法存活，所以會有一個閉包把這個i一起包進webAPI
-之後 setToimeout 的 i 就會依照閉包中的i給值
+> --  
+> 把上面 for 迴圈中的 var 改成 let 做到 1 -> 2 -> 3 (每隔一秒印出一個數字)
+> 為什麼改成 let 就可以執行，是因為閉包的概念  
+> var的話就算離開for迴圈還可以存活  
+> 所以最後 i 就會讀取 迴圈最後結束的值  
+> --  
+> 如果改成let的話，離開迴圈就無法存活，所以會有一個閉包把這個i一起包進webAPI  
+> 之後 setToimeout 的 i 就會依照閉包中的i給值  
+> --  
 
 
 
 
 ### Closure 閉包 - fc 都會有這個特性
-JS再執行的過程中，會去考慮非同步相關的參數 or function，是否有用for迴圈包住，用let宣告的話，裡面的 i 會持續變動
+- JS再執行的過程中，會去考慮非同步相關的函式 or function，是否有用for迴圈包住，用let宣告的話，裡面的 i 會持續變動
 
-let原本只會存活在for回圈裡面，但是被setTimeout一起帶去webAPI裡面，所以等 stack 裡面全部執行完後， let才會依然存活
+- let原本只會存活在for回圈裡面，但是被setTimeout一起帶去webAPI裡面，所以等 stack 裡面全部執行完後， let才會依然存活
 
-他會去捕捉周圍的環境變數，但是只會去抓字幾有用到的東西
-ex. 下面筆記補上
-
-
-10-28
-11.22分
-有一個fc的範例，筆記要補做
+- 他會去捕捉周圍的環境變數，但是只會去抓字幾有用到的東西
 
 
-return hey 的時候，會做一個閉包把要用的參數傳出去
+Closure實際範例
+------
+
+先做一個fc，裡面包一個變數、fc
+```md
+> function hi() {
+>     let a = 1
+>     function hey() {
+>         console.log(a)      # 1   -> 會印出1
+>     }
+>     hey()
+> }
+> hi()
+
+> Ps. let a 在 fc 存活，所以印出來很正常
+```
+
+
+
+現在我們換掉一些code，並在 fc 外面試著把 a 印出來
+```md
+> function hi() {
+>     let a = 1
+>     function hey() {
+>         console.log(a)  4. 印出 1
+>     }
+>     return hey          1. 我們把fc hey傳出去(這時候封包會一起把let a傳出去)    
+> }
+> 
+> const newHi = hi()      2. 並用一個新變數接住，這個newHi是一個fc喔！！
+> newHi()                 3. 呼叫newHi
+
+> Ps. 正常的情況下，let應該會被限制在function才對，不過因為封包的關係
+>     return hey 的時候，會做一個閉包把要用的參數傳出去
+```
 
 
 
@@ -244,8 +268,6 @@ return hey 的時候，會做一個閉包把要用的參數傳出去
 
 
 
-
-
 parcel 打包檔案 - parcel是一個上線過程的“打包器”  
 ------
 
@@ -267,9 +289,12 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 {: .block-tip}
 
 
-### 實際執行
 
-在專案終端機輸入
+
+### 打包器實際執行
+
+一、在專案終端機輸入
+
 ```md
 > yarn init
 ```
@@ -295,7 +320,8 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 
 
 
-1. 接著在json檔上的scripts加一些code
+二、接著在json檔上的scripts加一些code
+
 ```md
 > scripts -> 這個很常是前端工程師，加入自己很常用的語法
 
@@ -308,7 +334,9 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 > yarn run hey           # 456 
 ```
 
-2. 安裝 parcle  
+
+三、安裝 parcel
+
 ```md
 > yarn add --dev parcel 
 
@@ -333,7 +361,8 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 {: .block-tip}
 
 
-3. 接著到.json檔的scripts裡面，新增一段
+四、接著到.json檔的scripts裡面，新增一段
+
 ```md
 > 下面這一行的指令，就跟 rails s 一樣，就是啟動server
 
@@ -343,7 +372,8 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 >                                          就要yarn parcel src="this_test.js"
 ```
 
-4. 接著直接呼叫
+五、接著直接呼叫
+
 ```md
 > yarn run dev
 ```
@@ -353,7 +383,8 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 > yarn run "yarn parcel index.html"
 ```
 
-5. 最後把type="module" 寫進script裡面
+六、最後把type="module" 寫進script裡面
+
 ```md
 > <script src="app.js" defer type="module"></script>
 ```
@@ -363,7 +394,7 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 
 
 
-es modules 如果今天想要引用別人的模組 
+es modules 如果今天想要引用別人的模組
 ------
 
 ## 引用自己寫的套件
