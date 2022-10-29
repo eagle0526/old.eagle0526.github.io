@@ -77,12 +77,55 @@ card3.addEventListener("click", (e)=>{
 
 ### Event.stopPropagation()
 
+一、應用測試一
 那假設我今天想要點到3者共同的區塊，但是只想印出最上層的，那要怎麼辦？  
 使用stopPropagation()，停止事件流，可以辦到  
 
 ```md
+card1.addEventListener("click", (e)=>{
+    e.stopPropagation()                     -> 1. 把事件流停止在card1
+    console.log("card1");
+}, true)                                    -> 2. card1改成補捉階段碰到
+card2.addEventListener("click", (e)=>{
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
+```
+
+這樣就只會印出 card1 了
+```md
+> card1
+
+> 原因是因為，首先我們設定card1的事件流是補多階段碰到，接著設定碰到card1就停止
+```
+
+二、應用測試二
+那再假設，碰到三者共同區塊，但是我想印出的順序是 -> card3 -> card2，這樣怎麼設定
+```md
+card1.addEventListener("click", (e)=>{
+    // e.stopPropagation()
+    console.log("card1");
+})
+card2.addEventListener("click", (e)=>{
+    e.stopPropagation()                     -> 直接把事件流停在二就好
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
 
 ```
+
+```md
+> card3
+> card2
+
+> 這樣就可以照上面想印出的順序印出來了
+> 原因是原本事件流的順序就是冒泡，所以只要停在card2，就可以完成
+```
+
 
 
 Ps. 這個東西做遊戲會用到，像是卡牌遊戲
@@ -90,129 +133,87 @@ Ps. 這個東西做遊戲會用到，像是卡牌遊戲
 
 
 
+### target階段
 
+如果今天對監聽器最外層下e.target，並點擊三者共通處，會發生什麼事？
+```md
+card1.addEventListener("click", (e)=>{
+    console.log("card1");
+    console.log(e.target);              -> 在第一層設定e.target
+})
+card2.addEventListener("click", (e)=>{
+    
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
+```
 
-如果今天Ａ內層有Ｂ，但是我想要按B不出現A，要怎麼做
+```md
+> <div class="card3">我是內層</div>
 
-事件停止傳播
-Event.stopPropagation()
+> 會發現明明是設定在 card1上，卻印出card3的元素，原因是因為
+> 他會印出 **target層** 前一層的target
+> 以這個例子來說，離target層最近的元素是card3
+```
 
-直接在B下 e.stopPropagation()
-這樣事件流就會停在B，就會只印出B
-
-
-
-今天想點擊內層B層，但只出現A要怎麼做
-穿不過A的
-
-A.addEventListener("click", (e) => {
-    e.stopPropagation()                 -> 停在A
-    console.log("A");
-}, true)                                -> capture階段
-B.addEventListener("click", (e) => {
-    console.log("B");
+### currentTarget
+那要怎麼解決摸到哪一個元素，就印出該元素呢？
+```md
+card1.addEventListener("click", (e)=>{
+    console.log("card1");
+    console.log(e.currentTarget);              -> 在第一層設定e.currentTarget
 })
 
+> 這樣設定，就可以只印出這一層的taraget
+```
+
+> --  
+> currentTarget // 註冊事件的那傢伙，永遠不會因為事件流的而改變  
+> --  
+{: .block-tip}
 
 
-target階段
-
-如果今天對監聽器下
-e.target
-
-他會印出target前一層的traget
-如果今天事件流下在capture
-target就會抓最內層的，if A 包住 B，就會印出B
-
-如果今天事件流下在bubbing
-target就會抓最內層的，if A 包住 B，就會印出B
-
-
-
-
-currentTarget // 註冊事件的那傢伙，永遠不會因為事件流的而改變
-
-
-
-
+***
 
 
 什麼是範圍Scope
 ------
 
-Scope Chain - 內部找不到變數，就往外找
+- Scope Chain -> 內部找不到變數，就往外找
+- Lecical Scope -> Scope跟他寫在哪裡有關
 
-
-Lecical Scope - Scope跟他寫在哪裡有關
-下面就是一個 Lecical Scope 的狀況
-最後最呼叫出hey()，並印出2
-
-let a = 1
-
-function hello() {
-    let a = 2
-    console.log(a)
-}
-
-function hey() {
-    console.log(a)
-}
-
-
-hello() -> 2
-
-
-
-
+下面就是一個 Lecical Scope 的狀況，最後最呼叫出hey()，並印出2
+```md
+> let a = 1
+> 
+> function hello() {
+>     let a = 2
+>     console.log(a)
+> }
+> 
+> function hey() {
+>     console.log(a)
+> }
+> 
+> hello() -> 2
+```
 
 
 
 
 'use strict'
 ------
-
-fuction hi() {
-    'use stict'         -> 加上這個，就會對此函數有嚴格的標準
-    a = 2                  如果沒有宣告，就不會自動在window生成變數
-    console.log(2)
-}
-
-hi()
-
-
-
-
-
-
-
-
-
-// 每秒增加一
-for(let i = 3; i < 0; i++) {
-    setTimeOut(() => {
-        console.log("A")
-    }, 1000 * (i+1))
-}
-
-
-
-
-
-
-currentSec = sec
-
-let state = "stop"
-多做一個判斷
-如果狀態是runngning
-
-
-
-多宣告一個變數 - 狀態變數
-假設現在是開始，就把狀態改成stop
-並
-
-
-
+```md
+> fuction hi() {
+>     'use stict'         -> 加上這個，就會對此函數有嚴格的標準
+>     a = 2                  如果沒有宣告，就不會自動在window生成變數
+>     console.log(2)
+> }
+> 
+> hi()
+```
 
 
 ***
@@ -223,9 +224,9 @@ let state = "stop"
 物件導向
 ------
 
-物件導向的目的，用比較容易理解的方式，來整理你的程式碼，並把那些fc放到對的地方
-
-下面是一個hero物件
+物件導向的目的，用比較容易理解的方式，來整理你的程式碼，並把那些fc放到對的地方  
+  
+下面是一個hero物件  
 ```markdown
 > const hero = {
 >     name: "kk",
@@ -243,8 +244,7 @@ let state = "stop"
 **但是假如今天要是在做遊戲，要做一個小兵模組，總不會每一個小兵都像上面那樣一個一個物件生成，這樣太慢**
 
 
-因此我們來建立一個英雄模組，並且這個模組要傳兩個參數進去
-(客製化英雄的名字、力量)
+因此我們來建立一個英雄模組，並且這個模組要傳兩個參數進去(客製化英雄的名字、力量)
 ```markdown
 > function heroCreator(name, power) {
 >     const hero = {
