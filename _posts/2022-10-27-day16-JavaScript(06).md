@@ -10,25 +10,85 @@ layout: post
 事件流
 ------
 
-JS的事件留有三階段
-
-如果今天有兩層結構，會先往下穿過外層到內層
-再從內層到外層
-第一階段 -> 捕獲階段 (capturing) 
-第二階段 -> targeting 
-第三階段 -> 冒泡階段 (bubbing) 
-
+### JS的事件留有三階段
+  
+如果今天有兩層結構，會先往下穿過外層到內層，再從內層到外層    
+- 第一階段 -> 捕獲階段 (capturing)  
+- 第二階段 -> targeting   
+- 第三階段 -> 冒泡階段 (bubbing)  
 
 
 事件監聽器的第三個參數，預設值是false
-
-
 (第三個參數，如果是Ture，就會是capturing階段)
 (第三個參數，如果是false，就會是bubbing階段)
 
 
+### 實際範例
 
-這個東西做遊戲會用到，像是卡牌遊戲
+我現在做了三層的div，card1>card2>card3
+```html
+<div class="card1">我在最外層
+    <div class="card2">我是中層
+        <div class="card3">我是內層</div>
+    </div>
+</div>
+```
+
+並多做三個監聽器，點擊到div的時候，會印出被點擊到的區塊
+```md
+const card1 = document.querySelector(".card1")
+const card2 = document.querySelector(".card2")
+const card3 = document.querySelector(".card3")
+
+
+card1.addEventListener("click", (e)=>{
+    console.log("card1");
+})
+card2.addEventListener("click", (e)=>{
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
+```
+
+這樣假如我們點擊三個div的重疊區塊，印出card的順序是什麼呢？
+```md
+> card3    -> 第一個被印出
+> card2    -> 第二個被印出
+> card1    -> 第三個被印出
+
+> 會這樣印出來的原因就是因為，事件監聽器的第三個參數，預設值是false()，也就是在冒泡階段才會被觸發
+> Ps. card3被包在最內層，在空間中就是最下層
+```
+
+那假設我今天這樣改(把card1的監聽階段改成true)，印出來會變怎麼樣？
+```md
+> card1.addEventListener("click", (e)=>{
+>     console.log("card1");
+> }, true)
+
+> card1    -> 第一個被印出
+> card3    -> 第二個被印出
+> card2    -> 第三個被印出
+
+> 原因就是因為， card1改成在捕捉階段就觸發，所以card1在事件流肛下去就碰到card1
+```
+
+### Event.stopPropagation()
+
+那假設我今天想要點到3者共同的區塊，但是只想印出最上層的，那要怎麼辦？  
+使用stopPropagation()，停止事件流，可以辦到  
+
+```md
+
+```
+
+
+Ps. 這個東西做遊戲會用到，像是卡牌遊戲
+
+
+
 
 
 
@@ -709,7 +769,6 @@ function hi() {
 
 hi.call(88888)     # [Number: 888]     
 ```
-
 
 
 
