@@ -152,17 +152,18 @@ AJAX應用
 
 fetch寫爬蟲
 ------
-```md
-> const api = "網址"
-> 
-> const api = "https://jsonplaceholder.typicode.com/posts";
-> 
-> fetch(api).then((e) => {
->     console.log(e.json());       -> 印出 promise
-> })
 
-> 所有的promise都可以用 catch or then 街
-```
+const api = "網址"
+
+const api = "https://jsonplaceholder.typicode.com/posts";
+
+fetch(api).then((e) => {
+    console.log(e.json());       -> 印出 promise
+})
+
+
+所有的promise都可以用 catch or then 街
+
 
 
 
@@ -178,13 +179,13 @@ stack VS web api vs queue 瀏覽器真正再執行的細節
 ------
 
 #### stack
-- 瀏覽器堆疊的概念
-- 先進後出
-- FILO
+瀏覽器堆疊的概念
+先進後出
+FILO
 
 #### Queue
-- 先進先出
-- FIFO
+先進先出
+FIFO
 
 
 

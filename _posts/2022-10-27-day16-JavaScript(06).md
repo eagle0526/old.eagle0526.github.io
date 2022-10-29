@@ -16,14 +16,12 @@ layout: post
 - 第一階段 -> 捕獲階段 (capturing)  
 - 第二階段 -> targeting   
 - 第三階段 -> 冒泡階段 (bubbing)  
-  
-  
-事件監聽器的第三個參數，預設值是false  
-(第三個參數，如果是Ture，就會是capturing階段)  
-(第三個參數，如果是false，就會是bubbing階段)  
 
 
-Ps. 這個東西做遊戲會用到，像是卡牌遊戲
+事件監聽器的第三個參數，預設值是false
+(第三個參數，如果是Ture，就會是capturing階段)
+(第三個參數，如果是false，就會是bubbing階段)
+
 
 ### 實際範例
 
@@ -38,20 +36,20 @@ Ps. 這個東西做遊戲會用到，像是卡牌遊戲
 
 並多做三個監聽器，點擊到div的時候，會印出被點擊到的區塊
 ```md
-> const card1 = document.querySelector(".card1")
-> const card2 = document.querySelector(".card2")
-> const card3 = document.querySelector(".card3")
-> 
-> 
-> card1.addEventListener("click", (e)=>{
->     console.log("card1");
-> })
-> card2.addEventListener("click", (e)=>{
->     console.log("card2");
-> })
-> card3.addEventListener("click", (e)=>{
->     console.log("card3");
-> })
+const card1 = document.querySelector(".card1")
+const card2 = document.querySelector(".card2")
+const card3 = document.querySelector(".card3")
+
+
+card1.addEventListener("click", (e)=>{
+    console.log("card1");
+})
+card2.addEventListener("click", (e)=>{
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
 ```
 
 這樣假如我們點擊三個div的重疊區塊，印出card的順序是什麼呢？
@@ -84,16 +82,16 @@ Ps. 這個東西做遊戲會用到，像是卡牌遊戲
 使用stopPropagation()，停止事件流，可以辦到  
 
 ```md
-> card1.addEventListener("click", (e)=>{
->     e.stopPropagation()                     -> 1. 把事件流停止在card1
->     console.log("card1");
-> }, true)                                    -> 2. card1改成補捉階段碰到
-> card2.addEventListener("click", (e)=>{
->     console.log("card2");
-> })
-> card3.addEventListener("click", (e)=>{
->     console.log("card3");
-> })
+card1.addEventListener("click", (e)=>{
+    e.stopPropagation()                     -> 1. 把事件流停止在card1
+    console.log("card1");
+}, true)                                    -> 2. card1改成補捉階段碰到
+card2.addEventListener("click", (e)=>{
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
 ```
 
 這樣就只會印出 card1 了
@@ -106,17 +104,18 @@ Ps. 這個東西做遊戲會用到，像是卡牌遊戲
 二、應用測試二
 那再假設，碰到三者共同區塊，但是我想印出的順序是 -> card3 -> card2，這樣怎麼設定
 ```md
-> card1.addEventListener("click", (e)=>{
->     // e.stopPropagation()
->     console.log("card1");
-> })
-> card2.addEventListener("click", (e)=>{
->     e.stopPropagation()                     -> 直接把事件流停在二就好
->     console.log("card2");
-> })
-> card3.addEventListener("click", (e)=>{
->     console.log("card3");
-> })
+card1.addEventListener("click", (e)=>{
+    // e.stopPropagation()
+    console.log("card1");
+})
+card2.addEventListener("click", (e)=>{
+    e.stopPropagation()                     -> 直接把事件流停在二就好
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
+
 ```
 
 ```md
@@ -129,22 +128,26 @@ Ps. 這個東西做遊戲會用到，像是卡牌遊戲
 
 
 
+Ps. 這個東西做遊戲會用到，像是卡牌遊戲
+
+
+
 
 ### target階段
 
 如果今天對監聽器最外層下e.target，並點擊三者共通處，會發生什麼事？
 ```md
-> card1.addEventListener("click", (e)=>{
->     console.log("card1");
->     console.log(e.target);              -> 在第一層設定e.target
-> })
-> card2.addEventListener("click", (e)=>{
->     
->     console.log("card2");
-> })
-> card3.addEventListener("click", (e)=>{
->     console.log("card3");
-> })
+card1.addEventListener("click", (e)=>{
+    console.log("card1");
+    console.log(e.target);              -> 在第一層設定e.target
+})
+card2.addEventListener("click", (e)=>{
+    
+    console.log("card2");
+})
+card3.addEventListener("click", (e)=>{
+    console.log("card3");
+})
 ```
 
 ```md
@@ -158,10 +161,10 @@ Ps. 這個東西做遊戲會用到，像是卡牌遊戲
 ### currentTarget
 那要怎麼解決摸到哪一個元素，就印出該元素呢？
 ```md
-> card1.addEventListener("click", (e)=>{
->     console.log("card1");
->     console.log(e.currentTarget);              -> 在第一層設定e.currentTarget
-> })
+card1.addEventListener("click", (e)=>{
+    console.log("card1");
+    console.log(e.currentTarget);              -> 在第一層設定e.currentTarget
+})
 
 > 這樣設定，就可以只印出這一層的taraget
 ```
@@ -236,11 +239,11 @@ Ps. 這個東西做遊戲會用到，像是卡牌遊戲
 > 呼叫hero的attack fc
 > hero.attack();                    # attack!
 ```
-  
-  
-**但是假如今天要是在做遊戲，要做一個小兵模組，總不會每一個小兵都像上面那樣一個一個物件生成，這樣太慢**  
-  
-  
+
+
+**但是假如今天要是在做遊戲，要做一個小兵模組，總不會每一個小兵都像上面那樣一個一個物件生成，這樣太慢**
+
+
 因此我們來建立一個英雄模組，並且這個模組要傳兩個參數進去(客製化英雄的名字、力量)
 ```markdown
 > function heroCreator(name, power) {
@@ -429,8 +432,8 @@ new 新物件
 這個new會幫我們做幾件事情
 - 產生一個空的物件
 - 會有一個 this 指向空物件
-- {}.__proto__ = function.prototype
 - 自動 return 物件
+- 
 
 
 ```md
@@ -523,7 +526,7 @@ new 傳進 actions 的方法
 ```md
 > const a = new Array()             -> 用 new 創造一個變數a陣列
 > a.__proto__ === Array.prototype   # true
-> a.map === Array.prototype.map     # true
+> a.map === Array.prototype         # true
 ```
 
 
@@ -602,7 +605,7 @@ Ps.如果今天用Class寫法，創新物件的時候沒有給new，系統會直
 ### 面試會考的題目
 
 ```md
-> 1. All objects have prototype -> false 
+> 1. ll objects have prototype -> false 
 > (是所有 fc 都有prototype)
 
 > **
