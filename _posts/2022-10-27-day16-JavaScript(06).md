@@ -693,7 +693,29 @@ this - 一種代名詞
 
 ### 5. 是否有使用 apply, call, bind
 
-先給一個物件
+#### 用fc來看情況
+```md
+function hi() {
+    console.log(this)       -> 直接呼叫hi的情況下，this是全域
+}
+
+hi()     # window(全域)      
+```
+
+```md
+function hi() {
+    console.log(this)       -> 用call呼叫，這個會變成call裡面的東西
+}
+
+hi.call(88888)     # [Number: 888]     
+```
+
+
+
+
+
+
+#### 用物件來看情況，先給一個物件
 ```md
 > const hero = {
 >     name: "kk"
