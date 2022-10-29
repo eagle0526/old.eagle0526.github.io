@@ -1,5 +1,5 @@
 ---
-title: what is event-loop
+title: What Is Event-Loop
 author: YeeChen
 date: 2022-10-21
 category: JavaScript
