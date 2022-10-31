@@ -209,6 +209,10 @@ console.log(hawkEye)          # heroCreator { profess: 'hawkEye', skill: 'arrow'
 problem
 為啥 heroCreator.prototype 是一個物件
 heroCreator本來不是一個fc嗎？
+
+
+Ans. function 自己本身就是一個物件 & prototype也是一個物件  
+     所以物件.物件還是一個物件
 ＊＊＊＊＊＊
 
 
