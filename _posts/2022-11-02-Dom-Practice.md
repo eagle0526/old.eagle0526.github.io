@@ -1,7 +1,7 @@
 ---
 title: Dom Practice
 author: YeeChen
-date: 2022-12-31
+date: 2022-11-02
 category: JavaScript-Dom
 layout: post
 ---
@@ -337,6 +337,22 @@ li同一層元素的後一個就是第2個li
 >     
 > 上面兩者都印出 **1** -> 1代表的意思是"Node.ELEMENT_NODE"，一個元素的節點，例如 <p> 和 <div>。  
 > 可以到以下連結看其他數字的意思  
-> [nodeType中的數字，代表的意義](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType)  
+> [nodeType中的數字，代表的意義][nodetype]  
 >   
 {: .block-tip}
+
+
+***
+
+
+Active Button
+------
+
+[active範例網頁][activeButton]
+
+
+
+
+
+[nodetype]: https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType
+[activeButton]: https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_active_element
