@@ -1,7 +1,7 @@
 ---
 title: Dom Practice
 author: YeeChen
-date: 2023-01-01
+date: 2022-12-31
 category: JavaScript-Dom
 layout: post
 ---
@@ -329,8 +329,14 @@ li同一層元素的後一個就是第2個li
 
 
 
-
-額外提醒 - nodetype是什麼
-// // nodeType中的數字，代表的意義https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType
-// console.log(ulList.parentNode.nodeType)
-// console.log(liList.parentNode.nodeType)
+> --  
+> **額外補充 - nodetype是什麼**  
+>   
+> console.log(ulList.parentNode.nodeType)  
+> console.log(liList.parentNode.nodeType)  
+>     
+> 上面兩者都印出 **1** -> 1代表的意思是"Node.ELEMENT_NODE"，一個元素的節點，例如 <p> 和 <div>。  
+> 可以到以下連結看其他數字的意思  
+> [nodeType中的數字，代表的意義](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType)  
+>   
+{: .block-tip}
