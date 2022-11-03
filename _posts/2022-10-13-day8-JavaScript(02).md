@@ -124,18 +124,19 @@ x -> 參數 parameter
  - 第二輪式執行 - 執行期
   -- 執行函數、賦值
 
+
 ```markdown
 > 情境算式
 > var a = 1
 > console.log(a)
 >
 > ----------
-> 建立期
-> var a        1A、1b
+> 建立期         執行階段  
+> var a         1A、1b
 > 
 > 執行期
 > a = 1           2
-> console.log(a)  2
+> console.log(a)  2       
 ```
 > --  
 > 兩階段運作  
@@ -150,15 +151,17 @@ x -> 參數 parameter
 > 情境算式
 > console.log(a)
 > var a = 1
->
+> console.log(a)
 > ------ 
 > 第一階段
 > console.log(a)     # 不執行
 > var a = 1          # 執行 1A、1B -> 已初始化，但是還沒賦值
-> 
+> console.log(a)     # 不執行
+
 > 第二階段
 > console.log(a)     # 執行，印出undefined
-> var a = 1
+> var a = 1          # 執行，賦值
+> console.log        # 執行，印出1
 ```
 
 
@@ -167,20 +170,19 @@ x -> 參數 parameter
 > var a = 1
 > var a
 > 
-> console.log(a)   -> 1
+> console.log(a)         # 印出1
 > 
 > --------
 > 第一階段
-> var a = 1              # 執行 undefined
-> var a                  # 執行 undefined
+> var a = 1              # 執行 1a、1b
+> var a                  # 執行 1a、1b
 > 
 > console.log(a)         # 不執行
-> 
-> 
-> 
+
+
 > 第二階段
-> var a = 1              # 執行，給值變1
-> var a                  # 執行，但是啥都沒給，所以忽略
+> var a = 1              # 執行 2，給值變1
+> var a                  # 執行 2，但是啥都沒給，所以忽略
 > 
 > console.log(a)         # 執行，印出a是1
 ``` 
@@ -190,8 +192,8 @@ x -> 參數 parameter
 > if (false) {
 >     var a = 1
 > }
-> console.log(a)    -> undefined
->
+> console.log(a)                    # 印出 undefined
+
 > ---------
 > 第一階段
 > if (false) {                      # 沒執行
@@ -199,8 +201,8 @@ x -> 參數 parameter
 > }
 > 
 > console.log(a)    -> undefined    # 沒執行
-> 
-> 
+ 
+ 
 > 第二階段
 > if (false) {                      # 執行
 >     var a = 1                     # 因為if裡面是false 所以不執行
@@ -208,8 +210,10 @@ x -> 參數 parameter
 > 
 > console.log(a)    -> undefined    # 執行，最後印出undefined
 ```
-
-
+  
+Ps. if(false)雖然第一階段沒執行，但是裡面的var a 第一階段有執行，不過還沒賦值，等到第二階段，因為if直接錯誤，所以就不會進到if裡面，因此var a就是undefined狀態
+  
+  
 ### let 怎麼解決變數提升 - 1b不執行
 
 ```markdown
@@ -238,24 +242,57 @@ x -> 參數 parameter
 ```
 
 
-#### JS執行function的順序
+### 函數宣告順序
+
+
+範例第一題 - 用const宣告一個fc，並在此之前呼叫該變數
+```markdown
+> 第一階段
+> sayHi()                            # 第一輪不執行
+> const sayNyName = function {       # 第一輪做宣告，但是1b沒做 
+>     console.log()
+> }
+
+> 第二階段
+> sayHi()                            # 第二輪呼叫變數
+> const sayNyName = function {       # 第二輪做事，印出裡面的東西
+>     console.log()                  
+> }
+>
+> BUT!!!!!!!，上面這樣會出錯，會發生initialization的問題，原因就是TDZ的問題
+```
+  
+  
+  
+  
+範例第二題 - JS執行function的順序，在function裡面，1a、1b、2都會一起做好
+  
 ```markdown
 > 第一階段
 > sayHi()                   # 不執行
 > function sayHi() {        # 執行 - sayHi執行1a、1b   {}執行2 
->     console.log()
+>     console.log("hello") 
 > }
 > 
 > 第二階段
 > sayHi()                   # 執行
+>
+> 印出 hello
 ```
-
+  
 => 因爲第一階段{}會執行2(執行函數賦值)，因此第二階段執行的時候，才可以成功執行
+  
 
-
+> --  
+> 如果今天你是直接設定一個fc，不管在哪裡呼叫都可以使用  
+> 但假如今天你是用const / let 設定一個變數，記得要後呼叫才能成功使用該fc  
+> --  
+{: .block-warning}
+  
+  
 ***
-
-
+  
+  
 什麼是scope
 ------
 
@@ -271,9 +308,9 @@ let/const 只要有一個大括號就可以把他包住
 ```markdown
 > var age = 20
 > if (age >= 18) {
->     const message = "未成年"
+>     const message = "未成年"          # is not defined
 > } else {
->     const message = "已成年"
+>     const message = "已成年"          # is not defined
 > }
 > 
 > console.log(message) -> 因為const被{}包住，所以噴會出is not defined
@@ -353,9 +390,9 @@ let/const vs var
 > var age = 20
 > let message;               -> 先宣告，不要給值
 > if (age >= 18) {
->     const message = "未成年"
+>     message = "未成年"
 > } else {
->     const message = "已成年"
+>     message = "已成年"
 > }
 > 
 > console.log(message) -> # 未成年，這樣就可以跑了，因為前面先宣告過
