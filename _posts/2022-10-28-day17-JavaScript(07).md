@@ -470,6 +470,17 @@ es modules 如果今天想要引用別人的模組
 
 
 
+JavaScript 測試環境
+------
+
+到專案的終端機輸入以下
+```md
+> yarn add -dev jest
+```
+
+
+
+
 
 
 

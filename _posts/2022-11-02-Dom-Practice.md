@@ -80,6 +80,14 @@ insertAdjacentHTML() & removeChild()
 ```
 
 
+> --  
+> **關鍵提醒**  
+> 如果今天是用 last-child 抓取要新增、刪除的物件，要避免在監聽器會宣告  
+> 如果在監聽器外宣告，會導致抓取的事件被刪掉後，就導致整個壞掉  
+> ex. const lastElement = document.querySelector("ul li:last-child")  
+> 上面這這一行要在監聽器裡面才宣告   
+> --  
+{: .block-tip}
 
 
 classList Vs. className
