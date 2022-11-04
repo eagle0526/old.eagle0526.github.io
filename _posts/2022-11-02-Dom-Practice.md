@@ -19,7 +19,7 @@ insertAdjacentHTML() & removeChild()
 
 > --  
 > **使用querySelector抓取物件的小提醒~~~~**  
-> nth-child 只能作用在，有有父層的子層  
+> nth-child 使用方式
 > ex. 有兩個button元素，被一個div.btn包住  
 > --  
 {: .block-tip}
@@ -356,7 +356,84 @@ li同一層元素的後一個就是第2個li
 Active Button
 ------
 
+進階應用 - 製作Active Button(點擊不同按鈕，點下的那個按鈕active被持續啟動，前一個按鈕會回按鈕前狀態)  
+  
+  
+簡易解釋 - 首先給三個按鈕，並給基本css設定，按鈕有兩個特別屬性要提到，一個是button普通顏色狀態(有一個按鈕先給他active的屬性)，我們目標是，點擊另外一顆按鈕時，原本active的按鈕的屬性會被移除，並且新增加的按鈕，會被增加className，會是有新的啟動狀態的按鈕顏色。  
+  
+[codepen實際畫面](https://codepen.io/Yeegle/pen/NWzreXO)  
+  
+```md
+> HTML
+
+> <div class="part2">
+>     <h2>Dom btn-hightlight效果</h2>
+>     <div class="btns2">
+>         <button class="dom">按鈕3</button>
+>         <button class="dom active">按鈕4</button>
+>         <button class="dom">按鈕5</button>
+>     </div>
+> </div>
+```
+
+```md
+> css
+
+> .part2 {
+>     margin: 100px auto;
+>     width: 800px;
+>     outline: 1px solid black;
+> }
+> 
+> h2 {
+>     text-align: center;
+> }
+> 
+> 
+> button {
+>     margin: 20px;
+>     padding: 15px 30px;
+>     background-color: antiquewhite;
+> }
+> 
+> .btns2 {
+>     
+>     display: flex;
+>     outline: 1px solid tomato;
+>     justify-content: center;
+>     
+> }
+> 
+> .active, .active:hover ,.dom:hover {
+>     background-color: #666;
+>     color: white;
+> }
+```
+
+```md
+> JS
+
+> const btns = header.querySelectorAll(".dom")
+> for(let i = 0; i < btns.length; i++) {
+>     btns[i].addEventListener("click", (e)=>{
+>         let current = document.querySelector(".active")
+>         
+>         current.className = current.className.replace("active", "")
+>         btns[i].className = "active"        
+>     })
+> }
+```
+
+
+
+
+
+
+
+
 [active範例網頁][activeButton]
+
+
 
 
 
