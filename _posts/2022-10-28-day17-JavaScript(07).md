@@ -27,14 +27,12 @@ bind 跟 apply、call 的差異是， bind 會比較晚觸發(你去主動執行
 
 先給一個fc，印出this
 ```md
-> unction hi() {
->    console.log(this)   -> 這個this是全域變數
-> 
-> 
-> i()
+> function hi() {
+>    console.log(this)   -> 這個this是全域物件
+> hi()
 ```
 
-創建一個新變數，並用hi.bind([])會發生什麼事
+創建一個新變數，並用hi.bind()接著會發生什麼事
 ```md
 > function hi() {
 >     console.log(this)   # [Number: 123]    -> 這個this是bind傳進來的數字 
