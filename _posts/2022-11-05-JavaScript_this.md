@@ -18,10 +18,9 @@ JavaScript中的this是不是很常讓人誤解現在到底指向誰呢？
 > this就是代名詞的意思  
 > --  
 {: .block-tip}
-
-
-
-
+  
+  
+  
 ### this在以下幾種情況下，會有不同的意義
   
 1. 是否為嚴格模式 use strict  
@@ -178,12 +177,12 @@ Ps. 這個全域物件有點抽象，我們舉個例子
 那假設我們現在對上面這個英雄創造模組，使用call方法，會發生什麼事呢
 
 ```md
-function HeroCreator() {
-    console.log(this);
-}
-
-HeroCreator.call("111")     # String {"111"}
-HeroCreator.call(222)       # Number {222}
+> function HeroCreator() {
+>     console.log(this);
+> }
+> 
+> HeroCreator.call("111")     # String {"111"}
+> HeroCreator.call(222)       # Number {222}
 ```
 
 有沒有發現，原本是全域物件的的this，主要作用對象換了，變成call()裡面的的東西  
@@ -195,15 +194,14 @@ HeroCreator.call(222)       # Number {222}
   
 先給一個物件，物件中帶有英雄姓名、攻擊函式，並在攻擊fc裡面放一個this.name
 ```md
-
-const hero = {
-    name: "spider",
-    attack: function() {
-        console.log(`attack: ${this.name}`)    -> 這個會印出什麼呢 ？？？？
-    }
-}
-
-hero.attack()                                  > 被呼叫後，this會被指向hero物件
+> const hero = {
+>     name: "spider",
+>     attack: function() {
+>         console.log(`attack: ${this.name}`)    -> 這個會印出什麼呢 ？？？？
+>     }
+> }
+> 
+> hero.attack()                                  > 被呼叫後，this會被指向hero物件
 
 > Ans. 印出 attack: spider
 ```
@@ -215,14 +213,14 @@ hero.attack()                                  > 被呼叫後，this會被指向
   
 在創造一個新物件
 ```md
-const antMan = {
-    name: "AntMan"
-}
+> const antMan = {
+>     name: "AntMan"
+> }
 ```
   
 並用搭配剛剛的hero物件  
 ```md
-hero.attack.call(antMan)              -> 這個會印出什麼呢？？
+> hero.attack.call(antMan)              -> 這個會印出什麼呢？？
 ```
   
 因為用call的方式，this的作用對象會改為call()裡面的物件  
@@ -305,12 +303,14 @@ apply跟call非常像，差異的地方，只有在最後帶參數的地方，ca
 
 
 ### bind
-
+  
+> --  
 > **bind方法**  
 > 該bind()方法創建一個新函式，該函式被呼叫時，會將 this 關鍵字設為給定的參數，並在呼叫時，帶有提供之前給定順序的參數。  
 >   
 > **回傳值**  
 > 他會回傳一個新的 fc，並且會把傳進去的東西東做this的初始值  
+> --  
 {: .block-tip}
 
 
@@ -349,10 +349,10 @@ bind 跟 apply、call 的差異是， bind 會比較晚觸發(你去主動執行
 
 創立一個新英雄物件 - 鳥人  
 ```md
-const birdMan = {
-    name: "bird",
-    profess: "wind",
-}
+> const birdMan = {
+>     name: "bird",
+>     profess: "wind",
+> }
 ```
   
 一樣用剛剛的newHero的bind，不過要把bind裡面的東西改成birdMan  
