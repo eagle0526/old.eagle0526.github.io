@@ -181,7 +181,7 @@ console.log(hawkEye)          # heroCreator { profess: 'hawkEye', skill: 'arrow'
 ***
 
 
-### prototype、proto是什麼？
+### prototype、proto是什麼
 
 不過剛剛那個new物件，有沒有發現好像少了什麼?  
 沒錯，就是少了繼承的技能，也就是共通技能attack、shield沒有繼承到  
