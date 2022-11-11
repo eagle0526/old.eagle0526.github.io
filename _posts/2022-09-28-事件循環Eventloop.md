@@ -1,7 +1,7 @@
 ---
 title: What Is Event-Loop
 author: YeeChen
-date: 2022-10-21
+date: 2022-09-28
 category: JavaScript
 layout: post
 ---
@@ -11,15 +11,15 @@ Stack 是什麼
 ------
 
 ```markdown
-            JS
-   heap             stack
-  口                btn()
-     口             name()
-   口               cool()
-      口            OK()
-
-左半部是記憶體分配     右半部是執行函數的地方
-memory allocation   execution context
+>             JS
+>    heap             stack
+>   口                btn()
+>      口             name()
+>    口               cool()
+>       口            OK()
+> 
+> 左半部是記憶體分配     右半部是執行函數的地方
+> memory allocation   execution context
 ```
 
 
@@ -95,20 +95,20 @@ webAPIs & queue
 - 記住這一張圖，很重要
 
 ```markdown
-            JS                      webAPIs
-   heap             stack   
- |口                btn()  |     | DOM          |
- |   口             name() | --> | AJAX(fetch)  |  
- | 口               cool() |     | setTimeOut   |    
- |     口           OK()   |     |              | 
- --------------------------      ----------------
-            |
-        event loop
-            |
- ------------------callback queue------------------------
-    
-    onClick、onLoad、onDone
- ------------------callback queue------------------------
+>             JS                      webAPIs
+>    heap             stack   
+>  |口                btn()  |     | DOM          |
+>  |   口             name() | --> | AJAX(fetch)  |  
+>  | 口               cool() |     | setTimeOut   |    
+>  |     口           OK()   |     |              | 
+>  --------------------------      ----------------
+>             |
+>         event loop
+>             |
+>  ------------------callback queue------------------------
+>     
+>     onClick、onLoad、onDone
+>  ------------------callback queue------------------------
 ```
 
 ### 非同步回調在stack、webAPI、queue、console.log上實際發生的狀況
