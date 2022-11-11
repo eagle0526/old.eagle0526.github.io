@@ -615,7 +615,7 @@ Ps. 記得Math.round只會四捨五入取到整數位，所以如果想取到小
 
 ```markdown
 > --第一個參數使用--
-> reuslt = data.splice(1)                    -> 回傳值 = 取從指定索引值後面的所有元素
+> result = data.splice(1)                    -> 回傳值 = 取從指定索引值後面的所有元素
 > console.log(result)                        # ["帥哥", "kfs", 324]
 > 
 > **原始陣列值**
