@@ -78,13 +78,13 @@ Ps. 這個全域物件有點抽象，我們舉個例子
 > hi()
 ```
 > --  
-> 提問problem！！！: 非嚴格模式下，讓this變成全域物件，不好的影響就是會導致此this會變另外一個window
+> 提問problem！！！: 非嚴格模式下，讓this變成全域物件，不好的影響就是會導致此this會變另外一個window  
 > --  
 {: .block-warning}
 
 
 > --  
-> 提問problem！！！: 直接呼叫
+> 提問problem！！！: 直接呼叫  
 > --  
 {: .block-warning}
 
@@ -141,7 +141,7 @@ Ps. 這個全域物件有點抽象，我們舉個例子
 ```
 
 > --  
-> 所有這非常可怕，new物件時一定要記得加上new
+> 所有這非常可怕，new物件時一定要記得加上new  
 > --  
 {: .block-warning}
 
@@ -152,7 +152,7 @@ Ps. 這個全域物件有點抽象，我們舉個例子
 三、apply, call, bind 
 ------
 
-3. 是否有使用 apply, call, bind  
+### 3. 是否有使用 apply, call, bind  
   
 首先來展示一下call方法，大家還記得前面說的，假設今天在非嚴格狀態下，直接在fc裡面使用this  
 這個this是代表什麼嗎？給大家幾秒鐘想一下~
@@ -205,13 +205,13 @@ Ps. 這個全域物件有點抽象，我們舉個例子
 
 > Ans. 印出 attack: spider
 ```
-
-
-
-＊＊＊＊important＊＊＊＊
+  
+  
+  
+＊＊＊＊important＊＊＊＊  
 那我們今天用創造一個新物件，並用call方法呢(沿用上方hero物件)  
   
-在創造一個新物件
+在創造一個新物件  
 ```md
 > const antMan = {
 >     name: "AntMan"
@@ -400,8 +400,6 @@ bind 跟 apply、call 的差異是， bind 會比較晚觸發(你去主動執行
 {: .block-tip}
 
 
-
-四、箭頭函式 
 
 ### 4. 是否使用箭頭函式，箭頭函式沒有this
 

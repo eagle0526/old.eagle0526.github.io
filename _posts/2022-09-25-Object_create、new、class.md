@@ -1,7 +1,7 @@
 ---
-title: What Is Object.creat、new Object、class
+title: JS的Object、new、class、prototype
 author: YeeChen
-date: 2022-10-26
+date: 2022-09-25
 category: JavaScript
 layout: post
 ---
