@@ -434,7 +434,7 @@ new 新物件
 
 
 ```md
-> fuction heroCreator (name, power) {
+> function heroCreator (name, power) {
 >     // this -> {}       -> this會指向new出來的空物件
 >     this.name = name;
 >     this.power = power
