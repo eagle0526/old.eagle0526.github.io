@@ -1,7 +1,7 @@
 ---
 title: Rails Polymorphic-Associations
 author: YeeChen
-date: 2022-12-10
+date: 2022-12-03
 category: Rails
 layout: post
 ---
