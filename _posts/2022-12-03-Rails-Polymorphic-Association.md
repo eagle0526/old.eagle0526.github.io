@@ -59,7 +59,7 @@ layout: post
 
 
 
-> **英文原文**
+> **英文原文**  
 > You can think of a polymorphic belongs_to declaration as setting up an interface that any other model can use.    
 > From an instance of the Employee model, you can retrieve a collection of pictures: @employee.pictures.    
 >   
@@ -69,7 +69,7 @@ layout: post
 > To make this work, you need to declare both a foreign key column and a type column in the model   
 > that declares the polymorphic interface:  
 > 
-> **翻譯**
+> **翻譯**  
 > 你可以把多型belongs_to的寫法，當作其他model都可以使用的連接處
 > 以員工產生的實體為例，你可以在終端機這要打@employee.pictures，把所有員工的圖片拉出來
 > 
@@ -123,11 +123,9 @@ layout: post
 換成自己的話解釋多型態
 ------
 
-不過怕上面看官網的說明還是不太懂，這邊再做另一個例子。      
+不過怕上面看官網的說明還是不太懂，這邊再做另一個例子。          
 
-每個消費者有很多則留言，每個商店老闆也有很多則留言，因此這時留言就同時屬於消費者和老闆的model，但是留言model又不像多對多的第三張表  
-(第三張表是紀錄另外兩張表的關係，而留言model是單純都屬於另外兩個的model)，這時候就把留言的model，當作一個公開的連接處，提供給   
-其他的model來使用       
+每個消費者有很多則留言，每個商店老闆也有很多則留言，因此這時留言就同時屬於消費者和老闆的model，但是留言model又不像多對多的第三張表(第三張表是紀錄另外兩張表的關係，而留言model是單純都屬於另外兩個的model)，這時候就把留言的model，當作一個公開的連接處，提供給其他的model來使用       
 
 ### 範例解析
 (1) 有一個留言的Model，自己有一個欄位是commentable，這個欄位就是當作公開的連接處    
@@ -175,7 +173,7 @@ layout: post
 > m2.comments.create(content: "給我黃金")    # Comment裡面有一個欄位是content，因此把資料存去進
 > < Comment id: 3, content: "給我黃金", commentable_id: 2, commentable_type: "Manager" >
 
-Ps. 這樣可以發現，存在Comment資料表裡面的commentable_id，會因為type不同，而有不同的計數
+> Ps. 這樣可以發現，存在Comment資料表裡面的commentable_id，會因為type不同，而有不同的計數
 ```
 
 
@@ -195,8 +193,7 @@ Ps. 這樣可以發現，存在Comment資料表裡面的commentable_id，會因�
 
 看起來多型真的蠻方便的，假如今天很多表格都要放圖片，又或者是今天有很多不同的角色，都會做留言的動作，就可以透過多型的model來製作。   
 
-再來回到一開始寫這一篇文章的目的，主要是了解多型是否可以增加model的複雜度，自己理解過後，看起來是真的可以把model弄的很複雜，    
-因為在自己的model裡面做一個外鍵，等於可以對自己的欄位做查找，如果今天有很多角色做留言的話，model的確可以變得很複雜。    
+再來回到一開始寫這一篇文章的目的，主要是了解多型是否可以增加model的複雜度，自己理解過後，看起來是真的可以把model弄的很複雜，因為在自己的model裡面做一個外鍵，等於可以對自己的欄位做查找，如果今天有很多角色做留言的話，model的確可以變得很複雜。    
 
 
 
