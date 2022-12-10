@@ -16,10 +16,10 @@ layout: post
 
 
 
-多型態 Polymorphic Associations
+1、多型態 Polymorphic Associations
 ------
 
-### 名詞定義    
+### 1-1、名詞定義    
 要了解一個名詞是什麼，最好的方式就是從官方文件下手，所以我先把官網的原文放上來並附上翻譯        
 [官方文件連結](https://guides.rubyonrails.org/association_basics.html#self-joins)   
 
@@ -37,7 +37,7 @@ layout: post
 {: .block-tip}
 
 
-### 官網範例    
+### 1-2、官網範例    
 實際來寫model試試，首先讓大家知道，圖片、員工、產品之間的關聯   
 (1) 圖片model有一個imageable欄位，並且model自己是屬於imageable，並且開啟多型態  
 (2) 一個員工會有很多張圖片，以imageable當作基準  
@@ -80,7 +80,7 @@ layout: post
 {: .block-tip}
 
 
-### Picture table設定   
+### 1-3、Picture table設定   
 接著我們來設定Picture的Migration，照片會有以下這些欄位  
 ```md   
 > class CreatePictures < ActiveRecord::Migration[7.0]
@@ -111,7 +111,7 @@ layout: post
 > end
 ```
 
-### 官網圖片範例
+### 1-4、官網圖片範例
 我們來看看這樣設定完後，Table的關聯實際上長的樣子   
 <img src="/assets/polymorphic.png" style="zoom:70%" />  
 
@@ -120,19 +120,19 @@ layout: post
 
 
 
-換成自己的話解釋多型態
+2、換成自己的話解釋多型態
 ------
 
 不過怕上面看官網的說明還是不太懂，這邊再做另一個例子。          
 
 每個消費者有很多則留言，每個商店老闆也有很多則留言，因此這時留言就同時屬於消費者和老闆的model，但是留言model又不像多對多的第三張表(第三張表是紀錄另外兩張表的關係，而留言model是單純都屬於另外兩個的model)，這時候就把留言的model，當作一個公開的連接處，提供給其他的model來使用       
 
-### 範例解析
+### 2-1、範例解析
 (1) 有一個留言的Model，自己有一個欄位是commentable，這個欄位就是當作公開的連接處    
 (2) 消費者有很多的留言，他就是用comment裡面的commentable來存取留言(消費者自己的欄位有一個name欄位)  
 (3) 老闆也是同上    
 
-### Model關聯設定
+### 2-2、Model關聯設定
 ```md
 > class Comment < ApplicationRecord             
 >   belongs_to :commentable, polymorphic: true
@@ -148,7 +148,7 @@ layout: post
 ```
 
 
-### 實際寫入資料庫
+### 2-3、實際寫入資料庫
 
 這樣建好關聯後，我們就可以來查找資料了  
 
@@ -188,7 +188,7 @@ layout: post
 
 
 
-心得結論
+3、心得結論
 ------
 
 看起來多型真的蠻方便的，假如今天很多表格都要放圖片，又或者是今天有很多不同的角色，都會做留言的動作，就可以透過多型的model來製作。   

@@ -1,7 +1,7 @@
 ---
 title: Rails Self-Joins
 author: YeeChen
-date: 2022-12-09
+date: 2022-12-04
 category: Rails
 layout: post
 ---
@@ -13,13 +13,14 @@ layout: post
 > --    
 
 
-自連結 Self-Join
+1、自連結 Self-Join
 ------
 
 雖然看了官方文件，還是不了解，但是還是先從官方文件做起手，所以我先把官網的原文放上來並附上翻譯      
 [官方文件](https://guides.rubyonrails.org/association_basics.html#self-joins)   
 
 
+### 1-2、基本概念
 > --    
 > **英文原文**  
 > In designing a data model, you will sometimes find a model that should have a relation to itself. 
@@ -34,7 +35,7 @@ layout: post
 {: .block-tip}  
 
 
-
+### 1-2、Model關聯
 接著到Employee的model來設定一些關聯 
 ```md
 > class Employee < ApplicationRecord
@@ -60,6 +61,7 @@ layout: post
 {: .block-tip}
 
 
+### 1-3、Migration內容
 再來處裡migration   
 ```md
 > class CreateEmployees < ActiveRecord::Migration[7.0]
@@ -72,19 +74,20 @@ layout: post
 > end
 ```
 
+
 也因為官方文件這只有說到這，所以一開始看完覺的滿頭霧水，因此下面會用自己的方式解釋Self-Join
 
 
 ***
 
 
-換成自己的話解釋Self-join
+2、換成自己的話解釋Self-join
 ------
 
 範例一樣用員工、上司、下屬，三者的關係來解釋自連結
 
 
-### 基本概念詳解    
+### 2-1、基本概念詳解    
 首先我有一家公司，而我這一家公司的員工所有資料都在一張Employee表裡面，而公司理所當然的都有管理層、基層員工.....等等的分別   
 因此當我把員工所有資料都放在這張表單的時候，我想要知道到底誰是管理層，誰是基層員工呢？  
 
@@ -106,13 +109,14 @@ layout: post
 
 
 
-### 實際操作    
+### 2-2、產生Model    
 
 首先創造一個Employee的model，裡面會有一個name欄位，代表這個員工的名字   
 ```md
 > rails g model Employee name
 ```
 
+### 2-2、更新migration
 接著到migration加上manage_id的欄位，這個欄位就是之後要存放每一個員工的主管是誰(用Employee的id來表示)
 ```md
 > def change
@@ -124,12 +128,13 @@ layout: post
 > end
 ```
 
+### 2-3、具現化
 新增好後就可以把表格具現化了
 ```md
 > rails db:migrate
 ```
 
-
+### 2-4、Model寫關聯
 再來可以到model把關聯寫上去了，這邊會有兩個主要的關聯，一個是subordinates、一個是manager
 ```md
 > class Employee < ApplicationRecord
@@ -143,6 +148,7 @@ layout: post
 > end
 ```
 
+### 2-5、console測試、創造多個員工
 那實際應用的狀況是怎麼樣呢？我們來在console的環境跑一次。   
 進到環境後，我們先創造出五個員工
 ```md
@@ -155,6 +161,7 @@ layout: post
 > e5 = Employee.create(name: "羅賓")
 ```
 
+### 2-6、測試subordinates方法
 先來試試看subordinates這個方法，此方法其實代表的就是，如果今天e1是主管，那我可以用這方法，找他的下屬有哪些人    
 ```md
 > e1.subordinates               # 這樣打會傳一個空陣列給你，原因是因為我們還沒把下屬給e1主管
@@ -164,6 +171,7 @@ layout: post
 ```
 
 
+### 2-6、測試manage方法
 再來試試manager的方法，此方法代表的則是，如果我今天是一個員工，我要指定我的老闆是誰(跟剛剛的邏輯相反)   
 ```md
 > e5.manage = e1
@@ -174,7 +182,7 @@ layout: post
 
 
 
-心得結論
+3、心得結論
 ------
 
 翻了其他英文文章、自己實際動手寫關聯後，才終於了解self-join的強大之處，因為可以直接在同一張表上，就讓資料有階層的關係，查找起來也非常的方便。
