@@ -6,132 +6,120 @@ category: JavaScript
 layout: post
 ---
 
-JS正式開始前言
+1、JS前言
 ------
 
-### 前端工程師
+### 1-1、前端工程師
 
 html結構、css樣式、JavaScript行為
 
 
-### JavaScript 跟 Java 的關係
+### 1-2、JavaScript 跟 Java 的關係
 
 JS當初取名的來由，是去蹭Java名字的熱度(當初Java很紅)，除此之外都沒啥關係
 
 
-### JavaScript 跟 ES6 的關係
- - ECMA       - 歐洲電腦製造商協會
- - TC39       - 第39號委員會，負責JS的標準化
- - ECMA-262   - JS的規格
- - ECMAScript - 根據ECMA262規範所設計出來的程式語言規則
- - JS         - 某一款符合ECMAScript 的程式語言
- - ES6        - ECMAScript 第六代
+### 1-3、JavaScript 跟 ES6 的關係
+- ECMA       ： 歐洲電腦製造商協會  
+- TC39       ： 第39號委員會，負責JS的標準化    
+- ECMA-262   ： JS的規格    
+- ECMAScript ： 根據ECMA262規範所設計出來的程式語言規則  
+- JS         ： 某一款符合ECMAScript 的程式語言  
+- ES6        ： ECMAScript 第六代   
 
 
-### 為什麼不學最新版本就好
-
+### 1-4、為什麼不學最新版本就好
 瀏覽器跟不上
 
 
-### NODE.JS
-rumtime 執行環境 (這個程式語言可以在哪些環境執行)
+### 1-5、JS的runtime
 
+**runtime是什麼？** 
+runtime就是執行環境 (這個程式語言可以在哪些環境執行)        
 
-> JS
-> - 瀏覽器  
-> - Node  
-> - Deno  
->  
->  上面三個是 JS 的一種 runtime (執行環境)
+以下三個是JS的執行環境  
+> (1)瀏覽器     
+> (2)Node   
+> (3)Deno   
 {: .block-tip}
 
 
-JS 推薦外掛
- - Babel JS - 如果語法寫對，幫助 hightlighting 語法
- - Prettier - 幫忙排列程式碼
- - Material Icon Theme - 根據你的檔案類型，在檔案左邊給相對 Icon
- - Live Server
+### 1-6、JS 推薦外掛
+- Babel JS ： 如果語法寫對，幫助 hightlighting 語法
+- Prettier ： 幫忙排列程式碼
+- Material Icon Theme ： 根據你的檔案類型，在檔案左邊給相對 Icon
+- Live Server
 
 
 ***
 
 
-JS 的 hello world
+2、JS 的 hello world
 ------
 
+### 2-1、console.log()
 ```markdown
 > console.log("hi, world");
->
 ```
 
-
-
-### HTML連結 JS檔案
+### 2-2、HTML連結JS檔案
 
 ```markdown
  > <script src="file1.js"></script>
  ```
 
 
-### alert、confirm
+### 2-3、alert、confirm
 
 ```markdown
 > alert(" don't touch me ")   -> 彈出警告視窗
->
 > confirm(" are u sure? ")   -> 彈出建議視窗
 ```
 
-***
 
 
-變數、常數
+3、變數、常數
 ------
+
+### 3-1、宣告變數 - variable(var)
 
 變數就像一個標籤，標籤裡面有很多內容物，想要拿出內容物的時候，就去呼叫他
 
 ```markdown
- > 宣告 variable
- > var a = 2;
- >     | a = 變數名字
- >     | = assign 指定的意思
- >     | 2 是值
+> var a = 2;
+
+> "a" = 變數名字
+> "=" assign 指定的意思
+> "2" 是值
 ```
 
-
-
-### 變數設定要注意
-
-> 1、不能用數字開頭的字  
-> 2、不能用保留字 - 看起來像語法的字 ex. var if = 2  
-> 3、注意大小寫有差別  
->
-{: .block-warning}
+### 3-2、變數設定要注意
+ 
+1、不能用數字開頭的字  
+2、不能用保留字 - 看起來像語法的字 ex. var if = 2  
+3、注意大小寫有差別      
 
 
 
+### 3-3、未定義undefined vs 沒有定義not define
 
-### 未定義undefined vs 沒有定義not define
-
-> 這兩個是有差異的  
-> var a;   console.log(a)   -> undefined  
->          console.log(b)   -> not define  
->   
-> Ps. undefined 是一個值，not define 就只是純粹啥都沒有  
-{: .block-tip}
-
+```md
+> 這兩個是有差異的      
+> var a;   console.log(a)   -> undefined    
+>          console.log(b)   -> not define   
+```
+Ps. undefined 是一個值，not define 就只是純粹啥都沒有   
 
 
 
-### 變數如果還沒宣告就拿來用
+### 3-4、變數如果還沒宣告就拿來用
 
+**變數提升 variable hoisting**
+
+這個東西是JS的機制，不過很不妙，會造成很多意外
 ```markdown
 > console.log(a);    -> 會印出undefined  
 > var a = 1;
-> 
-> 這是JS的機制，叫做
-> **變數提升 variable hoisting**
-> 
-> 但是這個很不妙，會造成很多意外
 > 
 > console.log(b)     -> 會印出not define
 > b = 1
@@ -139,74 +127,75 @@ JS 的 hello world
 
 
 
-### let 設定變數
+### 3-5、let 設定變數
 
+這兩個看起來都一樣，但差異很大
 ```markdown
 > var a = 1;  
 > let b = 2;  
-> 兩個看起來都一樣  
-> 
-> 
-> **不過如果今天用 let ，可以直接解決變數提升的問題**
+```
+
+**如果今天用let，可以直接解決變數提升的問題**
+```md
 > console.log(a)     -> 會印出not define  
 > let a = 1  
 ```
 
 
 
-### const 設定常數
-
+### 3-6、const 設定常數
 
 假如今天跟別人一起協作，有某個數值你不想被更改，你就可以設定常數
-
 ```markdown
 > const a = 1
 > a = 2;
 >
 > console.log(a);      -> 印出 Assignment to constant variable.
-> Ps.常數不可更改
->
->
-> **const 的定義不是不能修改，是不能re assign**
-> 
-> 如果今天
+```
+
+**const 的定義不是不能修改，是不能re assign**
+```md
+> 舉個例子，如果今天我用const宣告一個陣列
 > const a = ["a","b","c"]
-> 
-> 情境一
+
+> (1) 情境一 : 修改陣列裡面的值
 > a[0] = 123
 > console.log(a)              -> 會印出 [123, "b", "c"] (可以修改裡面的值)
-> 
-> 情境二
+
+> (2) 情境二 : 重複賦值
 > a = ["c", "d", "e"]         -> 會印出 Assignment to constant variable.（不能重新指派）
 > console.log(a)
 > 
 ```
 
-### const vs. let vs. var
-> -  
-> 1、寫JS 選擇上使用順序 const > let > var  
-> 2、var也可以用，不過範圍大了一點  
-> 3、千萬不要沒宣告就使用，會造成很多全域污染  
->
-> const 和 let與var的差異是，const是用來設定常數的(不可re-assign)  
+### 3-7、const vs. let vs. var
+
+(1) 寫JS 選擇上使用順序 const > let > var  
+(2) var也可以用，不過範圍大了一點  
+(3) 千萬不要沒宣告就使用，會造成很多全域污染  
+
+```md 
+> const 和 let、var的差異是，const是用來設定常數的(不可re-assign)  
 > 而 let 和 var 的差異是，var因為設計漏洞的關係，會造成 **變數提升**  
 > 發生變數提升會讓後指派的 var 變數，console出來會變成 undefined，而不是not defined  
 >
 > ex. console.log(a);   # undefined  
 >     var a = 1;  
->
-> **undefine 和 not define 的差異在於，undefined是一個值，not define是啥都沒有**  
+```
+
+**undefine 和 not define 的差異在於，undefined是一個值，not define是啥都沒有**  
+```md
 > 而let就是解決變數提升的問題  
 >  
 > ex. console.log(b);    # not define  
 >     let b = 1;  
-> -  
-{: .block-warning}
+```
 
 
-
-a++ vs ++a
+4、a++ vs ++a
 ------
+
+a++和++a的差異之處
 
 ```markdown
 > var a = 1
@@ -218,29 +207,32 @@ a++ vs ++a
 > console.log(b)          # 2
 ```
 
-***
 
-原始型別 vs 物件型別
+
+5、原始型別 vs 物件型別
 ------
 
-#### 原始型別  
+
+### 5-1、原始型別有哪些  
 數字、字串、真假值、之類的  
 
-#### 物件型別  
+### 5-2、物件型別有哪些  
 大括號、中括號、函數、物件之類的
 
 
-#### 為什麼要有不同型別
+### 5-3、為什麼要有不同型別
+
 為了不同型別之間的搭配使用  
 ```markdown
-ex. console.log(1+2)  
-    console.log("a"+"b")  
+> ex. console.log(1+2)  
+>     console.log("a"+"b")  
 ```
 
 
 
-### 字串顯示
+### 5-4、字串顯示
 
+使用``，並搭配${}，就可以把宣告的變數，塞在一個字串裡面
 
 ```markdown
 > let num = 123  
@@ -254,35 +246,42 @@ ex. console.log(1+2)
 ```
 
 
-### 改變型別、確認型別
+### 5-5、改變型別、確認型別typeof
 
 typeof 運算子會傳回一個字串值, 指出未經運算 (unevaluated) 的運算元所代表的型別。
-
 
 ```markdown
 > let a = 2;  
 > console.log(typeof a)          #Number  
->   
+
 > let b = String(b)  
 > console.log(typeof b)          #String  
->
+
 > console.log(typeof(typeof(a))) #String -> 真實樣式是這樣 typeof(Number)
->
 ```
 
 
-### NaN介紹 - NaN = Not a Number
+### 5-6、NaN介紹 
 
+**NaN = Not a Number**
+
+5-6-1、數字除以字串，會印出NaN
 ```markdown
 > console.log(2/"c")               #NaN
-> 
-> console.log(typeof NaN);         #number  -> NaN是一個數字，不過他代表不是數字  
->                                              就像Null他存在，不過他代表不存在  
->  
-> console.log(NaN === NaN);        #false   -> JS唯一一個自己不等於自己的
 ```
 
-***
+5-6-2、NaN是一個數字，不過他代表不是數字
+```md 
+> console.log(typeof NaN);         #number  -> NaN是一個數字，不過他代表不是數字  
+>                                              就像Null他存在，不過他代表不存在  
+```
+
+5-6-3、JS唯一一個自己不等於自己的值
+```md
+> console.log(NaN === NaN);        #false
+```
+
+
 
 流程控制 Flow Control
 ------
