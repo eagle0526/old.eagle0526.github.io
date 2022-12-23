@@ -8,35 +8,42 @@ layout: post
 
 
 
-函數 function
+1、函數 function
 ------
 
-### 什麼是函數？
+### 1-1、什麼是函數？
 f(x) = 3x + 2
 
 f -> function的縮寫
 x -> 參數 parameter
 
-### 為什麼要寫函式
-為一函式定義一個行為
+### 1-2、為什麼要寫函式
+(1) 為一函式定義一個行為
+(2) 重複利用
 
 
-### function helloworld
+### 1-3、function hello world
 ```markdown
 > // name -> 參數parameter
+
 > function sayMyName(name) {
 >     console.log("hi222222");
 >     console.log(name);
 > }
 
+
 > // "Yeeeeee" -> 引數argument
 > // () -> 呼叫、使用、啟動
+
 > sayMyName("Yeeeeee")
 ```
 
 
 
-#### 如果函數有一個參數，但是如果引用的時候啥都沒給，最後會給你undefined
+### 1-4、有參數的函式，呼叫時不給引數的話會印出什麼
+
+如果函數有一個參數，但是如果引用的時候啥都沒給，最後會給你undefined
+
 ```markdown
 > function sayHi(name) {
 >     console.log(name)
@@ -46,7 +53,7 @@ x -> 參數 parameter
 ```
 
 
-#### 參數給一個，引數給兩個，最後會給你第一個
+### 1-5、參數給一個，引數給兩個，最後會給你第一個
 ```markdown
 > function sayHi(name) {
 >     console.log(name)
@@ -55,7 +62,7 @@ x -> 參數 parameter
 > sayHi(1, 2)                         -> 1
 ```
 
-#### 幫某個參數設定預設值
+### 1-6、參數設定預設值
 ```markdown
 > function sayHi(name, age = 18) {    -> 預設為18
 >     console.log(name)
@@ -66,7 +73,7 @@ x -> 參數 parameter
 ```
 
 
-### 匿名函數anonymous
+### 1-7、匿名函數anonymous
 
 常數設定 + 函數設定融合 (後面function整段叫做匿名函數)
 
@@ -81,7 +88,7 @@ x -> 參數 parameter
 > };
 ```
 
-#### 函數定義寫在前面 - 是可以執行的
+### 1-8、函數呼叫寫在前面 - 是可以執行的
 
 ```markdown
 > sayHi("kk")                         ->  印出"kk"、18
@@ -91,9 +98,9 @@ x -> 參數 parameter
 >     console.log(age)
 > }
 ```
-***
 
-#### 變數宣告函數寫在前面 - 無法執行(會噴出ReferenceError)
+
+### 1-9、變數宣告函數寫在前面 - 無法執行(會噴出ReferenceError)
 
 ```markdown
 > say("kk")                         ->  噴錯 ReferenceError
@@ -105,13 +112,14 @@ x -> 參數 parameter
 ```
 
 > --  
-> undefined() 呼叫，會造成typeError  
+> undefined() 呼叫，會造成typeError     
 > --  
 {: .block-tip}
 
-***
 
-變數提升
+
+
+2、變數提升
 ------
 
 ### 宣告的時候發生了什麼事
