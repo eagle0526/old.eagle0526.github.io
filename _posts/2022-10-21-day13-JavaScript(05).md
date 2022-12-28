@@ -7,15 +7,15 @@ layout: post
 ---
 
 
-抓網路資料前要注意的東西
-======
+1、抓網路資料前要注意的東西
+------
 
 資料來源 - API Application Programming Interface
 
 
 
 
-RESTFul
+2、RESTFul
 ---- 
 
 - REST = 表現層狀態轉換
@@ -30,8 +30,9 @@ RESTFul
 > DELETE
 ```
 
+### PUT Vs. PATCH
 > --  
-> PUT 會整筆蓋掉，換新了出來  
+> PUT 會整筆蓋掉，換新了出來    
 > PATCH 不會整筆換掉，是一筆一筆蓋掉  
 > --  
 {: .block-tip}
@@ -39,7 +40,7 @@ RESTFul
 
 
 
-資料傳輸格式
+3、資料傳輸格式
 ------
 ### XML 
 是一種延伸標記語言(跟HTML一樣都是標記語言) - 裡面的標籤可以自己定義，不過也只有你自己看得懂
