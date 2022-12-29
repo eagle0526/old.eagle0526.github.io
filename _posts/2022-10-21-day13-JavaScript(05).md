@@ -7,19 +7,28 @@ layout: post
 ---
 
 
-1、抓網路資料前要注意的東西
+1、API(Application Programming Interface)
 ------
 
-資料來源 - API Application Programming Interface
+抓取網路資料或是拿取一些別人的程式套件，就是用API來取得
 
+### 1-1、舉個例子
+
+當A程式需要另一個B程式幫他做某件事或拿某些資料的時候，這中間就會透過API(我們稱C)來幫忙溝通。
+這時A並不需要知道B做了什麼，怎麼做的。他只需要知道三件事:   
+(1) 向C要求做這件事之前需要提供什麼資料?    
+(2) 成功的話C會回復給我什麼?    
+(3) 失敗的話C會回復給我什麼?    
+
+上述三點也就是我們說的API的規格，至於這些規格要從哪邊取得呢?    
+通常都是跟開發API的工程端拿，或是大一點的網站，如Facebook、google，或是政府機關網站都會有對應的API規格文件可以參考。    
 
 
 
 2、RESTFul
 ---- 
-
-- REST = 表現層狀態轉換
-- 網頁資料取得的幾個動詞，這之後會在提到
+(1) REST = 表現層狀態轉換   
+(2) 網頁資料取得的幾個動詞，這之後會在提到  
 
 如果我的網址的CRUD都符合上述方法，就稱為 符合RESTFul API設計
 ```markdown
@@ -30,79 +39,79 @@ layout: post
 > DELETE
 ```
 
-### PUT Vs. PATCH
-> --  
-> PUT 會整筆蓋掉，換新了出來    
-> PATCH 不會整筆換掉，是一筆一筆蓋掉  
-> --  
-{: .block-tip}
+### 2-1、PUT Vs. PATCH
 
+假設今天要更新使用者的基本資料(有姓名、大頭貼、描述)    
+
+#### 2-1-1、PUT
+用put方法送出更新，不只使用者的姓名會更新，連帶的連其實沒有要更新的大頭照以及描述都會在更新一次   
+
+#### 2-1-2、PATCH   
+用patch方法送出更新，則僅會將使用者姓名更新 ，沒有動到的大頭照以及描述並不會也一起更新一次    
 
 
 
 3、資料傳輸格式
 ------
-### XML 
+### 3-1、XML 
 是一種延伸標記語言(跟HTML一樣都是標記語言) - 裡面的標籤可以自己定義，不過也只有你自己看得懂
 
-### CSV 逗號分隔值， 所有資料被逗號分格 ( !==excel檔 )
+### 3-2、CSV 
+逗號分隔值，所有資料被逗號分格(!==excel檔)
 
-### json (JavaScript Object Notation)
+### 3-3、json (JavaScript Object Notation)
 json - 他跟JS很像的關係，因為他是用JS格式寫出來的 (不過要記得，網路上拿到的東西不是物件或是字串的格式，**都是文字喔**)
 
 
 
-AJAX Asynchronous JavaScript And XML
+4、AJAX(Asynchronous JavaScript And XML)
 ------
-- AJAX不是一種技術或語法，而是一種術語
-- 什麼是非同步 - 假設今天你傳簡訊給同事，他過一陣子才會回你訊息，這就叫非同步
-- JS是一種 **單執行緒** 的程式語言 (一個廚房只有一個廚師)
+(1) AJAX不是一種技術或語法，而是一種術語    
+(2) 什麼是非同步 - 假設今天你傳簡訊給同事，他過一陣子才會回你訊息，這就叫非同步     
+(3) JS是一種 **單執行緒** 的程式語言 (一個廚房只有一個廚師)     
 
 
-#### 今天執行AJAX是什麼意思
-
-前面正在執行JS，後面在送資料到你的電腦，也就是在畫面執行時，偷偷送資料進來
-
+### 4-1、今天執行AJAX是什麼意思
+前面正在執行JS，後面在送資料到你的電腦，也就是在畫面執行時，偷偷送資料進來  
 
 
-AJAX應用
-------
+### 4-2、AJAX應用
 
-1. google map
- --  一開始只能載入一小部分的圖資，在你拖拉畫面的時候，他會一直持續load新圖資進來  
- --  滑鼠移到景點名稱時，才跳出名稱，也是AJAX應用  
+#### 4-2-1、google map
+(1) 一開始只能載入一小部分的圖資，在你拖拉畫面的時候，他會一直持續load新圖資進來  
+(2) 滑鼠移到景點名稱時，才跳出名稱，也是AJAX應用  
 
-2. Fetch/XHR
- -- 網路爬蟲
- -- 抓取別人的Json檔案
+#### 4-2-3、Fetch/XHR
+(1) 網路爬蟲
+(2) 抓取別人的Json檔案
 
 
 
-同步執行、單執行緒的問題
+5、同步執行、單執行緒的問題
 ------
 
-### 同步執行有什麼問題嗎
+### 5-1、同步執行有什麼問題嗎
 會比較慢，因為JS是單執行緒，今天載入一張圖片時，如果這張圖片很大，那你要等這張圖片載完，才能做其他事情
 
 
-### 單執行緒
-單執行緒的也就是程式執行時，所跑的程式路徑（處理的東西）是連續順序下來的，必須前面的處理好，後面的才會 執行到。  
+### 5-2、單執行緒
+單執行緒的也就是程式執行時，所跑的程式路徑（處理的東西）是連續順序下來的，必須前面的處理好，後面的才會執行    
 
 
 
-使用 XHR (XMLHttpRequest) 寫網路爬蟲
+6、使用 XHR (XMLHttpRequest) 寫網路爬蟲
 ------
+(1) 資料來源 - API Application Programming Interface    
+(2) jsonplaceholder這個網站可以加入我的最愛(free fake API)，假的API網站，可以拿來練習   
 
-- 資料來源 - API Application Programming Interface
-- jsonplaceholder這個網站可以加入我的最愛(free fake API)，假的API網站，可以拿來練習
 
-
+### 6-1、forEach寫法
 ```markdown
 > const api = "網址"
 > const req = new XMLHttpRequest();
 > 
 > 
-> req.addEventListerer("Load", () => {
+> req.addEventListener("Load", () => {
 >     const posts = JSON.parse(req.responseText)
 >     // 處理posts顯示(用json.parse處理這個文字檔)
 > 
@@ -117,79 +126,83 @@ AJAX應用
 >     })
 > })
 > 
+
+> **open後面接的動詞不能改POST，取用API的時候。方法對，action錯，還是一樣取不到答案**
 > req.open("GET", api)
 > req.send()
-> 
-> #### 上面open不能改POST，取用API的時候。方法對，action錯，還是一樣取不到答案
 ```
 
+### 6-2、reduce寫法
 ```markdown
-> ----reduce寫法----
-> 
-> const rawData = req.resopnseText
+> const rawData = req.responseText
 > const posts = JSON.parse(rawData)
 > 
-> const reslut = posts.reduce((acc, {id, userId, title}) => {
+> const result = posts.reduce((acc, {id, userId, title}) => {
 >     return acc + `<li>${id} ${userId} ${title}</li>`
 > })
 > 
 > lists.insertAdjacentHTML("beforeend", result);
 > });
-> 
-> ----reduce寫法----
-> 
-> 在迴圈外定義一個變數，在裡面一直持續用他，通常有更好的寫法
-> 
-> 
-> 這一段看影片在學習一次1021 11:28
-> 學習reduce解法
 ```
 
+> --    
+> 在迴圈外定義一個變數，在裡面一直持續用他，通常有更好的寫法    
+> --    
+{: .block-tip}
 
 
-***
 
 
-
-fetch寫爬蟲
+7、fetch寫爬蟲
 ------
 ```md
 > const api = "網址"
 > 
 > const api = "https://jsonplaceholder.typicode.com/posts";
 > 
-> fetch(api).then((e) => {
+> fetch(api)
+>   .then((e) => {
 >     console.log(e.json());       -> 印出 promise
-> })
-
-> 所有的promise都可以用 catch or then 街
+>   })
+>   .then((data) => {
+>      console.log(data)           -> 印出json解析出來的資料    
+>   })
+>   .catch((err) => {
+>      console.log(err)  
+>   })
 ```
 
+> --    
+> 所有的promise都可以用catch、then接住      
+> --        
+{: .block-tip}
 
 
 
-Event loop
+8、Event loop
 ------
 
 有另外寫一篇完整的文章
+[點我觀看完整個事件循環介紹](https://eagle0526.github.io/javascript/2022-09-24-What-Is-Event-Loop.html)
 
 
-
-stack VS web api vs queue 瀏覽器真正再執行的細節
+9、Stack VS Web api vs Queue 
 ------
 
-#### stack
-- 瀏覽器堆疊的概念
-- 先進後出
-- FILO
+來看瀏覽器真正在執行的細節
 
-#### Queue
-- 先進先出
-- FIFO
+### 9-1、stack
+(1) 瀏覽器堆疊的概念    
+(2) 先進後出(FILO)  
+
+### 9-2、Queue
+(1) 先進先出(FIFO)  
 
 
 
-### 呼叫堆疊
+### 9-3、呼叫堆疊
+
+現在我們設定三個函式，並且在函式裡面呼叫另外個函式，看看觸發順序的狀況
 ```markdown
 > function a() {
 >     b()
@@ -204,7 +217,7 @@ stack VS web api vs queue 瀏覽器真正再執行的細節
 > }
 > 
 > a();
-> 
+
 > a() 先執行先疊第一層，再來b()，再來c()
 > 結束的時候，c() 先抽出來，再來b()，再來a()
 > |            |
@@ -215,57 +228,47 @@ stack VS web api vs queue 瀏覽器真正再執行的細節
 ```
 
 > --  
-> **stackvoerflow名稱來源**  
+> **Stack Overflow名稱來源**  
 > stack -> stack 是存放執行code的地方  
 > overflow -> overflow 是溢滿的意思  
-> stackoverflow -> 程式堆疊滿出來  
+> Stack Overflow -> 程式堆疊滿出來  
 > --  
 {: .block-tip}
 
 
 
-
-- setTimeOut or Fetch 等等需要時間的函數
-
-- 使用的時候，會在webAPI排隊，接著會依照函數的執行順序，進到queue
-
-- queue的特性是先進先出
-
-- stack 裡面的東西要完全結束，Queue執行列裡面的東西才會執行
-
-- function結束時就會離開stack
-
-- webAPI沒有順序問題，把他想像成一個廣場
-
-- 監聽器 addEventListener("click") 會一直待在 webAPI 裡面
+### 9-4、重點提醒
+(1) setTimeOut or Fetch 等等需要時間的函數  
+(2) 使用的時候，會在webAPI排隊，接著會依照函數的執行順序，進到queue     
+(3) queue的特性是先進先出   
+(4) stack 裡面的東西要完全結束，Queue執行列裡面的東西才會執行   
+(5) function結束時就會離開stack     
+(6) webAPI沒有順序問題，把他想像成一個廣場      
+(7) 監聽器 addEventListener("click") 會一直待在 webAPI 裡面     
 
 
+### 9-5、vip Queue、normal Queue
 
-vip Queue、normal Queue
-------
-
-- vip通道進到stack要看stack是否清空
-- 一般通道進到stack，要確認vip是否為空，再確認stack是否為空才能進去
+(1) vip通道進到stack要看stack是否清空   
+(2) 一般通道進到stack，要確認vip是否為空，再確認stack是否為空才能進去   
 
 > --  
-> **之後再提到，queue也有分VIP、normal**  
+> **queue也有分VIP、normal**  
 > 一般的queue  
 > setTimeout  
 >   
 > vip的queue  
 > fetch是vip  
 > --  
-{: .block-top}
+{: .block-tip}
 
 
-**可以去loupe網站看看+操作**
-這一段12:36再聽一次做筆記
-
+Ps. [可以去loupe網站看看+操作](http://latentflip.com/loupe/?code=JC5vbignYnV0dG9uJywgJ2NsaWNrJywgZnVuY3Rpb24gb25DbGljaygpIHsKICAgIHNldFRpbWVvdXQoZnVuY3Rpb24gdGltZXIoKSB7CiAgICAgICAgY29uc29sZS5sb2coJ1lvdSBjbGlja2VkIHRoZSBidXR0b24hJyk7ICAgIAogICAgfSwgMjAwMCk7Cn0pOwoKY29uc29sZS5sb2coIkhpISIpOwoKc2V0VGltZW91dChmdW5jdGlvbiB0aW1lb3V0KCkgewogICAgY29uc29sZS5sb2coIkNsaWNrIHRoZSBidXR0b24hIik7Cn0sIDUwMDApOwoKY29uc29sZS5sb2coIldlbGNvbWUgdG8gbG91cGUuIik7!!!PGJ1dHRvbj5DbGljayBtZSE8L2J1dHRvbj4%3D)
 
 
 
 
-async寫法 - await記得要在最外圍加上async
+10、async寫法 - await記得要在最外圍加上async
 ------
 
 ```markdown
@@ -279,12 +282,12 @@ async寫法 - await記得要在最外圍加上async
 ```
 
 
-跨來源資源分享 CORS Cross  - 面試會問
+11、跨來源資源分享 CORS Cross  - 面試會問
 ------
 
-- 如果對方沒有開 CORS policy 是抓不回來的  
-- 如果未來碰到業主網站CORS的問題，打電話叫他們開  
-- CORS policy test 可以檢測對方CORS有沒有開
+(1) 如果對方沒有開 CORS policy 是抓不回來的     
+(2) 如果未來碰到業主網站CORS的問題，打電話叫他們開      
+(3) CORS policy test 可以檢測對方CORS有沒有開   
 
 > --  
 > **CORS是針對瀏覽器的行為，而不是針對JavaScript**  
@@ -296,17 +299,12 @@ async寫法 - await記得要在最外圍加上async
 
 
 
-### CORS proxy
+### 11-1、CORS proxy
 
-1. 另外架一個伺服器 (用ruby node python)，去抓對方網站資料
-2. 然後因為伺服器是我們自己的，可以把該伺服器的 CORS 打開
-3. 就可以用我們自己的JavaScript把那台伺服器的資料抓過來
+(1) 另外架一個伺服器 (用ruby node python)，去抓對方網站資料     
+(2) 然後因為伺服器是我們自己的，可以把該伺服器的 CORS 打開      
+(3) 就可以用我們自己的JavaScript把那台伺服器的資料抓過來    
 
-
-
-
-實際練習爬蟲 - 抓取youbike資料
-------
 
 
 
