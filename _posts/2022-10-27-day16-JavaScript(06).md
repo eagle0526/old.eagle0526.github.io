@@ -7,20 +7,20 @@ layout: post
 ---
 
 
-事件流
+1、事件流
 ------
 
-### JS的事件留有三階段
+### 1-1、JS的事件留有三階段
   
 如果今天有兩層結構，會先往下穿過外層到內層，再從內層到外層    
-- 第一階段 -> 捕獲階段 (capturing)  
-- 第二階段 -> targeting   
-- 第三階段 -> 冒泡階段 (bubbing)  
+(1) 第一階段 -> 捕獲階段 (capturing)    
+(2) 第二階段 -> targeting       
+(3) 第三階段 -> 冒泡階段 (bubbling)     
   
   
 事件監聽器的第三個參數，預設值是false  
-(第三個參數，如果是Ture，就會是capturing階段)  
-(第三個參數，如果是false，就會是bubbing階段)  
+(第三個參數，如果是True，就會是capturing階段)  
+(第三個參數，如果是false，就會是bubbling階段)  
 
 
 Ps. 這個東西做遊戲會用到，像是卡牌遊戲

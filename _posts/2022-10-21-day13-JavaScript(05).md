@@ -301,7 +301,7 @@ Ps. [可以去loupe網站看看+操作](http://latentflip.com/loupe/?code=JC5vbi
 
 ### 11-1、CORS proxy
 
-(1) 另外架一個伺服器 (用ruby node python)，去抓對方網站資料     
+(1) 另外架一個伺服器 (用ruby node python)，去抓對方網站資料  
 (2) 然後因為伺服器是我們自己的，可以把該伺服器的 CORS 打開      
 (3) 就可以用我們自己的JavaScript把那台伺服器的資料抓過來    
 
