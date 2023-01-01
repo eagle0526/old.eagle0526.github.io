@@ -30,3 +30,26 @@ layout: post
 1. 另外架一個伺服器 (用ruby node python)，去抓對方網站資料
 2. 然後因為伺服器是我們自己的，可以把該伺服器的 CORS 打開
 3. 就可以用我們自己的JavaScript把那台伺服器的資料抓過來
+
+
+
+物件繼承
+------
+
+(1) Q. All objects have prototype?      
+Ans. false  
+詳解：是所有function都有prototype，所有物件都有的是__proto__    
+
+(2) 箭頭函式沒有prototype
+
+(3) 使用new實體時，在類別裡面呼叫return，會發生啥事
+
+```md
+> function Cat(name) {
+>     this.name = name
+>     return 123             -> 如果今天刻意給實體 return  (正常人不會在這邊return)
+> }
+> 
+> const c = new Cat("cc")    -> 實際上會忽略上面傳下來的123，一樣是傳Cat下來
+> console.log(c)             # 印出 Cat { name: 'cc' }
+```

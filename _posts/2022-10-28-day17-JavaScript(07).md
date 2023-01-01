@@ -7,154 +7,15 @@ layout: post
 ---
 
 
-續 this
+
+1、Closure 閉包
 ------
 
-### 5. 是否有使用 apply, call, bind
+Closure是什麼？我們以setTimeout舉例  
+Ps. [完整的 code 可以看closure那邊文章](https://eagle0526.github.io/javascript/2022-09-27-Closure.html)  
 
-bind 跟 apply、call 的差異是， bind 會比較晚觸發(你去主動執行的時候才會觸發)
-
-> #### bind方法  
-> 該bind()方法創建一個新函式，該函式被呼叫時，會將 this 關鍵字設為給定的參數，並在呼叫時，帶有提供之前給定順序的參數。
->   
-> #### 回傳值  
-> 他會回傳一個新的 fc，並且會把傳進去的東西東做this的初始值
-{: .block-tip}
-
-
-
-#### bind舉個例子更好懂 - fc舉例
-
-先給一個fc，印出this
-```md
-> function hi() {
->    console.log(this)   -> 這個this是全域物件
-> hi()
-```
-
-創建一個新變數，並用hi.bind()接著會發生什麼事
-```md
-> function hi() {
->     console.log(this)   # [Number: 123]    -> 這個this是bind傳進來的數字 
-> }
-> 
-> const newHi = hi.bind(123)    -> 這個 newHi 因為 bind 的關係，是一個fc
-```
-
-也因為newHi是一個新的fc，所以在主動呼叫之前，他不會發動
-```md
-> newHi()   -> 主動發動
-```
-
-#### bind舉個例子更好懂 - 物件舉例
-
-剛剛只有fc和123可能不太好懂，我們今天加入物件試試  
-  
-創建一個ironMan物件
-```md
-> const ironMan = {name: "ironMan"}
-```
-
-把這個ironMan換成剛剛bind裡面的123
-```md
-> const newHi = hi.bind(ironMan)
-```
-
-這時候呼叫newHi，就會跑出ironMan物件了
-```md
-> newHi()         # {name: "ironMan"}
-> 
-> ps. 會印出來是因為前面的hi()，我有寫console.log(this)喔！不要忘記
-```
-  
-  
-**不過目前還看不出好處在哪對不對，我把整段code更改一下**
-```md
-> 1. 一樣給一個fc，然後帶兩個參數
-> function hello(n, m) {
->     console.log(this)    # {name: "ironMan"}  -> 在fc執行前，物件被修改了
->     console.log(n, m)    # (1, 2)             -> fc 可以帶參數進來
-> }
->   
-> 2. 一樣有一個ironMan物件
-> const ironMan = {name: "ironMan"}
->   
-> 3. 一樣用bind做出一個新物件，並帶入ironMan
-> const newHello = hello.bind(ironMan)
->   
-> 4. **不一樣的來了，我們在執行前，先改變 ironMan 的值**
-> ironMan.name = "ironHeart"
->   
-> 5. 執行，並帶一些參數給newHello
-> newHello(1, 2)
-```
-  
-> --  
-> **bind的好處在哪**  
-> bind 會比較晚觸發(你去主動執行的時候才會觸發)  
-> 在觸發前，可以更改一些值，改完後在觸發  
-> --  
-{: .block-tip}
-  
-  
-### 6. 是否為嚴格模式 use strict
-不是嚴格模式的情況下，在 fc 裡面使用this，會變成全域變數，嚴格模式下會變成undefined
-```md
-> function hi() {
->     `use strict`
->     console.log(this) -> undefined
-> }
-```
-  
-  
-> --  
-> **this 先後順序**  
-> 1. 是否為嚴格模式 use strict  
-> 2. 是否有使用 new  
-> 3. 是否有使用 apply, call, bind  
-> 4. () => {} 沒有自己的 this  
-> 5. 誰呼叫，誰就是 this  
-> 6. 沒人呼叫，this -> 全域物件  
->   
-> 嚴格模式 > new > apply、call、bind > 箭頭函式 > 誰呼叫誰就是this > 沒人呼叫為全域物件  
->   
-> --  
-{: .block-tip}
-
-
-
-#### 箭頭函式沒有this，那我們對一個箭頭函式 new 物件會發生什麼事
-```markdown
-> 會報錯 -> not a constructor
-> 
-> cosnt heroCreator = () => {}
-> 
-> const h1 = new heroCreator()
-> console.log(h1)
-```
-
-
-
-> --  
-> **箭頭函式缺少的東西**  
-> - 缺少this  
-> - 缺少一般fc有的arguments  
->   
-> 一般函式有一個隱藏 的arguments(引數)  
-> ps. 可以試試做一個正常的fc -> console.log(arguments)  
->   
-> --  
-{: .block-tip}
-
-
-
-
-
-### Closure 閉包 - 以 setTimeout 舉例
-
-#### 完成的 code 可以看closure那邊文章
-
-假設今天想要印出 1 -> 2 -> 3 (每過一秒印出 1++)
+假設今天想要印出 1 -> 2 -> 3 (每過一秒印出 1++)         
+但是發現用var宣告變數後，結果跟預想的不太一樣   
 ```md
 > for(var i = 0; i < 3; i++) {
 >     setTimeout(()=>{
@@ -170,7 +31,7 @@ bind 跟 apply、call 的差異是， bind 會比較晚觸發(你去主動執行
 > 所以最後 i 就會讀取 迴圈最後結束的值  
 > --  
 > 如果改成let的話，離開迴圈就無法存活，所以會有一個閉包把這個i一起包進webAPI  
-> 之後 setToimeout 的 i 就會依照閉包中的i給值  
+> 之後 setTimeout 的 i 就會依照閉包中的i給值  
 > --  
 
 
