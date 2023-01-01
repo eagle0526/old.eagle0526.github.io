@@ -9,34 +9,80 @@ layout: post
 JavaScript
 ------
 
+
+
+
+既然有非同源，那當然有同源
+
 ### 1-1、跨來源資源分享 CORS Cross
+> --  
+> 跨來源資源共用（Cross-Origin Resource Sharing (CORS)）  
+> 是一種使用額外 HTTP 標頭令目前瀏覽網站的使用者代理 (en-US)取得存取其他來源（網域）伺服器特定資源權限的機制。  
+> 當使用者代理請求一個不是目前文件來源——例如來自於不同網域（domain）、通訊協定（protocol）或通訊埠（port）的資源時，  
+> 會建立一個跨來源 HTTP 請求（cross-origin HTTP request）。   
+> [CORS (Cross-Origin Resource Sharing)](https://developer.mozilla.org/zh-TW/docs/Web/HTTP/CORS)  
+> from MDN  
+> --  
+{: .block-tip}
 
 
-- 如果對方沒有開 CORS policy 是抓不回來的  
-- 如果未來碰到業主網站CORS的問題，打電話叫他們開  
-- CORS policy test 可以檢測對方CORS有沒有開
+#### 1-1-1、同源、非同源到底是什麼意思？
+
+
+簡單地說，用 JavaScript 存取資源時，如果是同源的情況下，存取不會受到限制  
+**那同源的定義是什麼呢？**  
+
+所謂的同源，必須滿足以下三個條件：  
+(1) 相同的通訊協定 (protocol)，即 http/https    
+(2) 相同的網域 (domain)   
+(3) 相同的通訊埠 (port)   
+
+
+
+#### 1-1-2、跨來源請求  
+
+不是同源的情況下，就會產生一個跨來源 http 請求（cross-origin http request）。
+而跨來源請求就必須遵守CORS的規範
+
+
+
+#### 1-1-3、CORS簡介
+簡單地說，CORS (Cross-Origin Resource Sharing) 是針對不同源的請求而定的規範   
+透過 JavaScript 存取非同源資源時，server 必須明確告知瀏覽器允許何種請求   
+只有 server 允許的請求能夠被瀏覽器實際發送，否則會失敗。    
+
+
+
+#### 1-1-4、非同源解決方法
+(1) 如果對方沒有開 CORS policy 是抓不回來的  
+(2) 如果未來碰到業主網站CORS的問題，打電話叫他們開  
+(3) CORS policy test 可以檢測對方CORS有沒有開  
 
 > --  
 > **CORS是針對瀏覽器的行為，而不是針對JavaScript**  
 > 這個行為就是指，假設你今天想從網頁存取別人的個人資料，會碰到資安問題  
->   
 > 如果未來有第二個可以控制瀏覽器的語言，這個語言也會碰到CORS的問題  
 > --  
 {: .block-tip}
 
 
 
-### CORS proxy
+#### 1-1-5、CORS proxy
 
-1. 另外架一個伺服器 (用ruby node python)，去抓對方網站資料
-2. 然後因為伺服器是我們自己的，可以把該伺服器的 CORS 打開
-3. 就可以用我們自己的JavaScript把那台伺服器的資料抓過來
+1. 另外架一個伺服器 (用ruby node python)，去抓對方網站資料  
+2. 然後因為伺服器是我們自己的，可以把該伺服器的 CORS 打開   
+3. 就可以用我們自己的JavaScript把那台伺服器的資料抓過來   
+
+
+
+> --  
+> [CORS參考資料連結](https://shubo.io/what-is-cors/#%E5%90%8C%E6%BA%90%E6%94%BF%E7%AD%96-same-origin-policy)  
+> --  
+{: .block-tip}
 
 
 
 ### 1-2、物件繼承
-
-
 (1) Q. All objects have prototype?      
 Ans. false  
 詳解：是所有function都有prototype，所有物件都有的是__proto__    
