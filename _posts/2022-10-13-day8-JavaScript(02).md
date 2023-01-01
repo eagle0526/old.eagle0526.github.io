@@ -386,7 +386,7 @@ node 世界裡面也有一個全域物件叫做 global
 ------
 
 ### 4-1、三個比較表
-||var|let/const|
+|特性|var|let/const|
 |:-:|:-:|:-:|
 |scope|function scope|block scope|
 |變數宣告|可|不可|

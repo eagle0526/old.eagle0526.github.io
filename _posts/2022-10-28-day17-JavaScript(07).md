@@ -14,6 +14,7 @@ layout: post
 Closure是什麼？我們以setTimeout舉例  
 Ps. [完整的 code 可以看closure那邊文章](https://eagle0526.github.io/javascript/2022-09-27-Closure.html)  
 
+
 假設今天想要印出 1 -> 2 -> 3 (每過一秒印出 1++)         
 但是發現用var宣告變數後，結果跟預想的不太一樣   
 ```md
@@ -24,6 +25,7 @@ Ps. [完整的 code 可以看closure那邊文章](https://eagle0526.github.io/ja
 > }
 ```
 
+
 > --  
 > 把上面 for 迴圈中的 var 改成 let 做到 1 -> 2 -> 3 (每隔一秒印出一個數字)
 > 為什麼改成 let 就可以執行，是因為閉包的概念  
@@ -33,20 +35,17 @@ Ps. [完整的 code 可以看closure那邊文章](https://eagle0526.github.io/ja
 > 如果改成let的話，離開迴圈就無法存活，所以會有一個閉包把這個i一起包進webAPI  
 > 之後 setTimeout 的 i 就會依照閉包中的i給值  
 > --  
+{: .block-tip}
 
 
 
-
-### Closure 閉包 - fc 都會有這個特性
-- JS再執行的過程中，會去考慮非同步相關的函式 or function，是否有用for迴圈包住，用let宣告的話，裡面的 i 會持續變動
-
-- let原本只會存活在for回圈裡面，但是被setTimeout一起帶去webAPI裡面，所以等 stack 裡面全部執行完後， let才會依然存活
-
-- 他會去捕捉周圍的環境變數，但是只會去抓字幾有用到的東西
+### 1-1、function都會有Closure的特性
+(1) JS再執行的過程中，會去考慮非同步相關的函式 or function，是否有用for迴圈包住，用let宣告的話，裡面的 i 會持續變動     
+(2) let原本只會存活在for回圈裡面，但是被setTimeout一起帶去webAPI裡面，所以等 stack 裡面全部執行完後， let才會依然存活   
+(3) 他會去捕捉周圍的環境變數，但是只會去抓自己有用到的東西  
 
 
-Closure實際範例
-------
+### 1-2、Closure實際範例    
 
 先做一個fc，裡面包一個變數、fc
 ```md
@@ -84,10 +83,13 @@ Closure實際範例
 
 
 
-斐波那契數列
+2、遞迴函式
 ------
 
-前兩個位數的數字相加 = 新的位數數字
+### 2-1、斐波那契數列
+
+以斐波那契數列來示範遞迴函式    
+斐波那契數列 = 前兩個位數的數字相加等於新的位數數字
 
 ```md
 > function fib(n) {
@@ -112,8 +114,8 @@ Closure實際範例
 
 
 
-### IIFE = Immediately Invoked Function Expression (念 " 一 ㄈㄧ " )
-
+3、IIFE = Immediately Invoked Function Expression (念 " 一 ㄈㄧ " )
+------
 寫套件的時候很常用到，因為不想讓自己的套件的fc被影響到
 ```md
 > 用一個小括弧把fc包住，並在最後用()呼叫此fc
@@ -124,13 +126,17 @@ Closure實際範例
 > 這種寫法的目的，是因為只能使用一次，不會漏到外面
 ```
 
+> --    
+> 使用立即函式的好處，除了可以立即執行程式碼，省略多餘的呼叫，還可以用來避免汙染全域執行環境的東西，減少開發時因相同命名相衝的bug。  
+> --  
+{: .block-tip}
 
 
-
-parcel 打包檔案 - parcel是一個上線過程的“打包器”  
+4、parcel 打包檔案
 ------
 
-### 如果今天太多JS、CS檔案，要在index.html連結其他檔案的時候，該怎麼辦？
+parcel是一個上線過程的“打包器”      
+如果今天太多JS、CS檔案，要在index.html連結其他檔案的時候，該怎麼辦？    
 
 ```md
 > 現在有3個js檔案，我想把這三個壓成一個JS檔案 -> webpack、parcel可以做到
@@ -150,9 +156,9 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 
 
 
-### 打包器實際執行
+### 4-1、打包器實際執行
 
-一、在專案終端機輸入
+一、在專案終端機輸入    
 
 ```md
 > yarn init
@@ -168,18 +174,16 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 > }
 ```
 > --  
-> MIT是麻省理工  
-> BSD是柏克萊  
+> (1) MIT是麻省理工  
+> (2) BSD是柏克萊  
 > 這兩間授權的話，基本上都可以免費使用  
->   
-> GPL也是一種開源的受援，不過你今天用GPL的lincese寫一份專案，你那一份專案也要開源  
-> 
+> (3) GPL也是一種開源的受援，不過你今天用GPL的license寫一份專案，你那一份專案也要開源  
 > --  
 {: .block-tip}
 
 
 
-二、接著在json檔上的scripts加一些code
+二、接著在json檔上的scripts加一些code   
 
 ```md
 > scripts -> 這個很常是前端工程師，加入自己很常用的語法
@@ -194,16 +198,15 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 ```
 
 
-三、安裝 parcel
+三、安裝 parcel  
 
+輸入後，會直接下載一大堆檔案，包在一個資料夾(node_modules)裡面   
 ```md
 > yarn add --dev parcel 
-
-> 輸入後，會直接下載一大堆檔案，包在一個資料夾(node_modules)裡面 
 ```
 
 
-並會在json檔生成一個多幾行程式
+並會在json檔生成一個多幾行程式   
 ```md
 > "devDependencies": {
 > "parcel": "^2.7.0"
@@ -220,11 +223,9 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 {: .block-tip}
 
 
-四、接著到.json檔的scripts裡面，新增一段
-
+四、接著到.json檔的scripts裡面，新增一段    
+下面這一行的指令，就跟 rails s 一樣，就是啟動server
 ```md
-> 下面這一行的指令，就跟 rails s 一樣，就是啟動server
-
 > "scripts": {
 >     "dev": "yarn parcel index.html"  ->  加在這邊的關係，是因為我之後想重複只用 dev 這個指令
 > },                                       要注意那個index.html，如果今天沒有把script包在index裡面
@@ -253,35 +254,38 @@ parcel 打包檔案 - parcel是一個上線過程的“打包器”
 
 
 
-es modules 如果今天想要引用別人的模組
+
+5、JS import/export
 ------
+es modules 如果今天想要引用別人的模組或是自己寫的模組
 
-### 引用自己寫的套件
+### 5-1、export模組輸出
 
-#### 模組輸出
-
-現在在math.js
+#### 5-1-1、方法一、輸入給別人用
 ```md
-> 輸入給別人用
+> math.js
+
 > export function add(a, b) {
 >     return a + b
 > }
 ```
 
-另外一種export寫法
+#### 5-1-2、方法二、另外一種export寫法
 ```md
+> math.js
+
 > function add(a, b) {
 >     return a + b
 > }
-> export { add, minus, mmultiple } -> 也可以在最後寫export，把所有想要傳出去的傳出去
+> export { add, minus, multiple } -> 也可以在最後寫export，把所有想要傳出去的傳出去
 ```
 
 
-#### 模組輸入
+### 5-2、import模組輸入
 
-現在在app.js
 ```md
-> 引用別人套件
+> app.js
+
 > import{ add, PI } from "./math.js"  -> 這個add套件是寫在math.js裡面的
 >                                     -> 如果今天有多個要import，可以,隔開就好
 > console.log(add(1, 5))     # 6
@@ -293,11 +297,12 @@ es modules 如果今天想要引用別人的模組
 {: .block-warning}
 
 
+### 5-3、export default意思 
+export的時候，default是什麼意思？   
+default其實就是一個預設匯出的寫法！   
 ```md
-> 這個default是什麼，就是一個預設匯出的東西
-> export default add -> export default 只會有一個
-> 
-> import X from "./math.js"   -> 輸入預設的模組，可以隨便取名使用
+> export default add -> export default 只會有一個   
+> import X from "./math.js"   -> 輸入預設的模組，可以隨便取名使用   
 ```
 
 > --  
@@ -308,7 +313,7 @@ es modules 如果今天想要引用別人的模組
 
 
 
-### 引用別人的套件
+### 5-4、引用別人的套件
 
 ```md
 > yarn add dayjs -> 這樣會把dayjs裝在node_modules裡面
@@ -329,7 +334,7 @@ es modules 如果今天想要引用別人的模組
 
 
 
-JavaScript 測試環境
+6、JavaScript 測試環境
 ------
 
 到專案的終端機輸入以下

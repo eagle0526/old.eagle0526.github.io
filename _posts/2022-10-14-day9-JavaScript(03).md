@@ -714,18 +714,18 @@ querySelectorAll 抓到的是一個物件，也包著所有東西
 ```markdown
 > JavaScript
 > / 抓中間的顯示器
-> onst counter = document.querySelector("#counter")
+> const counter = document.querySelector("#counter")
 > 
 > / 抓 + 號
-> onst plusBtn = document.querySelector("#plus")
+> const plusBtn = document.querySelector("#plus")
 > lusBtn.addEventListener("click", () => {
 >    counter.value = Number(counter.value) + 1
 > )
 > 
 > 
 > / 抓 - 號
-> onst minusBtn = document.querySelector("#minus")
-> inusBtn.addEventListener("click", () => {
+> const minusBtn = document.querySelector("#minus")
+> minusBtn.addEventListener("click", () => {
 >    const value = Number(counter.value)
 >    if (value > 1) {
 >        counter.value = value - 1    
