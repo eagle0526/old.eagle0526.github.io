@@ -6,13 +6,9 @@ category: Rails
 layout: post
 ---
 
-JavaScript
+1、JavaScript
 ------
 
-
-
-
-既然有非同源，那當然有同源
 
 ### 1-1、跨來源資源分享 CORS Cross
 > --  
@@ -106,13 +102,14 @@ Ans. false
 ------
 
 ### 2-1、find vs find_by vs find_by!
-> --  
-> **面試題**  -> 未寫完，記得補寫  
-> Book.find      =>   
-> Book.find_by   => nil  
-> Book.find_by!  => Exception  
-> --  
+> ---  
+> **面試題**
+> Book.find      => find如果錯誤，會噴出錯誤警告，而且find後面只能接數字  
+> Book.find_by   => find_by錯誤，只會給一個nil，find_by後面可以接其他的欄位  
+> Book.find_by!  => Exception，加一個驚嘆號就如果錯誤的話，就會跳錯誤警告給你  
+> ---  
 {: .block-tip}
+
 
 
 
@@ -182,5 +179,62 @@ include與extend都是可以讓類別增加方法的做法，而差別在於incl
 
 
 ### 2-5、說明private的特色
- 
 
+
+
+
+### 2-6、gem、bundle差異
+
+gem版本介紹、和bundle有什麼不一樣、Gemfile.lock是用來做啥的  
+
+#### 2-6-1、gem版本代表的意思  
+設計多版本的原因是，如果今天加小物件，跳patch版號，如果今天是加新功能，跳minor版號，如果大更新，跳major版號  
+
+```md
+> gem 'xxx' 3.1.7
+> 3 => major => 完全不同的產品  
+> 1 => minor => 有可能會壞掉    
+> 7 => patch => 增加不太重要的功能 （可以隨便更新來用）
+
+> gem 'xxx', '~> 3.1.7' 3.2.0 不會裝
+> gem 'xxx', '>3.1.7' 3.2.0 會裝
+```
+
+> --  
+> ~的意思是，會去裝比較安全的版本，所以今天如果改動的是patch就會安裝，跳minor版號就不會安裝  
+> --  
+{: .block-tip}
+
+### 2-6-2、gem vs bundle  
+
+(1) gem 是一次裝一個指定的套件  
+(2) bundle 是一次下載寫在 gemfile 的描述檔  
+
+```md
+> bundle指令會做以下事情
+
+> (1) 找 gemfile  
+> (2) gem install ...  
+> (3) 產生 Gemfile.lock  
+```
+  
+### 2-6-3、Gemfile.lock是啥
+
+假設今天A套件需要B套件2.0版本，C套件需要B套件3.0版本，bundle完後，可以解決上面這個問題        
+```md
+> Gemfile.lock => 會產生一個“多個檔案相依性”的檔案，這可以解決版本不同的相依性問題  
+```
+
+
+
+
+3、Repl(Read-eval-print loop)是啥
+------
+### wiki
+「讀取-求值-輸出」循環（英語：Read-Eval-Print Loop，簡稱REPL）  
+也被稱做交互式頂層構件（英語：interactive toplevel），是一個簡單的，交互式的編程環境。  
+這個詞常常用於指代一個Lisp的交互式開發環境，也能指代命令行的模式。  
+  
+### 懶人包
+REPL對於學習一門新的程式語言具有很大的幫助，因為它能立刻對初學者做出回應。  
+  
