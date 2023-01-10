@@ -1,10 +1,37 @@
 ---
 layout: home
-title: Jekyll Gitbook Theme
+title: Yee Chen 的技術部落格
 permalink: /
 ---
 
-Make Jelly site have a GitBook look!
+## side project
+- [Woding(致敬inline的餐廳訂位網站)](https://github.com/5xruby-WoDing/WoDing)
+- [Fintech(用wordress做的金融個人BLOG)](https://fintechrich.com/)
+
+
+## 個人介紹
+
+原本是一個數位行銷人員，但是在串接數據中串上癮了，決定實際踏入後端程式這個行業   
+
+### 心路歷程
+
+在2022年3月的時候，開始決定走向軟體工程師。  
+   
+一開始決定先從台大的資訊專班來入門(有人推薦)，因此先去報名台大的python課程，在這個期間，最後完成了一個[爬蟲程式](https://github.com/eagle0526/Basketball-League-Crawler)，成功爬下多個籃球聯盟的數據，並有完成基礎的數據分析   
+
+不過學到後面，發現台大資訊所只是給你加強單個技能，並無法幫助你實際從零開始做轉職，因此學習了3個月之後(其中還上了台大的SQL課程)，開始上網查詢有哪些課程，此時我有查到三個幫助轉職成全端的課程，一個是ASTRO CAMP、一個是Alpha CAMP，還有一個是免費但是要簡易面試的AppWorks。  
+
+原本想說我有一點底子，可以去AppWorks試試，不過剛好那一期的收人剛結束，我又不想再等半年，因此剩下兩個CAMP考慮，不過因為Alpha是全線上上課，我覺得線上跟實體比，實體還是比較穩妥一點，所以決定到ASTRO CAMP當作我軟體工程師的起點。  
+
+
+
+
+
+
+<!-- 
+
+
+
 
 ## Demo
 
@@ -177,4 +204,4 @@ Copyright 2019 Tao He.
 [11]: https://discordjs.guide/popular-topics/canvas.html#setting-up-napi-rs-canvas
 [12]: https://rubygems.org/gems/jekyll-remote-theme
 [13]: https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/adding-a-theme-to-your-github-pages-site-using-jekyll
-[14]: https://github.com/sighingnow/jekyll-gitbook/blob/master/_config.yml
+[14]: https://github.com/sighingnow/jekyll-gitbook/blob/master/_config.yml -->
