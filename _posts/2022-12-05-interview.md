@@ -9,6 +9,12 @@ layout: post
 1、JavaScript
 ------
 
+> ---  
+> JS面試題 - [lydia](https://github.com/lydiahallie/javascript-questions)  
+>  
+> ---  
+{: .block-tip}
+
 
 ### 1-1、跨來源資源分享 CORS Cross
 > ---  
@@ -98,6 +104,13 @@ Ans. false
 > const c = new Cat("cc")    -> 實際上會忽略上面傳下來的123，一樣是傳Cat下來
 > console.log(c)             # 印出 Cat { name: 'cc' }
 ```
+
+
+
+### 1-3、JS兩個等號跟三個等號的差異
+
+
+
 
 
 2、Ruby On Rails
