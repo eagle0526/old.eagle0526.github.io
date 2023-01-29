@@ -139,8 +139,7 @@ Ps. 包含改變瀏覽器歷史、發起網路請求、從快取回存某個頁�
 
 ### 2-3、application visit
 
-
-一個 application visit 一定會發起一個網路請求，當收到回應Turbolinks會render該HTML，以完成當次visit.
+一個 application visit 一定會發起一個網路請求，當收到回應Turbolinks會render該HTML，以完成當次visit.  
 
 > ---   
 > 什麼時候會觸發application visit呢？   
@@ -150,13 +149,13 @@ Ps. 包含改變瀏覽器歷史、發起網路請求、從快取回存某個頁�
 {: .block-tip}
 
 
-使用者點擊連結後～render畫面出來前，到底發生了哪些事？
-
-1、發出一個網路的需求：request a network request
-2、如果有 cache，就先把它 render 出來：render a preview of the page from cache
-3、移到先前 cache 的錨點(如果先前有的話，如果沒有就移動到頁面最上方)：scroll to the anchored element
-4、等到 server 回應內容，就再把它 render 出來：response arrived, renders HTML
-5、改瀏覽器的歷史紀錄：change to the browser’s history
+使用者點擊連結後～render畫面出來前，到底發生了哪些事？   
+     
+1、發出一個網路的需求：request a network request     
+2、如果有 cache，就先把它 render 出來：render a preview of the page from cache   
+3、移到先前 cache 的錨點(如果先前有的話，如果沒有就移動到頁面最上方)：scroll to the anchored element     
+4、等到 server 回應內容，就再把它 render 出來：response arrived, renders HTML    
+5、改瀏覽器的歷史紀錄：change to the browser’s history   
  
 
 ### 2-4、restoration visit
@@ -185,7 +184,7 @@ Ps. Turbolinks在每一頁要離開時，會自動儲存捲軸位置，並且當
 
 > ---   
 > Turbolinks 發出允許您追蹤導航生命週期和響應頁面加載的事件，除非另有說明，Turbolinks會在document object上觸發事件。
-
+>    
 > Turbolinks emits events that allow you to track the navigation lifecycle and respond to page loading   
 > Except where noted, Turbolinks fires events on the document object.    
 >       
@@ -380,6 +379,7 @@ Ps. Turbolinks在每一頁要離開時，會自動儲存捲軸位置，並且當
 ```
 
 
+
 #### 4-1-3、小總結
 
 還蠻建議關掉 preview 的，畢竟很多瀏覽器都已經有內建的 cache 了，關掉 cache 有一個好處是 body 內的 javascript 就不會執行兩次了。
@@ -398,4 +398,86 @@ Ps. Turbolinks在每一頁要離開時，會自動儲存捲軸位置，並且當
 5、串接GTM
 ------
 
-終於！！前面講了這麼多的turbolinks的作用、生命週期，終於可以開始把rails網站接上GTM了～
+終於！！前面講了這麼多的turbolinks的作用、生命週期，終於可以開始把rails網站接上GTM了～   
+Ps. [參考連結](http://labs.wrprojects.com/how-to-use-google-tag-manager-with-rails-and-turbolinks/)  
+
+
+```md
+> 原本放在head的程式碼
+
+>  <!-- Google Tag Manager -->
+> <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+> new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+> j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+> 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+> })(window,document,'script','dataLayer','GTM-WWSRBV2');</script>
+> <!-- End Google Tag Manager -->
+
+> 原本放在body的程式碼
+
+> <!-- Google Tag Manager (noscript) -->
+> <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWSRBV2"
+> height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+> <!-- End Google Tag Manager (noscript) -->
+```
+
+更改過後的head程式碼，把下面這一段，塞進head裡面就可以
+```md
+<!-- Google Tag Manager trigger for Turbolinks -->
+<script type="text/javascript">
+$(document).on('page:change', function(){
+var url = window.location.href;
+
+dataLayer.push({
+'event':'pageView',
+'virtualUrl': url
+});
+});
+</script>
+<!-- End Google Tag Manager trigger for Turbolinks -->
+
+
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=[YOUR ID]"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','[YOUR ID]');</script>
+<!-- End Google Tag Manager -->
+```
+
+
+
+雖然這樣就裝好了，但是我看紅寶鐵軌客的說明，這樣會遇到點擊連結後，GTM的debug console會不見，不過目前我還沒遇到(可能是專案還不夠大)，之後遇到會在這邊補充！除了debug console不見以外，鐵軌客還有提出一些其他的問題，不過我目前遇到的專案也沒辦法體驗到(QQQ..希望可以趕快遇到大專案讓我試試)，所以也只能等到遇到問題的時候再來補充這篇文章了。
+
+
+
+6、完整刪除turbolinks
+------
+
+前面有提到部分拿掉turbolinks，不過如果今天真的不想用turbolinks，要怎麼拿掉呢？
+```md
+> 1、移除 turbolinks gem(移除完後記得bundle install)
+> 2、移除：<meta name="turbolinks-cache-control" xxx>，這有可能在任何一頁，做個 search 吧！
+> 3、javascripts/application.js -> 移除：//= require turbolinks
+> 4、assets/javascripts/ 中所有的 js 跟 coffee 都要改成：
+>    js: $(document).on('turbolinks:load', function() {  ⇒  $(document).ready( function() {
+>    coffee: jQuery(document).on 'turbolinks:load',  ⇒  $(document).ready
+> 5、移除 'data-no-turbolink'，data-turbolinks 屬性
+> 6、Javascript 中：改寫任何有 Turbolinks.visit、Turbolinks.clearCache()、Turbolinks.xxx 的程式，
+```
+
+
+
+
+7、總結
+------
+
+終於！最後成功把ROR網站成功串接GTM了，並且也有把GA成功串接上，不過問題就是目前做的專案太小，所以沒辦法遇到軌道客說的一堆問題，希望之後能把這一塊補完！！
+
+
+
+
+
