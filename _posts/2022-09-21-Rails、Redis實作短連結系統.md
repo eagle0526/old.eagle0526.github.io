@@ -537,7 +537,7 @@ Ps. rails的JS是使用stimulus JS
 (4) 使用者點擊短連結，會先從redis找該筆資料  
 (5) 如果今天redis沒有該筆資料，而使用者還是點擊了，會去資料庫找連結，並且寫一份到redis裡面   
 (6) 使用者點擊短連結後，會增加點擊次數   
-(7) UTM功能
+(7) UTM功能  
 
 
 
@@ -545,11 +545,13 @@ Ps. rails的JS是使用stimulus JS
 Rails On Ruby、Redis、Tailwind CSS
 
 
+### 3-2、GitHub連結
+[https://github.com/eagle0526/rails_redis_shortlink]https://github.com/eagle0526/rails_redis_shortlink
 
-
-
-
-
+   
+   
+   
+   
 
 
 
