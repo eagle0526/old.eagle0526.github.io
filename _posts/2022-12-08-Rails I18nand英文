@@ -1,0 +1,1572 @@
+**DO NOT READ THIS FILE ON GITHUB, GUIDES ARE PUBLISHED ON https://guides.rubyonrails.org.**
+
+Rails Internationalization (I18n) API
+=====================================
+
+The Ruby I18n (shorthand for _internationalization_) gem which is shipped with Ruby on Rails (starting from Rails 2.2) provides an easy-to-use and extensible framework for **translating your application to a single custom language** other than English or for **providing multi-language support** in your application.
+
+Ruby I18n（簡稱國際化）這個gem隨著Ruby on Rails（從Rails 2.2開始）一起提供了一個易於使用且可擴充的框架，用於將你的應用程序**翻譯成一種非英語的單一自定義語言**或者**提供多語言支持**。
+
+The process of "internationalization" usually means to abstract all strings and other locale specific bits (such as date or currency formats) out of your application. The process of "localization" means to provide translations and localized formats for these bits.[^1]
+
+「國際化」的過程通常意味著將所有字串和其他特定於地區的位元（例如日期或貨幣格式）從您的應用程序中抽象出來。 「本地化」的過程是提供這些位元的翻譯和本地化格式。[^1]
+
+So, in the process of _internationalizing_ your Rails application you have to:
+因此，在你的rails應用程序"國際化"的過程中，你必須：
+
+
+* Ensure you have support for I18n.
+* Tell Rails where to find locale dictionaries.
+* Tell Rails how to set, preserve, and switch locales.
+
+* 確保Rails提供I18的支援  
+* 告訴Rails在哪裡找到語言字典(locale dictionaries)   
+* 告訴Rails如何設定、保留、切換語言  
+
+In the process of _localizing_ your application you'll probably want to do the following three things:
+在應用程式本地化的過程，你可能會想要做以下三件事：
+
+* Replace or supplement Rails' default locale - e.g. date and time formats, month names, Active Record model names, etc.
+* Abstract strings in your application into keyed dictionaries - e.g. flash messages, static text in your views, etc.
+* Store the resulting dictionaries somewhere.
+
+* 替換或補充Rails的預設語言，例如日期、時間格式、月份名稱、Active Record 模型名稱等。
+* 將應用程式中的字串抽象成關鍵字字典，像是flash訊息、view中的靜態文字...等。
+* 把得到的字典存在某處。
+
+
+本指南將引導你完成I18n的API，並包含一個從頭開始國際化Rails應用程式的教學。
+This guide will walk you through the I18n API and contains a tutorial on how to internationalize a Rails application from the start.
+
+閱讀完本指南後，你將會了解：
+After reading this guide, you will know:
+
+* Ruby on Rails 中 I18n 的工作方式
+* 如何正確使用 I18n 在 RESTful 應用程式中以不同方式使用 I18n 
+* 如何使用 I18n 翻譯 Active Record 錯誤或 Action Mailer 郵件主旨 
+* 進一步幫你翻譯應用程式中的其他工具
+
+* How I18n works in Ruby on Rails
+* How to correctly use I18n in a RESTful application in various ways
+* How to use I18n to translate Active Record errors or Action Mailer E-mail subjects
+* Some other tools to go further with the translation process of your application
+
+--------------------------------------------------------------------------------
+
+備註: Ruby I18n框架為您提供了國際化/本地化Rails應用程序所需全部必要的支援。 您還可以使用各種可用的gem來添加其他功能或特色。 有關詳細信息，請參閱[rails-i18n gem](https://github.com/svenfuchs/rails-i18n)。
+
+NOTE: The Ruby I18n framework provides you with all necessary means for internationalization/localization of your Rails application. You may also use various gems available to add additional functionality or features. See the [rails-i18n gem](https://github.com/svenfuchs/rails-i18n) for more information.
+
+Rails 中 I18n 的工作原理
+-------------------------------
+
+Internationalization is a complex problem. Natural languages differ in so many ways (e.g. in pluralization rules) that it is hard to provide tools for solving all problems at once. For that reason the Rails I18n API focuses on:
+國際化是一個復雜的問題。自然語言有許多不同之處（例如複數規則），很難提供一次性解決所有問題的工具。因此Rails I18n API的重點是：
+
+* 支持英語及類似語言
+* 容易容易訂製、擴展，以支持其他語言
+
+* providing support for English and similar languages out of the box
+* making it easy to customize and extend everything for other languages
+
+為了解決這個問題， **Rails框架中所有的靜態字串**(像是Active Record的驗證訊息、時間和日期格式**都已經國際化**)。對Rails應用程序進行_本地化_意味著把這些靜態字串翻譯為所需語言。
+As part of this solution, **every static string in the Rails framework** - e.g. Active Record validation messages, time and date formats - **has been internationalized**. _Localization_ of a Rails application means defining translated values for these strings in desired languages.
+
+
+要對你的應用程序中的內容進行本地化、存儲和更新（例如翻譯不羅格文章），詳見[Translating model content](#translating-model-content)部分。
+
+To localize, store, and update _content_ in your application (e.g. translate blog posts), see the [Translating model content](#translating-model-content) section.
+
+### The Overall Architecture of the Library
+### I18n 的資料庫整體架構
+
+因此，Ruby I18n gem 分成兩個部分
+Thus, the Ruby I18n gem is split into two parts:
+
+
+* I18n框架的公開API - 一個Ruby公開方法的模塊，它定義I18n資料庫的工作方式
+* 一個默認後端（有意命名為簡單後端）實現了這些方法
+
+* The public API of the I18n framework - a Ruby module with public methods that define how the library works
+* A default backend (which is intentionally named _Simple_ backend) that implements these methods
+
+作為用戶，我們應該只訪問I18n模塊上的公開方法，但是了解後端的能力是有幫助的。
+As a user you should always only access the public methods on the I18n module, but it is useful to know about the capabilities of the backend.
+
+
+備註: 可以將默認的簡單後端與功能更強大的後端進行交換，該後端將在關係數據庫、GetText字典或類似位置中存儲翻譯數據。請參閱下面的[使用不同的後端]（#使用不同的後端）部分。
+
+NOTE: It is possible to swap the shipped Simple backend with a more powerful one, which would store translation data in a relational database, GetText dictionary, or similar. See section [Using different backends](#using-different-backends) below.
+
+
+### 公開的I18n API The Public I18n API
+
+I18n最重要的兩個方法：
+The most important methods of the I18n API are:
+
+```ruby
+translate # 查找文本翻譯
+localize  # 把日期和時間的物件轉成本地格式
+```
+這兩個方法的別名稱作 #t 和 #l，你可以像下面這樣使用它們：
+These have the aliases #t and #l so you can use them like this:
+
+```ruby
+I18n.t 'store.title'
+I18n.l Time.now
+```
+對於下列屬性，I18n還提供屬性的讀取值、設定值的方法
+There are also attribute readers and writers for the following attributes:
+
+```ruby
+load_path                 # 自定義翻譯文件的路徑 
+locale                    # 獲取或設定當前區域
+default_locale            # 獲取或設定默認區域
+available_locales         # 可供應用的允許區域
+enforce_available_locales # 強制執行允許區域(真或假)
+exception_handler         # 使用其他異常處理程序
+backend                   # 使用其他後端
+```
+
+因此，在下一個章節，讓我們來對一個簡單的Rails應用程式進行國際化設定！
+So, let's internationalize a simple Rails application from the ground up in the next chapters!
+
+
+Setup the Rails Application for Internationalization
+----------------------------------------------------
+
+要幫Rails應用程式啟用I18n支援，需要執行以下幾個步驟：
+There are a few steps to get up and running with I18n support for a Rails application.
+
+### Configure the I18n Module
+### 設置I18n的模組
+
+根據慣例優於設定的哲學，Rails I18n提供合理的預設翻譯字串，當需要不同的翻譯字串時，可以覆蓋預設值。
+Following the _convention over configuration_ philosophy, Rails I18n provides reasonable default translation strings. When different translation strings are needed, they can be overridden.
+
+Rails會自動將 `config/locales` 目錄中的所有 `.rb` 和 `.yml` 文件加入 **翻譯載入路徑**。
+Rails adds all `.rb` and `.yml` files from the `config/locales` directory to the **translations load path**, automatically.
+
+這個目錄中的預設 `en.yml` 語系包含一對示例翻譯字串：
+The default `en.yml` locale in this directory contains a sample pair of translation strings:
+
+```yaml
+en:
+  hello: "Hello world"
+```
+
+這代表，在 `:en` 語系， `鍵值hello` 會對應到 `Hello world` 這個字串上。在Rails中，字串都是以這種方式國際化的，例如，Active Model的驗證訊息在[`activemodel/lib/active_model/locale/en.yml`](https://github.com/rails/rails/blob/main/activemodel/lib/active_model/locale/en.yml)文件中，時間和日期格式在[`activesupport/lib/active_support/locale/en.yml`](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml)文件中。我們可以使用YAML或標準的Ruby Hash，把翻譯訊息存在預設的簡單後端中。
+
+This means, that in the `:en` locale, the key _hello_ will map to the _Hello world_ string. Every string inside Rails is internationalized in this way, see for instance Active Model validation messages in the [`activemodel/lib/active_model/locale/en.yml`](https://github.com/rails/rails/blob/main/activemodel/lib/active_model/locale/en.yml) file or time and date formats in the [`activesupport/lib/active_support/locale/en.yml`](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml) file. You can use YAML or standard Ruby Hashes to store translations in the default (Simple) backend.
+
+The I18n library will use **English** as a **default locale**, i.e. if a different locale is not set, `:en` will be used for looking up translations.
+I18n資料庫預設的語系是用英文，例如，如果沒有設置其他的語系，那就使用 `:en` 語系來查找翻譯。
+
+
+備註： I18n資料庫對於選取區域設定的鍵時，採取了務實的方法([在一些討論後](https://groups.google.com/g/rails-i18n/c/FN7eLH2-lHA))，也就是僅包含語言的部分，例如 `:en` 、 `pl` ，而不是傳統上使用語言和區域兩部分，像是： `en-US` 或 `en-GB` 。傳統上通常都會把"語言"和"區域設置"或"方言"分開，很多國際化的應用反而是只使用"語言"這個元素，例如`:cs`、`:th`或`:es`(分別為捷克語、泰語、西班牙語)。但是不同語言群體間，也存在區域差異，這很重要。例如，在`:"en-US"`語系中，會有$作為貨幣符號，而在`:"en-GB"`中則會有£作為貨幣符號。因此，如果需要的話，你也可以使用傳統的方式設定語系，例如，在 `:en-GB`字典中，提供完整的 `"English - United Kingdom"` 區域。
+
+NOTE: The i18n library takes a **pragmatic approach** to locale keys (after [some discussion](https://groups.google.com/g/rails-i18n/c/FN7eLH2-lHA)), including only the _locale_ ("language") part, like `:en`, `:pl`, not the _region_ part, like `:"en-US"` or `:"en-GB"`, which are traditionally used for separating "languages" and "regional setting" or "dialects". Many international applications use only the "language" element of a locale such as `:cs`, `:th`, or `:es` (for Czech, Thai, and Spanish). However, there are also regional differences within different language groups that may be important. For instance, in the `:"en-US"` locale you would have $ as a currency symbol, while in `:"en-GB"`, you would have £. Nothing stops you from separating regional and other settings in this way: you just have to provide full "English - United Kingdom" locale in a `:"en-GB"` dictionary.
+
+Rails會自動加載 **翻譯載入路徑** (`I18n.load_path`)，它是一個保存有翻譯文件路徑的陣列，通過配置翻譯文件加載路徑，我們可以自定義翻譯文件的目錄結構和文件命名規則。
+The **translations load path** (`I18n.load_path`) is an array of paths to files that will be loaded automatically. Configuring this path allows for customization of translations directory structure and file naming scheme.
+
+備註： I18n採用了延遲加載技術，相關翻譯訊息僅在第一次查找時加載。可以根據需求，隨時替換掉預設的後端設定。
+NOTE: The backend lazy-loads these translations when a translation is looked up for the first time. This backend can be swapped with something else even after translations have already been announced.
+
+你可以在 `config/application.rb` 中更改默認語言環境，並配置翻譯加載路徑，如下所示：
+You can change the default locale as well as configure the translations load paths in `config/application.rb` as follows:
+
+```ruby
+config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}')]
+config.i18n.default_locale = :de
+```
+
+在查找翻譯文件之前，必須先指定翻譯文件的加載路徑，如果想要改變預設的語系的話，應該要使用 `initializer` 來做修改，而不是 `config/application.rb`：
+The load path must be specified before any translations are looked up. To change the default locale from an initializer instead of `config/application.rb`:
+
+```ruby
+# config/initializers/locale.rb
+
+# Where the I18n library should search for translation files
+I18n.load_path += Dir[Rails.root.join('lib', 'locale', '*.{rb,yml}')]
+
+# Permitted locales available for the application
+I18n.available_locales = [:en, :pt]
+
+# Set default locale to something other than :en
+I18n.default_locale = :pt
+```
+
+直接把他添加到 `I18n.load_path`，而不是應用程式配置的 `I18n` 中，這樣 **不會** 覆蓋另外新安裝的 `gems` 的翻譯。
+Note that appending directly to `I18n.load_path` instead of to the application's configured I18n will _not_ override translations from external gems.
+
+### Managing the Locale across Requests
+### 跨請求管理語系設定
+
+本地化應用程式有時候會需要支援多個語言環境。為了實現這一目標，應該在每個請求開始時，設定語言環境，這樣在請求的整個生命週期中，會根據指定語系對所有字串進行翻譯。
+A localized application will likely need to provide support for multiple locales. To accomplish this, the locale should be set at the beginning of each request so that all strings are translated using the desired locale during the lifetime of that request.
+
+除非使用 `I18n.locale=` 或是 `I18n.with_locale`，否則將使用默認語言環境進行所有翻譯。
+The default locale is used for all translations unless `I18n.locale=` or `I18n.with_locale` is used.
+
+如果沒有在 `controller` 中一致的設定， `I18n.locale` 可能會漏掉同一個線程中的後續請求，例如，在一個 `POST` 請求中，執行 `I18n.locale = :es` ，會對以後所有沒有設定語系的 `controller` 請求產生影響，不過這個只有在特定的線程中。因此，你可以使用 `I18n.locale =` 而不是 `I18n.with_locale` ，這樣就不會有洩漏問題。
+`I18n.locale` can leak into subsequent requests served by the same thread/process if it is not consistently set in every controller. For example executing `I18n.locale = :es` in one POST requests will have effects for all later requests to controllers that don't set the locale, but only in that particular thread/process. For that reason, instead of `I18n.locale =` you can use `I18n.with_locale` which does not have this leak issue.
+
+我們可以在 `ApplicationController` 中使用 `around_action` 來設定語系：
+The locale can be set in an `around_action` in the `ApplicationController`:
+
+```ruby
+around_action :switch_locale
+
+def switch_locale(&action)
+  locale = params[:locale] || I18n.default_locale
+  I18n.with_locale(locale, &action)
+end
+```
+
+這個範例說明了使用URL查詢參數來設定語系的語系的情況(e.g. `http://example.com/books?locale=pt`)，通過這種設定， `http://localhost:3000?locale=pt` 渲染葡萄牙語的本地化，而 `http://localhost:3000?locale=de` 加載德語的本地化。
+This example illustrates this using a URL query parameter to set the locale (e.g. `http://example.com/books?locale=pt`). With this approach, `http://localhost:3000?locale=pt` renders the Portuguese localization, while `http://localhost:3000?locale=de` loads a German localization.
+
+可以使用許多不同的方法，來設定語系。
+The locale can be set using one of many different approaches.
+
+#### Setting the Locale from the Domain Name
+#### 根據域名設置語系
+
+第一種方式，根據域名來設定語系。例如，通過 `www.example.com` 加載英語(預設)語系設定，通過 `www.example.es` 西班牙語系設定。也就是根據頂級域名設定語系。這種方式有幾種優點：
+One option you have is to set the locale from the domain name where your application runs. For example, we want `www.example.com` to load the English (or default) locale, and `www.example.es` to load the Spanish locale. Thus the _top-level domain name_ is used for locale setting. This has several advantages:
+
+* URL網址有一部分是語系設定很常見
+* 用戶可以看URL就知道這個頁面使用哪種語言
+* 在Rails中實現很簡單
+* 搜尋引擎偏愛這種把不同語言內容放在不同域名上的做法
+
+* The locale is an _obvious_ part of the URL.
+* People intuitively grasp in which language the content will be displayed.
+* It is very trivial to implement in Rails.
+* Search engines seem to like that content in different languages lives at different, inter-linked domains.
+
+你可以自在 `ApplicationController` 這設定：
+You can implement it like this in your `ApplicationController`:
+
+```ruby
+around_action :switch_locale
+
+def switch_locale(&action)
+  locale = extract_locale_from_tld || I18n.default_locale
+  I18n.with_locale(locale, &action)
+end
+
+# Get locale from top-level domain or return +nil+ if such locale is not available
+# You have to put something like:
+#   127.0.0.1 application.com
+#   127.0.0.1 application.it
+#   127.0.0.1 application.pl
+# in your /etc/hosts file to try this out locally
+def extract_locale_from_tld
+  parsed_locale = request.host.split('.').last
+  I18n.available_locales.map(&:to_s).include?(parsed_locale) ? parsed_locale : nil
+end
+```
+
+我們也可以通過類似的方式，根據子域名來設定語系：
+We can also set the locale from the _subdomain_ in a very similar way:
+
+```ruby
+# Get locale code from request subdomain (like http://it.application.local:3000)
+# You have to put something like:
+#   127.0.0.1 gr.application.local
+# in your /etc/hosts file to try this out locally
+def extract_locale_from_subdomain
+  parsed_locale = request.subdomains.first
+  I18n.available_locales.map(&:to_s).include?(parsed_locale) ? parsed_locale : nil
+end
+```
+
+如果你想要在網站的menu上，增加切換語系的連結，可以使用以下代碼：
+If your application includes a locale switching menu, you would then have something like this in it:
+
+```ruby
+link_to("Deutsch", "#{APP_CONFIG[:deutsch_website_url]}#{request.env['PATH_INFO']}")
+```
+其中 `APP_CONFIG[:deutsch_website_url]` 的值類似於 `http://www.application.de`。
+assuming you would set `APP_CONFIG[:deutsch_website_url]` to some value like `http://www.application.de`.
+
+
+儘管這個解決方案具有上面所有的優點，不過通過域名來設定不同版本的在地化語言(語言版本)，通常不是我們的首選。在其他可以選擇的方案中，在URL參數(或請求路徑)中包含語系設定是最常見的。
+This solution has aforementioned advantages, however, you may not be able or may not want to provide different localizations ("language versions") on different domains. The most obvious solution would be to include locale code in the URL params (or request path).
+
+#### Setting the Locale from URL Params
+#### 根據URL參數設定語系
+
+語系設定最常見的方式，是將其包含在URL參數之中，例如：在前文第一個範例中 `_around_action_` 方法呼叫了 `I18n.with_locale(params[:locale], &action)` 。此時，我們會使用 `www.example.com/books?locale=ja` 或 `www.example.com/ja/books` 這樣的網址。
+The most usual way of setting (and passing) the locale would be to include it in URL params, as we did in the `I18n.with_locale(params[:locale], &action)` _around_action_ in the first example. We would like to have URLs like `www.example.com/books?locale=ja` or `www.example.com/ja/books` in this case.
+
+
+這種方法與從網域名稱設定語系有幾點相似的優點，尤其是RESTful的命名風格，符合當前網站製作的潮流。不過採用這種方式，所需要的工作量會大一點。
+This approach has almost the same set of advantages as setting the locale from the domain name: namely that it's RESTful and in accord with the rest of the World Wide Web. It does require a little bit more work to implement, though.
+
+從 `params` 獲取語系並做相對應的設定並不難，只要把語系設定包含在URL中，並通過請求傳遞即可，不過，沒有人會想要在生成每個URL地址時，添加語系設定，例如：`link_to(books_url(locale: I18n.locale))`。
+Getting the locale from `params` and setting it accordingly is not hard; including it in every URL and thus **passing it through the requests** is. To include an explicit option in every URL, e.g. `link_to(books_url(locale: I18n.locale))`, would be tedious and probably impossible, of course.
+
+Rails 的 [`ApplicationController#default_url_options`](https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-default_url_options) 方法，提供 "集中修改URL動態生成規則"的功能，正好可以解決上面那個問題：我們可以設定 [`url_for`](https://api.rubyonrails.org/classes/ActionDispatch/Routing/UrlFor.html#method-i-url_for) 及相關輔助方法與預設行為(通過覆蓋default_url_options方法)。
+
+Rails contains infrastructure for "centralizing dynamic decisions about the URLs" in its [`ApplicationController#default_url_options`](https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Base.html#method-i-default_url_options), which is useful precisely in this scenario: it enables us to set "defaults" for [`url_for`](https://api.rubyonrails.org/classes/ActionDispatch/Routing/UrlFor.html#method-i-url_for) and helper methods dependent on it (by implementing/overriding `default_url_options`).
+
+我們可以在 `ApplicationController` 中添加下面的程式碼：
+We can include something like this in our `ApplicationController` then:
+
+```ruby
+# app/controllers/application_controller.rb
+def default_url_options
+  { locale: I18n.locale }
+end
+```
+
+這樣每個依賴 `url_for` 的方法(像是路徑輔助方法：root_path、root_url，資源路徑輔助方法：books_path、books_url....等等)將會自動在查詢字串中添加語系設定，例如：`http://localhost:3001/?locale=ja`。
+Every helper method dependent on `url_for` (e.g. helpers for named routes like `root_path` or `root_url`, resource routes like `books_path` or `books_url`, etc.) will now **automatically include the locale in the query string**, like this: `http://localhost:3001/?locale=ja`.
+
+雖然照上面那樣設定，就可以運行了，但是當語言設定"掛"在應用程式中，每個URL網址的末尾時，它會影響URL的可讀性。此外，從架構角度來看，語系設定的層級，應該高於URL地址中，除域名之外的其他組成部分，這一點也應該通過URL網址自身顯現出來。
+
+You may be satisfied with this. It does impact the readability of URLs, though, when the locale "hangs" at the end of every URL in your application. Moreover, from the architectural standpoint, locale is usually hierarchically above the other parts of the application domain: and URLs should reflect this.
+
+你如果想使用：`http://www.example.com/en/books`(英文語系)和`http://www.example.com/nl/books`(荷蘭語系)，這樣的URL網址，我們可以使用前面有說到的，覆蓋`default_url_options` 方法的方式，通過 [`scope`](https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html)方法來設定路徑：
+
+You probably want URLs to look like this: `http://www.example.com/en/books` (which loads the English locale) and `http://www.example.com/nl/books` (which loads the Dutch locale). This is achievable with the "over-riding `default_url_options`" strategy from above: you just have to set up your routes with [`scope`](https://api.rubyonrails.org/classes/ActionDispatch/Routing/Mapper/Scoping.html):
+
+```ruby
+# config/routes.rb
+scope "/:locale" do
+  resources :books
+end
+```
+
+現在，當我們呼叫 `books_path` 方法時，你應該會得到 `/en/books` (默認語系設定)，像 `http://localhost:3001/nl/books` 這樣的網址會加載荷蘭語系設定，之後呼叫 `books_path` 方法會返回 `/nl/books` (因為語系被改過了)。
+Now, when you call the `books_path` method you should get `"/en/books"` (for the default locale). A URL like `http://localhost:3001/nl/books` should load the Dutch locale, then, and following calls to `books_path` should return `"/nl/books"` (because the locale changed).
+
+警告，由於default_url_options方法的返回值是根據請求分別緩存的，因此無法通過循環調用輔助方法來生成URL地址中的語系設定，也就是說，無法在每次迭代中設定相應的 `I18n.locale`。正確的做法是，保持 `I18n.locale` 不變，像輔助方法顯示傳遞 :locale選項，或者編輯 `request.original_fullpath`。
+
+WARNING. Since the return value of `default_url_options` is cached per request, the URLs in a locale selector cannot be generated invoking helpers in a loop that sets the corresponding `I18n.locale` in each iteration. Instead, leave `I18n.locale` untouched, and pass an explicit `:locale` option to the helper, or edit `request.original_fullpath`.
+
+如果你不想在路徑中強制使用語系設定，我們可以使用可選的路徑作用域(用括號表示)，像下面這樣：
+If you don't want to force the use of a locale in your routes you can use an optional path scope (denoted by the parentheses) like so:
+
+```ruby
+# config/routes.rb
+scope "(:locale)", locale: /en|nl/ do
+  resources :books
+end
+```
+
+透過這種方式，訪問不帶語系設定的 `http://localhost:3001/books` URL地址時，就不會有路徑錯誤了，這樣我們就可以在不指定語系設定的情況下，使用默認的語系設定。
+With this approach you will not get a `Routing Error` when accessing your resources such as `http://localhost:3001/books` without a locale. This is useful for when you want to use the default locale when one is not specified.
+
+
+當然，我們需要特別注意應用的根路徑(root_path)，通常是主頁（homepage）、儀表板（dashboard），像root to: "books#index" 這樣不考慮語系設定的路徑聲明，會導致 `http://localhost:3001/nl` 無法正常拜訪(儘管只有一個跟路徑，看起來並沒有錯)。
+
+Of course, you need to take special care of the root URL (usually "homepage" or "dashboard") of your application. A URL like `http://localhost:3001/nl` will not work automatically, because the `root to: "dashboard#index"` declaration in your `routes.rb` doesn't take locale into account. (And rightly so: there's only one "root" URL.)
+
+因此，我們可以像下面這樣映射URL地址：
+You would probably need to map URLs like these:
+
+```ruby
+# config/routes.rb
+get '/:locale' => 'dashboard#index'
+```
+
+要特別注意路徑的設定順序，要避免這條路徑覆蓋掉其他路徑。(你可以把這一條路徑加到root :to路徑設定前)
+Do take special care about the **order of your routes**, so this route declaration does not "eat" other ones. (You may want to add it directly before the `root :to` declaration.)
+
+備註： 有一些gem可以幫助簡化路徑設定，像是[routing_filter](https://github.com/svenfuchs/routing-filter/tree/master), [route_translator](https://github.com/enriclluelles/route_translator)。
+NOTE: Have a look at various gems which simplify working with routes: [routing_filter](https://github.com/svenfuchs/routing-filter/tree/master), [route_translator](https://github.com/enriclluelles/route_translator).
+
+#### Setting the Locale from User Preferences
+#### 在用戶偏好設定語系
+
+一個擁有認證用戶的應用程式可以允許用戶通過應用程式的介面設定語言偏好。通過這種方法，用戶選擇的語言偏好將被持久化到數據庫中，並用於對該用戶的認證要求設定語言。
+An application with authenticated users may allow users to set a locale preference through the application's interface. With this approach, a user's selected locale preference is persisted in the database and used to set the locale for authenticated requests by that user.
+
+```ruby
+around_action :switch_locale
+
+def switch_locale(&action)
+  locale = current_user.try(:locale) || I18n.default_locale
+  I18n.with_locale(locale, &action)
+end
+```
+
+#### Choosing an Implied Locale
+#### 使用隱式語系設定
+
+如果今天沒有用顯示的語系設定(透過上面的幾種方法)，應用程式會嘗試推斷你所在的區域。
+When an explicit locale has not been set for a request (e.g. via one of the above methods), an application should attempt to infer the desired locale.
+
+##### Inferring Locale from the Language Header
+##### 根據HTTP頭部推斷語系設定
+
+
+`Accept-Language` 頭部會指定回應請求時使用的語言，瀏覽器[根據用戶的語言偏好設定這個HTTP頭部](https://www.w3.org/International/questions/qa-lang-priorities)，這是推斷語系設定的首選。
+The `Accept-Language` HTTP header indicates the preferred language for request's response. Browsers [set this header value based on the user's language preference settings](https://www.w3.org/International/questions/qa-lang-priorities), making it a good first choice when inferring a locale.
+
+下面是使用 `Accept-Language` HTTP 頭部的一个簡單範例：
+A trivial implementation of using an `Accept-Language` header would be:
+
+```ruby
+def switch_locale(&action)
+  logger.debug "* Accept-Language: #{request.env['HTTP_ACCEPT_LANGUAGE']}"
+  locale = extract_locale_from_accept_language_header
+  logger.debug "* Locale set to '#{locale}'"
+  I18n.with_locale(locale, &action)
+end
+
+private
+  def extract_locale_from_accept_language_header
+    request.env['HTTP_ACCEPT_LANGUAGE'].scan(/^[a-z]{2}/).first
+  end
+```
+
+實際上，我們通常會使用更可靠的代碼，Iain Hecker 開發的 [http_accept_language](https://github.com/iain/http_accept_language/tree/master) 或 Ryan Tomayko 開發的 [locale](https://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/locale.rb) Rack 中介軟體，就提供了更好的解决方案。
+In practice, more robust code is necessary to do this reliably. Iain Hecker's [http_accept_language](https://github.com/iain/http_accept_language/tree/master) library or Ryan Tomayko's [locale](https://github.com/rack/rack-contrib/blob/master/lib/rack/contrib/locale.rb) Rack middleware provide solutions to this problem.
+
+##### Inferring the Locale from IP Geolocation
+##### 根據IP位置來判斷語系
+
+
+我們可以通過客戶端請求的IP地址，來推斷客戶端所在的地理位置，進而推斷他的語系設定。[GeoLite2 Country](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)這樣的服務，或 [geocoder](https://github.com/alexreisner/geocoder) 這個gem可以實現這個功能。
+
+The IP address of the client making the request can be used to infer the client's region and thus their locale. Services such as [GeoLite2 Country](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data) or gems like [geocoder](https://github.com/alexreisner/geocoder) can be used to implement this approach.
+
+一般來說，這種方式遠不如使用HTTP頭部可靠，因此並不適用於大多數的WEB應用程式。
+In general, this approach is far less reliable than using the language header and is not recommended for most web applications.
+
+#### Storing the Locale from the Session or Cookies
+#### 在session 或 cookie 中儲存語系設定
+
+警告： 我們可能會認為，可以把語系設定存在session或cookie中，但是，我們不能這樣做，語系設定應該要是透明的，並作為URL網址的一部分，這樣我們就不會打破用戶正常的預期情況：如果我們今天發送一個URL網址給朋友，他應該看到和我們一樣的頁面和內容，這就是所謂的[REST規則]((https://en.wikipedia.org/wiki/Representational_State_Transfer))，關於REST規則的更多介紹，請看 [Stefan Tilkov 系列文章](https://www.infoq.com/articles/rest-introduction)，之後將討論這個規則的例外情況。
+
+WARNING: You may be tempted to store the chosen locale in a _session_ or a *cookie*. However, **do not do this**. The locale should be transparent and a part of the URL. This way you won't break people's basic assumptions about the web itself: if you send a URL to a friend, they should see the same page and content as you. A fancy word for this would be that you're being [*RESTful*](https://en.wikipedia.org/wiki/Representational_State_Transfer). Read more about the RESTful approach in [Stefan Tilkov's articles](https://www.infoq.com/articles/rest-introduction). Sometimes there are exceptions to this rule and those are discussed below.
+
+
+國際化與本地化
+-------------------------------------
+
+現在我們已經完成對Rails應用程式I18n的初始化設定，並在不同的請求中使用語系設定。
+OK! Now you've initialized I18n support for your Ruby on Rails application and told it which locale to use and how to preserve it between requests.
+
+接下來，我們將要通過抽象本地化相關元素，完成應用的國際化，最後，通過為這些抽象元素提供必要的翻譯，完成應用的本地化：
+Next we need to _internationalize_ our application by abstracting every locale-specific element. Finally, we need to _localize_ it by providing necessary translations for these abstracts.
+
+下面是一個例子：
+Given the following example:
+
+```ruby
+# config/routes.rb
+Rails.application.routes.draw do
+  root to: "home#index"
+end
+```
+
+```ruby
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::Base
+
+  around_action :switch_locale
+
+  def switch_locale(&action)
+    locale = params[:locale] || I18n.default_locale
+    I18n.with_locale(locale, &action)
+  end
+end
+```
+
+```ruby
+# app/controllers/home_controller.rb
+class HomeController < ApplicationController
+  def index
+    flash[:notice] = "Hello Flash"
+  end
+end
+```
+
+```html+erb
+<!-- app/views/home/index.html.erb -->
+<h1>Hello World</h1>
+<p><%= flash[:notice] %></p>
+```
+
+![rails i18n demo untranslated](images/i18n/demo_untranslated.png)
+
+### Abstracting Localized Code
+### 抽象本地化程式碼
+
+在我們的程式碼中，有兩個英文字串("Hello Flash" 和 "Hello World")，他們在回應用戶的請求時顯示。為了國際化這部分的程式碼，需要使用Rails提供的 `#t` 輔助方法來代替這兩個字串，同時為每個字串選擇合適的鍵：
+In our code, there are two strings written in English that will be rendered in our response ("Hello Flash" and "Hello World"). To internationalize this code, these strings need to be replaced by calls to Rails' `#t` helper with an appropriate key for each string:
+
+```ruby
+# app/controllers/home_controller.rb
+class HomeController < ApplicationController
+  def index
+    flash[:notice] = t(:hello_flash)
+  end
+end
+```
+
+```html+erb
+<!-- app/views/home/index.html.erb -->
+<h1><%= t :hello_world %></h1>
+<p><%= flash[:notice] %></p>
+```
+
+現在，當index畫面被選染出來時，會顯示錯誤訊息，告訴我們缺少 `:hello_world` 和 `:hello_flash` 這兩個鍵的翻譯。
+Now, when this view is rendered, it will show an error message which tells you that the translations for the keys `:hello_world` and `:hello_flash` are missing.
+
+![rails i18n demo translation missing](images/i18n/demo_translation_missing.png)
+
+備註： Rails為 `view` 添加了 `t（translate）辅助方法`，從而避免了反覆使用 `I18n.t` 這麼長的寫法。此外，t輔助方法還能捕獲缺少翻譯的錯誤，把生成的錯誤訊息放在<span class="translation_missing"> 元素裡面。
+NOTE: Rails adds a `t` (`translate`) helper method to your views so that you do not need to spell out `I18n.t` all the time. Additionally this helper will catch missing translations and wrap the resulting error message into a `<span class="translation_missing">`.
+
+
+### Providing Translations for Internationalized Strings
+### 為國際化字串提供翻譯
+
+接著，我們把剛剛缺少的翻譯，加進翻譯字典文件中：
+Add the missing translations into the translation dictionary files:
+
+```yaml
+# config/locales/en.yml
+en:
+  hello_world: Hello world!
+  hello_flash: Hello flash!
+```
+
+```yaml
+# config/locales/pirate.yml
+pirate:
+  hello_world: Ahoy World
+  hello_flash: Ahoy Flash
+```
+
+因為我們沒有修改 `default_locale` ，翻譯會使用 `:en` 語系設定，響應請求時生成的 `view` 會顯示英文字串：
+Because the `default_locale` hasn't changed, translations use the `:en` locale and the response renders the english strings:
+
+![rails i18n demo translated to English](images/i18n/demo_translated_en.png)
+
+如果我們把通過的網址語系設定改成pirate語系(`http://localhost:3000?locale=pirate`)，響應請求生成的 `view` 就會是海盜黑話：
+If the locale is set via the URL to the pirate locale (`http://localhost:3000?locale=pirate`), the response renders the pirate strings:
+
+![rails i18n demo translated to pirate](images/i18n/demo_translated_pirate.png)
+
+備註： 添加新的語系文件設定後，你需要重新啟動伺服器
+NOTE: You need to restart the server when you add new locale files.
+
+要想把翻譯存在SimpleStore中，我們可以使用YAML (`.yml`) 或是 纯 Ruby（.rb）文件，大多數 Rails 開發者會優先使用YAML，不過YAML有一個很大的缺點，他對空格和特殊字符非常敏感，因此有可能出現應用無法正確加載字典的情況，而Ruby文件如果有錯誤，在第一次加載的時候就會崩潰，因此我們很容易就能找到問題(如果在使用 YAML 字典時，遇到了"奇怪的問題"，可以嘗試把字典的相關部分放入 Ruby 文件中。)
+
+You may use YAML (`.yml`) or plain Ruby (`.rb`) files for storing your translations in SimpleStore. YAML is the preferred option among Rails developers. However, it has one big disadvantage. YAML is very sensitive to whitespace and special characters, so the application may not load your dictionary properly. Ruby files will crash your application on first request, so you may easily find what's wrong. (If you encounter any "weird issues" with YAML dictionaries, try putting the relevant portion of your dictionary into a Ruby file.)
+
+如果你的翻譯存在 `YAML` 檔案裡面，有一些字符需要被 `escaped`。像是：
+If your translations are stored in YAML files, certain keys must be escaped. They are:
+
+* true, on, yes
+* false, off, no
+
+以下範例：
+
+```yaml
+# config/locales/en.yml
+en:
+  success:
+    'true':  'True!'
+    'on':    'On!'
+    'false': 'False!'
+  failure:
+    true:    'True!'
+    off:     'Off!'
+    false:   'False!'
+```
+
+```ruby
+I18n.t 'success.true'  # => 'True!'
+I18n.t 'success.on'    # => 'On!'
+I18n.t 'success.false' # => 'False!'
+I18n.t 'failure.false' # => Translation Missing
+I18n.t 'failure.off'   # => Translation Missing
+I18n.t 'failure.true'  # => Translation Missing
+```
+
+### Passing Variables to Translations
+### 把變數傳給翻譯
+
+要成功地將應用程式國際化，一個重要的考慮因素是在抽象本地化的代碼時避免對語法規則做出不正確的假設。 在一個位置中看似基本的語法規則可能在另一個位置中並不成立。
+
+One key consideration for successfully internationalizing an application is to
+avoid making incorrect assumptions about grammar rules when abstracting localized
+code. Grammar rules that seem fundamental in one locale may not hold true in
+another one.
+
+
+
+以下範例展示了不正確的抽象化，在此假設了翻譯的不同部分的順序。請注意，Rails 提供了 `number_to_currency` 幫助函式來處理以下情況。
+
+Improper abstraction is shown in the following example, where assumptions are
+made about the ordering of the different parts of the translation. Note that Rails
+provides a `number_to_currency` helper to handle the following case.
+
+```erb
+<!-- app/views/products/show.html.erb -->
+<%= "#{t('currency')}#{@product.price}" %>
+```
+
+```yaml
+# config/locales/en.yml
+en:
+  currency: "$"
+```
+
+```yaml
+# config/locales/es.yml
+es:
+  currency: "€"
+```
+如果产品价格是 10，那么西班牙语的正确翻译是“10 €”而不是“€10”，但上面的抽象并不能正确处理这种情况。
+
+如果產品的價格是10，那麼西班牙語的正確翻譯是 "10 €" 而不是 "€10"，但上面的抽象化並不能正確處理這種情況。
+If the product's price is 10 then the proper translation for Spanish is "10 €"
+instead of "€10" but the abstraction cannot give it.
+
+
+為了創建正確的抽象化，I18n gem提供的變量插值（variable interpolation）的功能，他允許我們在翻譯定義（translation definition）中使用變數，並把這些變數的值傳給翻譯方法。
+To create proper abstraction, the I18n gem ships with a feature called variable
+interpolation that allows you to use variables in translation definitions and
+pass the values for these variables to the translation method.
+
+下面是一個正確抽象的範例：
+Proper abstraction is shown in the following example:
+
+```erb
+<!-- app/views/products/show.html.erb -->
+<%= t('product_price', price: @product.price) %>
+```
+
+```yaml
+# config/locales/en.yml
+en:
+  product_price: "$%{price}"
+```
+
+```yaml
+# config/locales/es.yml
+es:
+  product_price: "%{price} €"
+```
+
+所有語法和標點都由翻譯定義自己決定，所以抽象化可以給出正確的翻譯。
+All grammatical and punctuation decisions are made in the definition itself, so
+the abstraction can give a proper translation.
+
+備註： `default` 和 `scope` 是保留關鍵字，不能做變量名，如果誤用，會噴出這個錯誤 `I18n::ReservedInterpolationKey`，如果沒有把翻譯所需的變量差值傳遞給 `#translate` 方法，Rails會噴出 `I18n::MissingInterpolationArgument` 錯誤。
+
+NOTE: The `default` and `scope` keywords are reserved and can't be used as
+variable names. If used, an `I18n::ReservedInterpolationKey` exception is raised.
+If a translation expects an interpolation variable, but this has not been passed
+to `#translate`, an `I18n::MissingInterpolationArgument` exception is raised.
+
+### Adding Date/Time Formats
+### 添加時間、日期格式
+
+現在，我們要給 `view` 加上時間戳記，已便展示 `日期/時間的本地化功能`，要想本地化時間格式，可以把時間對象傳遞給 I18n.l 方法，或(最好)使用 `#l` 輔助方法，可以通過 `:format` 選項指定時間格式(默認情況下使用 :default 格式)。
+OK! Now let's add a timestamp to the view, so we can demo the **date/time localization** feature as well. To localize the time format you pass the Time object to `I18n.l` or (preferably) use Rails' `#l` helper. You can pick a format by passing the `:format` option - by default the `:default` format is used.
+
+```erb
+<!-- app/views/home/index.html.erb -->
+<h1><%= t :hello_world %></h1>
+<p><%= flash[:notice] %></p>
+<p><%= l Time.now, format: :short %></p>
+```
+
+然後在 pirate 翻譯文件中添加時間格式(Rails 默認使用的英文翻譯文件已經包含時間格式)
+And in our pirate translations file let's add a time format (it's already there in Rails' defaults for English):
+
+```yaml
+# config/locales/pirate.yml
+pirate:
+  time:
+    formats:
+      short: "arrrround %H'ish"
+```
+
+得到的結果如下：
+So that would give you:
+
+![rails i18n demo localized time to pirate](images/i18n/demo_localized_pirate.png)
+
+提示： 現在，我們可能需要添加一些日期/時間格式，這樣 I18n 後端才能如預期工作(至少應該為 pirate 語系設定添加日期/時間格式)。當然，很可能已經有人 `通過翻譯 Rails 相關語系設定的默認值`，完成這些工作，[Github上的 Rails-i18n repository](https://github.com/svenfuchs/rails-i18n/tree/master/rails/locale)提供了各種本地化文件的存黨，把這些本地化文件放在 `config/locales/` 資料夾中就可以正常使用。
+TIP: Right now you might need to add some more date/time formats in order to make the I18n backend work as expected (at least for the 'pirate' locale). Of course, there's a great chance that somebody already did all the work by **translating Rails' defaults for your locale**. See the [rails-i18n repository at GitHub](https://github.com/svenfuchs/rails-i18n/tree/master/rails/locale) for an archive of various locale files. When you put such file(s) in `config/locales/` directory, they will automatically be ready for use.
+
+### Inflection Rules for Other Locales
+### 其他區域的變形規則
+
+
+Rails 允許我們為英語之外的語系定義變形規則 (像是單複數轉換規則)，在 `config/initializers/inflections.rb` 文件中，我們可以為多個語系定義規則，這個初始化腳本包含為英語指定附加規則的例子，我們可以參考這些例子的格式為其他語系定義規則。
+
+
+Rails allows you to define inflection rules (such as rules for singularization and pluralization) for locales other than English. In `config/initializers/inflections.rb`, you can define these rules for multiple locales. The initializer contains a default example for specifying additional rules for English; follow that format for other locales as you see fit.
+
+### Localized Views
+### 本地化 views
+
+假設應用程式中包含 _BooksController_，你的 _index_ 動作默認會渲染 `app/views/books/index.html.erb` 模板，如果我們在同一個資料夾中創建了包含本地化變量的 `index.es.html.erb` 模板，當語系設定為 :es 時，index動作就會渲染這個模板，而當語系設定為默認語系時，index動作會渲染通用的 `index.html.erb` 模板。(在 Rails 的未來模板中，本地化這種 _自動化魔術_，又可能被應用於 public 資料夾中的資源)。
+Let's say you have a _BooksController_ in your application. Your _index_ action renders content in `app/views/books/index.html.erb` template. When you put a _localized variant_ of this template: `index.es.html.erb` in the same directory, Rails will render content in this template, when the locale is set to `:es`. When the locale is set to the default locale, the generic `index.html.erb` view will be used. (Future Rails versions may well bring this _automagic_ localization to assets in `public`, etc.)
+
+
+本地化视图功能很有用，例如，如果我们有大量静态内容，就可以使用本地化视图，从而避免把所有东西都放进 YAML 或 Ruby 字典里的麻烦。但要记住，一旦我们需要修改模板，就必须对每个模板文件逐一进行修改。
+
+本地化 `view` 功能很有用，像是如果我們有大量的靜態內容，就可以使用本地化`view`，從而避免把所有東西都放進 YAML 或 Ruby 字典裡，但要記住，一旦我們需要修改模板，就必須對每個模板文件進行逐一修改。
+You can make use of this feature, e.g. when working with a large amount of static content, which would be clumsy to put inside YAML or Ruby dictionaries. Bear in mind, though, that any change you would like to do later to the template must be propagated to all of them.
+
+### Organization of Locale Files
+### 語系設定文件的組織
+
+
+當我們使用 I18n 資料庫自帶的 `SimpleStore` 時，字典儲存在磁碟上的純文本文件中，對於每個區域，把應用的各部分翻譯都放在一個文件中，可能會造成管理上的困難，因此，把每個語系的翻譯放在多個文件中，分層進行管理是更好的選擇。
+When you are using the default SimpleStore shipped with the i18n library,
+dictionaries are stored in plain-text files on the disk. Putting translations
+for all parts of your application in one file per locale could be hard to
+manage. You can store these files in a hierarchy which makes sense to you.
+
+例如，我們可以像我們可以像下面這樣管理 `config/locales` 資料夾：
+For example, your `config/locales` directory could look like this:
+
+```
+|-defaults
+|---es.yml
+|---en.yml
+|-models
+|---book
+|-----es.yml
+|-----en.yml
+|-views
+|---defaults
+|-----es.yml
+|-----en.yml
+|---books
+|-----es.yml
+|-----en.yml
+|---users
+|-----es.yml
+|-----en.yml
+|---navigation
+|-----es.yml
+|-----en.yml
+```
+
+這樣，我們可以把模型、屬性名從同個 `view` 中的文本分離，同時還能使用 "默認值"(像是日期、時間格式)，I18n資料庫的不同後端，提供了不同的分離方式。
+This way, you can separate model and model attribute names from text inside views, and all of this from the "defaults" (e.g. date and time formats). Other stores for the i18n library could provide different means of such separation.
+
+備註： Rails 默認的語系設置加載機制，無法自動加載上面例子中位於千套文件中的語系設定文件，因此，我們需要進行顯示設定：
+NOTE: The default locale loading mechanism in Rails does not load locale files in nested dictionaries, like we have here. So, for this to work, we must explicitly tell Rails to look further:
+
+
+```ruby
+# config/application.rb
+config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
+```
+
+I18n API功能概述
+---------------------------------
+
+現在我們對I18n資料庫有更深刻的了解，知道如何國際化Rails的應用程式，在下面的章節中，我們將更深入的了解相關功能。
+You should have a good understanding of using the i18n library now and know how
+to internationalize a basic Rails application. In the following chapters, we'll
+cover its features in more depth.
+
+這幾個章節，將展示使用 `I18n.translate` 方法，以及 [`translate view helper method`](https://api.rubyonrails.org/classes/ActionView/Helpers/TranslationHelper.html#method-i-translate)(注意 view 輔助方法的提供的副加功能)。
+These chapters will show examples using both the `I18n.translate` method as well as the [`translate` view helper method](https://api.rubyonrails.org/classes/ActionView/Helpers/TranslationHelper.html#method-i-translate) (noting the additional features provided by the view helper method).
+
+提供的功能如下：
+Covered are features like these:
+
+
+* 查找翻譯
+* 把數據插入翻譯中
+* 複數的翻譯
+* 使用安全HTML翻譯(只針對view輔助方法)
+* 本地化日期、數字、貨幣...等
+
+* looking up translations
+* interpolating data into translations
+* pluralizing translations
+* using safe HTML translations (view helper method only)
+* localizing dates, numbers, currency, etc.
+
+### Looking up Translations
+### 查找翻譯
+
+#### Basic Lookup, Scopes, and Nested Keys
+#### 基本查找、作用域和嵌套鍵
+
+Rails 通過鍵來查找翻譯，其中鍵可以是符號或字串，這兩種鍵是等價的，例如：
+Translations are looked up by keys which can be both Symbols or Strings, so these calls are equivalent:
+
+```ruby
+I18n.t :message
+I18n.t 'message'
+```
+
+
+`translate` 方法接受 `:scope` 選項，選項的值可以包含一個或多個副加鍵，用於指定翻譯鍵 (translation key) 的 "命名空間"或作用域：
+The `translate` method also takes a `:scope` option which can contain one or more additional keys that will be used to specify a "namespace" or scope for a translation key:
+
+```ruby
+I18n.t :record_invalid, scope: [:activerecord, :errors, :messages]
+```
+
+上述程式碼會在 Active Record 錯誤訊息中查找 `:record_invalid` 訊息。
+This looks up the `:record_invalid` message in the Active Record error messages.
+
+此外，我們還可以用點號分隔的鍵來指定翻譯鍵或作用域：
+Additionally, both the key and scopes can be specified as dot-separated keys as in:
+
+```ruby
+I18n.translate "activerecord.errors.messages.record_invalid"
+```
+
+因此，下面的呼叫是無效的：
+Thus the following calls are equivalent:
+
+```ruby
+I18n.t 'activerecord.errors.messages.record_invalid'
+I18n.t 'errors.messages.record_invalid', scope: :activerecord
+I18n.t :record_invalid, scope: 'activerecord.errors.messages'
+I18n.t :record_invalid, scope: [:activerecord, :errors, :messages]
+```
+
+#### Defaults
+#### 預設值
+
+如果指定了 `:default` 選項，在缺少翻譯的情况下，就會返回該選項的值：
+When a `:default` option is given, its value will be returned if the translation is missing:
+
+```ruby
+I18n.t :missing, default: 'Not here'
+# => 'Not here'
+```
+
+如果 `:default` 值是符號，這個值會被當作鍵並被翻譯，我們可以為 `:default` 選項指定多個值，第一個被成功翻譯的鍵或字串將被作為返回值。
+If the `:default` value is a Symbol, it will be used as a key and translated. One can provide multiple values as default. The first one that results in a value will be returned.
+
+
+例如，下面的程式碼首先嘗試翻譯 `:missing` 鍵，然後是 `:also_missing` 鍵，如果兩次翻譯都不能得到結果，最後會返回 "Not here" 字串。
+E.g., the following first tries to translate the key `:missing` and then the key `:also_missing.` As both do not yield a result, the string "Not here" will be returned:
+
+```ruby
+I18n.t :missing, default: [:also_missing, 'Not here']
+# => 'Not here'
+```
+
+#### Bulk and Namespace Lookup
+#### 批量和命名空間查找
+
+如果想要一次查找多個翻譯，我們可以傳遞鍵的陣列作為參數：
+To look up multiple translations at once, an array of keys can be passed:
+
+```ruby
+I18n.t [:odd, :even], scope: 'errors.messages'
+# => ["must be odd", "must be even"]
+```
+
+
+另外，鍵可以轉換為一組翻譯的(可能是嵌套的)Hash，例如，下面的程式碼可以生成所有 Active Record 錯誤訊息的Hash：
+Also, a key can translate to a (potentially nested) hash of grouped translations. E.g., one can receive _all_ Active Record error messages as a Hash with:
+
+```ruby
+I18n.t 'errors.messages'
+# => {:inclusion=>"is not included in the list", :exclusion=> ... }
+```
+
+如果你想對一個大量的翻譯Hash進行內插，你需要將 `deep_interpolation: true` 作為參數傳遞。當你有以下Hash時：
+
+If you want to perform interpolation on a bulk hash of translations, you need to pass `deep_interpolation: true` as a parameter. When you have the following dictionary:
+
+```yaml
+en:
+  welcome:
+    title: "Welcome!"
+    content: "Welcome to the %{app_name}"
+```
+
+如果沒有設定，嵌套內差將會被忽略：
+then the nested interpolation will be ignored without the setting:
+
+```ruby
+I18n.t 'welcome', app_name: 'book store'
+# => {:title=>"Welcome!", :content=>"Welcome to the %{app_name}"}
+
+I18n.t 'welcome', deep_interpolation: true, app_name: 'book store'
+# => {:title=>"Welcome!", :content=>"Welcome to the book store"}
+```
+
+#### "Lazy" Lookup
+#### 懶惰查找
+
+
+Rails 實現了一種在 `views` 中查找語系設定的方便方法，如果有下述的字典：
+Rails implements a convenient way to look up the locale inside _views_. When you have the following dictionary:
+
+```yaml
+es:
+  books:
+    index:
+      title: "Título"
+```
+
+我們可以像下面這樣，在 `app/views/books/index.html.erb` 模板中，查找 `books.index.title` 的值：
+you can look up the `books.index.title` value **inside** `app/views/books/index.html.erb` template like this (note the dot):
+
+```erb
+<%= t '.title' %>
+```
+
+備註： 只有 `translate` view輔助方法，支援根據片段自動補完翻譯作用域的功能。
+NOTE: Automatic translation scoping by partial is only available from the `translate` view helper method.
+
+懶惰查找一樣可以被用在 `controllers` 中：
+"Lazy" lookup can also be used in controllers:
+
+```yaml
+en:
+  books:
+    create:
+      success: Book created!
+```
+
+用於設定 `flash` 訊息：
+This is useful for setting flash messages for instance:
+
+```ruby
+class BooksController < ApplicationController
+  def create
+    # ...
+    redirect_to books_url, notice: t('.success')
+  end
+end
+```
+
+### Pluralization
+### 複數轉換
+
+在英語中，一個字串只有一種單數形式和一種複數形式，例如，"1 message" 和 "2 messages"，其他語言([阿拉伯語](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html#ar)、[日語](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html#ja)、[俄語](ttp://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html#ru)等)則具有不同的語法，有更多或更少的[複數形式](http://cldr.unicode.org/index/cldr-spec/plural-rules)，因此，I18n API提供了靈活的複數轉換功能。
+
+In many languages — including English — there are only two forms, a singular and a plural, for
+a given string, e.g. "1 message" and "2 messages". Other languages ([Arabic](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html#ar), [Japanese](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html#ja), [Russian](http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html#ru) and many more) have different grammars that have additional or fewer [plural forms](http://cldr.unicode.org/index/cldr-spec/plural-rules). Thus, the I18n API provides a flexible pluralization feature.
+
+
+
+`:count` 插值變數具有特殊作用，既可以把它插入翻譯，又可以根據後端定義的複數型規則選擇複數型翻譯，預設情況下，只會應用英語的複數型規則：
+The `:count` interpolation variable has a special role in that it both is interpolated to the translation and used to pick a pluralization from the translations according to the pluralization rules defined in the pluralization backend. By default, only the English pluralization rules are applied.
+
+```ruby
+I18n.backend.store_translations :en, inbox: {
+  zero: 'no messages', # optional
+  one: 'one message',
+  other: '%{count} messages'
+}
+I18n.translate :inbox, count: 2
+# => '2 messages'
+
+I18n.translate :inbox, count: 1
+# => 'one message'
+
+I18n.translate :inbox, count: 0
+# => 'no messages'
+```
+
+`:en` 語系設定的復轉轉換算法非常簡單：
+The algorithm for pluralizations in `:en` is as simple as:
+
+```ruby
+lookup_key = :zero if count == 0 && entry.has_key?(:zero)
+lookup_key ||= count == 1 ? :one : :other
+entry[lookup_key]
+```
+
+
+根據以下程式碼 `:one` 表示為單數，`:other` 則被視為複數，如果 `count` 是零， 並且存在 `:zero` 選項，則他將用於取代 `:other`。
+The translation denoted as `:one` is regarded as singular, and the `:other` is used as plural. If the count is zero, and a `:zero` entry is present, then it will be used instead of `:other`.
+
+
+如果查找鍵沒能返回可轉換為複數形式的Hash，就會導致 `I18n::InvalidPluralizationData` 的例外訊息。
+If the lookup for the key does not return a Hash suitable for pluralization, an `I18n::InvalidPluralizationData` exception is raised.
+
+#### Locale-specific Rules
+#### 語系設定規則
+
+I18n的GEM提供一個複數的後端，可以用於啟用特定語系的規則，將他包含到 `Simple` 後端中，然後將本地化的複數型演算法添加到翻譯儲存中，當作 `i18n.plural.rule`。
+The I18n gem provides a Pluralization backend that can be used to enable locale-specific rules. Include it
+to the Simple backend, then add the localized pluralization algorithms to translation store, as `i18n.plural.rule`.
+
+```ruby
+I18n::Backend::Simple.include(I18n::Backend::Pluralization)
+I18n.backend.store_translations :pt, i18n: { plural: { rule: lambda { |n| [0, 1].include?(n) ? :one : :other } } }
+I18n.backend.store_translations :pt, apples: { one: 'one or none', other: 'more than one' }
+
+I18n.t :apples, count: 0, locale: :pt
+# => 'one or none'
+```
+另外，可以使用獨立的gem[rails-i18n](https://github.com/svenfuchs/rails-i18n)，來提供更完整的特定語言語系的複數型規則。
+Alternatively, the separate gem [rails-i18n](https://github.com/svenfuchs/rails-i18n) can be used to provide a fuller set of locale-specific pluralization rules.
+
+### Setting and Passing a Locale
+### 語系設定和傳遞
+
+
+語系設定可以偽全局的設定為 `I18n.locale` (使用 Thread.current，例如 Time.zone)，也可以作為選項傳遞給 `#translate` 和 `#localize` 方法。
+The locale can be either set pseudo-globally to `I18n.locale` (which uses `Thread.current` in the same way as, for example, `Time.zone`) or can be passed as an option to `#translate` and `#localize`.
+
+如果我們沒有傳遞語系設定，Rails就會使用使用 `I18n.locale`：
+If no locale is passed, `I18n.locale` is used:
+
+```ruby
+I18n.locale = :de
+I18n.t :foo
+I18n.l Time.now
+```
+
+顯示傳遞語系設定：
+Explicitly passing a locale:
+
+```ruby
+I18n.t :foo, locale: :de
+I18n.l Time.now, locale: :de
+```
+
+
+`I18n.locale` 預設值是 `I18n.default_locale`，而 `I18n.default_locale` 預設值是 `:en`，可以像下面這樣設定預設語系：
+The `I18n.locale` defaults to `I18n.default_locale` which defaults to :`en`. The default locale can be set like this:
+
+```ruby
+I18n.default_locale = :de
+```
+
+### Using Safe HTML Translations
+### 使用安全HTML翻譯
+
+
+帶有 "_html" 後綴的鍵名為 "html" 的鍵被認為是HTML安全，當我們在 `view` 中使用這些鍵時，HTML不會被轉譯。
+Keys with a '_html' suffix and keys named 'html' are marked as HTML safe. When you use them in views the HTML will not be escaped.
+
+```yaml
+# config/locales/en.yml
+en:
+  welcome: <b>welcome!</b>
+  hello_html: <b>hello!</b>
+  title:
+    html: <b>title!</b>
+```
+
+```html+erb
+<!-- app/views/home/index.html.erb -->
+<div><%= t('welcome') %></div>
+<div><%= raw t('welcome') %></div>
+<div><%= t('hello_html') %></div>
+<div><%= t('title.html') %></div>
+```
+
+不過插值是會被轉譯的，例如，下面：
+Interpolation escapes as needed though. For example, given:
+
+```yaml
+en:
+  welcome_html: "<b>Welcome %{username}!</b>"
+```
+
+我們可以安全的傳遞用戶設定的用戶名：
+you can safely pass the username as set by the user:
+
+```erb
+<%# This is safe, it is going to be escaped if needed. %>
+<%= t('welcome_html', username: @current_user.username) %>
+```
+
+另一方面，安全字串將會逐字插入。
+Safe strings on the other hand are interpolated verbatim.
+
+備註： 只有使用 `translate` (或 `t`) 輔助方法中才能自動將文字轉換為 HTML 安全的文字，這在 `view` 或 `controller` 中都適用。
+NOTE: Automatic conversion to HTML safe translate text is only available from the `translate` (or `t`) helper method. This works in views and controllers.
+
+![i18n demo HTML safe](images/i18n/demo_html_safe.png)
+
+### Translations for Active Record Models
+### Active Record Models的翻譯
+
+
+我們可以使用 `Model.model_name.human` 和 `Model.human_attribute_name(attribute)` 方法，來明顯的查找model、屬性名的翻譯
+You can use the methods `Model.model_name.human` and `Model.human_attribute_name(attribute)` to transparently look up translations for your model and attribute names.
+
+例如當我們添加下面的翻譯：
+For example when you add the following translations:
+
+```yaml
+en:
+  activerecord:
+    models:
+      user: Customer
+    attributes:
+      user:
+        login: "Handle"
+      # will translate User attribute "login" as "Handle"
+```
+
+
+`User.model_name.human` 會返回 "Customer"，而 `User.human_attribute_name("login")` 會返回 "Handle"。
+Then `User.model_name.human` will return "Customer" and `User.human_attribute_name("login")` will return "Handle".
+
+我們可以像下面這樣為model名添加複數形式：
+You can also set a plural form for model names, adding as following:
+
+```yaml
+en:
+  activerecord:
+    models:
+      user:
+        one: Customer
+        other: Customers
+```
+
+
+
+要想访问模型的嵌套属性，我们可以在翻译文件的模型层级中嵌套使用“模型/属性”：
+
+然後 `User.model_name.human(count: 2)` 會返回 "Customers"，而 `count: 1` 或`User.model_name.human` 將會返回 "Customer"
+Then `User.model_name.human(count: 2)` will return "Customers". With `count: 1` or without params will return "Customer".
+
+要想訪問model的嵌套屬性，我們可以在翻譯文件的model層級中嵌套使用 `model/attribute`。
+In the event you need to access nested attributes within a given model, you should nest these under `model/attribute` at the model level of your translation file:
+
+```yaml
+en:
+  activerecord:
+    attributes:
+      user/role:
+        admin: "Admin"
+        contributor: "Contributor"
+```
+
+Then `User.human_attribute_name("role.admin")` will return "Admin".
+這時 `User.human_attribute_name("role.admin")` 會返回 "Admin"。
+
+備註： 如果我們使用的的類別包含了 `ActiveModel`，而沒有繼承自 `ActiveRecord::Base`，我們就應該用 `activemodel` 取代上述例子中，鍵路徑中的 `activerecord`。
+NOTE: If you are using a class which includes `ActiveModel` and does not inherit from `ActiveRecord::Base`, replace `activerecord` with `activemodel` in the above key paths.
+
+#### Error Message Scopes
+#### 錯誤訊息的作用域
+
+Active Record 驗證的錯誤訊息翻譯起來很容易，Active Record 提供了一些用於放置消息翻譯的命名空間，以便為不同的模型、屬性和驗證提供不同的消息和翻譯，當然 Active Record 也考慮到了單表繼承問題。
+Active Record validation error messages can also be translated easily. Active Record gives you a couple of namespaces where you can place your message translations in order to provide different messages and translation for certain models, attributes, and/or validations. It also transparently takes single table inheritance into account.
+
+这就为根据应用需求灵活调整信息，提供了非常强大的工具。
+
+這就給了根據應用需求靈活調整訊息，提供了非常強大的工具。
+This gives you quite powerful means to flexibly adjust your messages to your application's needs.
+
+假設 User model 對 name 屬性進行驗證：
+Consider a User model with a validation for the name attribute like this:
+
+```ruby
+class User < ApplicationRecord
+  validates :name, presence: true
+end
+```
+
+此時，錯誤訊息的鍵是 `:blank`，Active Record 會在命名空間中查找這個鍵：
+The key for the error message in this case is `:blank`. Active Record will look up this key in the namespaces:
+
+```ruby
+activerecord.errors.models.[model_name].attributes.[attribute_name]
+activerecord.errors.models.[model_name]
+activerecord.errors.messages
+errors.attributes.[attribute_name]
+errors.messages
+```
+
+因此，在本範例中， `Active Record` 會按順序查找下列的鍵，並返回第一個結果：
+Thus, in our example it will try the following keys in this order and return the first result:
+
+```ruby
+activerecord.errors.models.user.attributes.name.blank
+activerecord.errors.models.user.blank
+activerecord.errors.messages.blank
+errors.attributes.name.blank
+errors.messages.blank
+```
+
+如果 model 使用了繼承，Active Record還會在繼承鏈中查找訊息。
+When your models are additionally using inheritance then the messages are looked up in the inheritance chain.
+
+例如，對於繼承自 User model 的 Admin model：
+For example, you might have an Admin model inheriting from User:
+
+```ruby
+class Admin < User
+  validates :name, presence: true
+end
+```
+
+Active Record 會根據下列順序查找訊息：
+Then Active Record will look for messages in this order:
+
+```ruby
+activerecord.errors.models.admin.attributes.name.blank
+activerecord.errors.models.admin.blank
+activerecord.errors.models.user.attributes.name.blank
+activerecord.errors.models.user.blank
+activerecord.errors.messages.blank
+errors.attributes.name.blank
+errors.messages.blank
+```
+
+這樣，我們就可以在 model 繼承鏈的不同位置，以及屬性、model或預設作用域中，為各種錯誤訊息提供特殊翻譯。
+This way you can provide special translations for various error messages at different points in your model's inheritance chain and in the attributes, models, or default scopes.
+
+#### Error Message Interpolation
+#### 錯誤訊息的插值
+
+翻譯後的 `model` 名、`屬性`名、以及`值`，始終可以用於插值。
+The translated model name, translated attribute name, and value are always available for interpolation as `model`, `attribute` and `value` respectively.
+
+因此，舉例來說，我們可以用 `"Please fill in your %{attribute}"`，這樣的屬性名來代替預設的 `cannot be blank` 錯誤訊息。
+So, for example, instead of the default error message `"cannot be blank"` you could use the attribute name like this : `"Please fill in your %{attribute}"`.
+
+* 當 `count` 方法可以用時，可根據需要用於複數轉換：
+* `count`, where available, can be used for pluralization if present:
+
+| validation   | with option               | message                   | interpolation |
+| ------------ | ------------------------- | ------------------------- | ------------- |
+| confirmation | -                         | :confirmation             | attribute     |
+| acceptance   | -                         | :accepted                 | -             |
+| presence     | -                         | :blank                    | -             |
+| absence      | -                         | :present                  | -             |
+| length       | :within, :in              | :too_short                | count         |
+| length       | :within, :in              | :too_long                 | count         |
+| length       | :is                       | :wrong_length             | count         |
+| length       | :minimum                  | :too_short                | count         |
+| length       | :maximum                  | :too_long                 | count         |
+| uniqueness   | -                         | :taken                    | -             |
+| format       | -                         | :invalid                  | -             |
+| inclusion    | -                         | :inclusion                | -             |
+| exclusion    | -                         | :exclusion                | -             |
+| associated   | -                         | :invalid                  | -             |
+| non-optional association | -             | :required                 | -             |
+| numericality | -                         | :not_a_number             | -             |
+| numericality | :greater_than             | :greater_than             | count         |
+| numericality | :greater_than_or_equal_to | :greater_than_or_equal_to | count         |
+| numericality | :equal_to                 | :equal_to                 | count         |
+| numericality | :less_than                | :less_than                | count         |
+| numericality | :less_than_or_equal_to    | :less_than_or_equal_to    | count         |
+| numericality | :other_than               | :other_than               | count         |
+| numericality | :only_integer             | :not_an_integer           | -             |
+| numericality | :in                       | :in                       | count         |
+| numericality | :odd                      | :odd                      | -             |
+| numericality | :even                     | :even                     | -             |
+| comparison   | :greater_than             | :greater_than             | count         |
+| comparison   | :greater_than_or_equal_to | :greater_than_or_equal_to | count         |
+| comparison   | :equal_to                 | :equal_to                 | count         |
+| comparison   | :less_than                | :less_than                | count         |
+| comparison   | :less_than_or_equal_to    | :less_than_or_equal_to    | count         |
+| comparison   | :other_than               | :other_than               | count         |
+
+### Translations for Action Mailer E-Mail Subjects
+### Action Mailer 電子信件標題的翻譯
+
+如果你沒有將標題傳遞給 `mail` 方法， `Action Mailer` 會嘗試在翻譯中找到他，會使用 `<mailer_scope>.<action_name>.subject` 這種模式，來查找，
+If you don't pass a subject to the `mail` method, Action Mailer will try to find
+it in your translations. The performed lookup will use the pattern
+`<mailer_scope>.<action_name>.subject` to construct the key.
+
+```ruby
+# user_mailer.rb
+class UserMailer < ActionMailer::Base
+  def welcome(user)
+    #...
+  end
+end
+```
+
+```yaml
+en:
+  user_mailer:
+    welcome:
+      subject: "Welcome to Rails Guides!"
+```
+
+要將參數傳遞給插值法，請在 `mailer` 上使用 `default_i18n_subject` 方法。
+To send parameters to interpolation use the `default_i18n_subject` method on the mailer.
+
+```ruby
+# user_mailer.rb
+class UserMailer < ActionMailer::Base
+  def welcome(user)
+    mail(to: user.email, subject: default_i18n_subject(user: user.name))
+  end
+end
+```
+
+```yaml
+en:
+  user_mailer:
+    welcome:
+      subject: "%{user}, welcome to Rails Guides!"
+```
+
+### Overview of Other Built-In Methods that Provide I18n Support
+### 提供 I18n 支持的其他內置方法概述
+
+
+在 Rails 中，我們會使用固定字串，和其他本地化元素，例如，在一些輔助方法中使用的格式字串和其他格式訊息。本章節提供的簡要的概述。
+Rails uses fixed strings and other localizations, such as format strings and other format information in a couple of helpers. Here's a brief overview.
+
+#### Action View Helper Methods
+#### Action View 輔助方法
+
+
+* `distance_of_time_in_words` 輔助方法翻譯並以複數形式顯示結果，同時插入秒、分鐘、小時的數值。 看更多 [datetime.distance_in_words](https://github.com/rails/rails/blob/main/actionview/lib/action_view/locale/en.yml#L4)。
+* `distance_of_time_in_words` translates and pluralizes its result and interpolates the number of seconds, minutes, hours, and so on. See [datetime.distance_in_words](https://github.com/rails/rails/blob/main/actionview/lib/action_view/locale/en.yml#L4) translations.
+
+
+
+* `datetime_select` 和 `select_month` 輔助方法使用翻譯後的月份名稱來填充生成的 `select` 標籤。更多介紹請看[date.month_names](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L15)，`datetime_select ` 輔助方法還會從 [date.order](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L18) 中查找 order 選項 (除非我們顯示傳遞了 order 選項)。如果可能，所有日期選擇輔助方法在翻譯提示訊息時，都會使用 [datetime.prompts](https://github.com/rails/rails/blob/main/actionview/lib/action_view/locale/en.yml#L39) 作用域中的翻譯。
+
+
+* `datetime_select` and `select_month` use translated month names for populating the resulting select tag. See [date.month_names](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L15) for translations. `datetime_select` also looks up the order option from [date.order](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L18) (unless you pass the option explicitly). All date selection helpers translate the prompt using the translations in the [datetime.prompts](https://github.com/rails/rails/blob/main/actionview/lib/action_view/locale/en.yml#L39) scope if applicable.
+
+
+* `number_to_currency`, `number_with_precision`, `number_to_percentage`, `number_with_delimiter`, 和 `number_to_human_size` 輔助方法使用 [number](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L37) 作用域中的數字格式設定。
+
+* The `number_to_currency`, `number_with_precision`, `number_to_percentage`, `number_with_delimiter`, and `number_to_human_size` helpers use the number format settings located in the [number](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L37) scope.
+
+
+#### Active Model Methods
+#### Active Model 方法
+
+* `model_name.human` 和 `human_attribute_name` 方法會使用 [activerecord.models](https://github.com/rails/rails/blob/main/activerecord/lib/active_record/locale/en.yml#L36) 作用域中可用的 model 名、屬性名的翻譯，像錯誤訊息的作用域中介紹的那樣，這兩個方法也支持繼承類別名的翻譯(例如，用於STI)。
+* `model_name.human` and `human_attribute_name` use translations for model names and attribute names if available in the [activerecord.models](https://github.com/rails/rails/blob/main/activerecord/lib/active_record/locale/en.yml#L36) scope. They also support translations for inherited class names (e.g. for use with STI) as explained above in "Error message scopes".
+
+
+* `ActiveModel::Errors#generate_message` 方法 (在Active Model 驗證時使用，也可以手動使用) 會使用上面介紹的 `model_name.human` and `human_attribute_name` 方法。像錯誤訊息的作用域中介紹的那樣，這個方法也會翻譯錯誤訊息，並支持繼承的類別名的翻譯。
+* `ActiveModel::Errors#generate_message` (which is used by Active Model validations but may also be used manually) uses `model_name.human` and `human_attribute_name` (see above). It also translates the error message and supports translations for inherited class names as explained above in "Error message scopes".
+
+
+* `ActiveModel::Error#full_message` 和 `ActiveModel::Errors#full_messages` 方法，使用分隔符號把屬性名稱添加到錯誤訊息的開頭，然後在 `errors.format` 中查找(預設格式為 [`"%{attribute} %{message}"`](https://github.com/rails/rails/blob/main/activemodel/lib/active_model/locale/en.yml#L4))) 。要自定義預設格式，請在應用程式的語系設定文件中覆蓋他，要自訂義每個model或是每個屬性的格式，請看[`config.active_model.i18n_customize_full_message`][]
+
+
+* `ActiveModel::Error#full_message` and `ActiveModel::Errors#full_messages` prepend the attribute name to the error message using a format looked up from `errors.format` (default: [`"%{attribute} %{message}"`](https://github.com/rails/rails/blob/main/activemodel/lib/active_model/locale/en.yml#L4)). To customize the default format, override it in the app's locale files. To customize the format per model or per attribute, see [`config.active_model.i18n_customize_full_message`][].
+
+[`config.active_model.i18n_customize_full_message`]: configuring.html#config-active-model-i18n-customize-full-message
+
+#### Active Support Methods
+#### Active Support 方法
+
+* `Array#to_sentence` 方法使用 [support.array](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L33) 作用域中的格式設定。
+* `Array#to_sentence` uses format settings as given in the [support.array](https://github.com/rails/rails/blob/main/activesupport/lib/active_support/locale/en.yml#L33) scope.
+
+
+如何儲存自定義翻譯
+-------------------------------------
+
+`Active Support` 自帶的 `Simple backend`，允許我們用純 Ruby 或 YAML 格式儲存翻譯。[^2]   
+例如，通過 Ruby Hash 儲存翻譯的範例如下：
+
+The Simple backend shipped with Active Support allows you to store translations in both plain Ruby and YAML format.[^2]
+
+For example a Ruby Hash providing translations can look like this:
+
+```ruby
+{
+  pt: {
+    foo: {
+      bar: "baz"
+    }
+  }
+}
+```
+
+對應的 YAML 文件如下：
+The equivalent YAML file would look like this:
+
+```yaml
+pt:
+  foo:
+    bar: baz
+```
+
+正如我們看到的，在這兩種情況下，頂層的鍵是語系設定，`:foo` 是命名空間的鍵，`:bar` 是翻譯 "baz" 的鍵。
+As you see, in both cases the top level key is the locale. `:foo` is a namespace key and `:bar` is the key for the translation "baz".
+
+下面是來自 `Active Support` 自帶的 `YAML` 格式的翻譯文件 `en.yml` 的真實範例：
+Here is a "real" example from the Active Support `en.yml` translations YAML file:
+
+```yaml
+en:
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%b %d"
+      long: "%B %d, %Y"
+```
+
+因此，下列查找效果相同，都會返回短日期格式 "%b %d"：
+So, all of the following equivalent lookups will return the `:short` date format `"%b %d"`:
+
+```ruby
+I18n.t 'date.formats.short'
+I18n.t 'formats.short', scope: :date
+I18n.t :short, scope: 'date.formats'
+I18n.t :short, scope: [:date, :formats]
+```
+
+一般來說，我們推薦使用YAML作為儲存翻譯的一種格式，然而，在有些情況下，我們可能需要把 Ruby lambda 作為儲存語系設定訊息的一部分，例如特殊的日期格式。
+Generally we recommend using YAML as a format for storing translations. There are cases, though, where you want to store Ruby lambdas as part of your locale data, e.g. for special date formats.
+
+
+自定義 I18n 設定
+-------------------------
+
+### Using Different Backends
+### 使用不同的後端
+
+
+由於某些原因， Active Support 自帶的 `Simple backend` 只為 Ruby on Rails 做了 "完成任務所需的最少量工作"[^3]，這意外著只有對英語以及和英語高度相似的語言， `Simple backend` 才能保證正常的工作。此外，`Simple backend` 只能讀取翻譯，而不能動態的把翻譯儲存為任何格式。
+For several reasons the Simple backend shipped with Active Support only does the "simplest thing that could possibly work" _for Ruby on Rails_[^3] ... which means that it is only guaranteed to work for English and, as a side effect, languages that are very similar to English. Also, the simple backend is only capable of reading translations but cannot dynamically store them to any format.
+
+
+這並不意味著我們會被這些限制所困擾，Ruby I18n gem 讓我們能夠藉由將後端實體傳遞給 `I18n.backend=`， 輕易將 `Simple backend` 實現與更適合你需求的其他實現進行交換。
+That does not mean you're stuck with these limitations, though. The Ruby I18n gem makes it very easy to exchange the Simple backend implementation with something else that fits better for your needs, by passing a backend instance to the `I18n.backend=` setter.
+
+例如，你可以使用 `Chain backend` 來取代 `Simple backend`，以連結多個backend。當你想要使用標準翻譯與 `Simple backend` 一起使用，但是將自定義的應用翻譯儲存在資料庫或其他backend中時，這就很有用了。
+
+For example, you can replace the Simple backend with the Chain backend to chain multiple backends together. This is useful when you want to use standard translations with a Simple backend but store custom application translations in a database or other backends.
+
+使用 `Chain backend`，你可以使用Active Record backend並回到(預設) `Simple backend` :
+With the Chain backend, you could use the Active Record backend and fall back to the (default) Simple backend:
+
+```ruby
+I18n.backend = I18n::Backend::Chain.new(I18n::Backend::ActiveRecord.new, I18n.backend)
+```
+
+### Using Different Exception Handlers
+### 使用不同的異常處理程序
+
+I18n API 定義了下列的異常，這些異常會在相應的意外情況發生時，由後端拋出：
+The I18n API defines the following exceptions that will be raised by backends when the corresponding unexpected conditions occur:
+
+| Exception  | Reason  |
+|---|---|
+| `I18n::MissingTranslationData`       | 找不到對應鍵的翻譯 |
+| `I18n::InvalidLocale`                | I18n.locale 的語系設定是無效的(例如 `nil`) |
+| `I18n::InvalidPluralizationData`     | 傳遞 count 參數，但翻譯無法轉換成複數形式 |
+| `I18n::MissingInterpolationArgument` | 翻譯所需的插值參數未傳遞 |
+| `I18n::ReservedInterpolationKey`     | 翻譯包含的插值變數名稱使用了保留關鍵字 (例如：`scope` 或 `default`) |
+| `I18n::UnknownFileType`              | 後端不知道應該如何處理添加到 `I18n.load_path` 中的文件類型 |
+
+#### Customizing how `I18n::MissingTranslationData` is handled
+#### 自定義 `I18n::MissingTranslationData` 的處理方式
+
+如果 `config.i18n.raise_on_missing_translations` 是 `真`，`I18n::MissingTranslationData` 錯誤將會跳出來，在測試環境中打開它是好主意，這樣就可以找到缺少翻譯的地方。
+If `config.i18n.raise_on_missing_translations` is `true`, `I18n::MissingTranslationData` errors will be raised. It's a good idea to turn this on in your test environment, so you can catch places where missing translations are requested.
+
+如果 `config.i18n.raise_on_missing_translations` 是 `假` (所有環境中的預設值)，例外錯誤訊息會被印出來，他包含缺少的鍵/範圍，所以你可以修復你的程式碼。
+If `config.i18n.raise_on_missing_translations` is `false` (the default in all environments), the exception's error message will be printed. This contains the missing key/scope so you can fix your code.
+
+如果你想進一步定義此行為，你應該設定 `config.i18n.raise_on_missing_translations = false`，然後實施 `I18n.exception_handler`，自定義異常處理程序可以是一個 proc 或一個帶有 `call` 方法的類別：
+If you want to customize this behaviour further, you should set `config.i18n.raise_on_missing_translations = false` and then implement a `I18n.exception_handler`. The custom exception handler can be a proc or a class with a `call` method:
+
+```ruby
+# config/initializers/i18n.rb
+module I18n
+  class RaiseExceptForSpecificKeyExceptionHandler
+    def call(exception, locale, key, options)
+      if key == "special.key"
+        "translation missing!" # return this, don't raise it
+      elsif exception.is_a?(MissingTranslation)
+        raise exception.to_exception
+      else
+        raise exception
+      end
+    end
+  end
+end
+
+I18n.exception_handler = I18n::RaiseExceptForSpecificKeyExceptionHandler.new
+```
+
+這將會與預設處理程序相同的方式引發所有異常，除了 `I18n.t("special.key")` 的情況。
+This would raise all exceptions the same way the default handler would, except in the case of `I18n.t("special.key")`.
+
+
+翻譯 model 內容
+-------------------------
+
+本指南中所描述的I18n API主要用於翻譯介面字串。如果你正在尋找翻譯模型內容（例如部落格文章），則需要另一種解決方案來幫助這項工作。
+
+The I18n API described in this guide is primarily intended for translating interface strings. If you are looking to translate model content (e.g. blog posts), you will need a different solution to help with this.
+
+下面幾個 gem 可以解決這個問題：
+Several gems can help with this:
+
+* [Mobility](https://github.com/shioyama/mobility): 支援用多種格式儲存翻譯，包含翻譯表、Json欄位(PostgreSQL)等等。
+* [Mobility](https://github.com/shioyama/mobility): Provides support for storing translations in many formats, including translation tables, JSON columns (PostgreSQL), etc.
+* [Traco](https://github.com/barsoom/traco): 根據以下程式碼，在模型表中儲存可翻譯的列。
+* [Traco](https://github.com/barsoom/traco): Translatable columns stored in the model table itself
+
+
+結論
+----------
+
+现在，我们已经对 Ruby on Rails 的 I18n 支持有了较为全面的了解，可以开始着手翻译自己的项目了。
+
+現在，我們已經對 Ruby on Rails 的 I18n 支持有了比較全面的了解，可以開始著手翻譯自己的專案了。
+At this point you should have a good overview about how I18n support in Ruby on Rails works and are ready to start translating your project.
+
+
+為 Rails I18n 做貢獻
+--------------------------
+
+
+
+I18n 是在 Ruby on Rails 2.2 中引入的，並且仍在不斷發展，該項目繼承了 Ruby on Rails 開發的優良傳統，各種解決方案首先應用於 gem 和真實應用，然後再把其中最好和最泛用的部分納入 Rails 核心。
+I18n support in Ruby on Rails was introduced in the release 2.2 and is still evolving. The project follows the good Ruby on Rails development tradition of evolving solutions in gems and real applications first, and only then cherry-picking the best-of-breed of most widely useful features for inclusion in the core.
+
+
+
+因此，Rails 鼓勵每個人在 gem 或其他資料庫中試驗新想法和新特性，並將他們貢獻給社區。(別忘了在[信箱列表]([mailing list](https://groups.google.com/forum/#!forum/rails-i18n))上宣佈我們的工作！)
+Thus we encourage everybody to experiment with new ideas and features in gems or other libraries and make them available to the community. (Don't forget to announce your work on our [mailing list](https://groups.google.com/forum/#!forum/rails-i18n)!)
+
+
+
+如果在 Ruby on Rails 的範例翻譯資料庫中沒找到想要的語系設定(語言)，可以 [_fork_](https://github.com/guides/fork-a-project-and-submit-your-modifications) repository，並添加翻譯數據，然後發送請求。
+If you find your own locale (language) missing from our [example translations data](https://github.com/svenfuchs/rails-i18n/tree/master/rails/locale) repository for Ruby on Rails, please [_fork_](https://github.com/guides/fork-a-project-and-submit-your-modifications) the repository, add your data, and send a [pull request](https://help.github.com/articles/about-pull-requests/).
+
+
+資源
+---------
+
+* [Google group: rails-i18n](https://groups.google.com/g/rails-i18n) - 項目的信件列表
+* [GitHub: rails-i18n](https://github.com/svenfuchs/rails-i18n) - rails-i18n 項目的程式碼repository和issue追蹤，最重要的是，我們可以在這裡找到很多的 Rails [翻譯範例](https://github.com/svenfuchs/rails-i18n/tree/master/rails/locale)，在大多數情況下，他們都適用於我們的應用。
+* [GitHub: i18n](https://github.com/svenfuchs/i18n) - I18n gem 的程式碼repository和issue追蹤系統。
+
+
+作者
+-------
+
+* [Sven Fuchs](http://svenfuchs.com) (最初的作者)
+* [Karel Minařík](http://www.karmi.cz)
+
+
+參考資源
+---------
+
+[^1]: 根據以下代碼，或者引用[維基百科](https://en.wikipedia.org/wiki/Internationalization_and_localization): 「國際化是一個設計軟件應用程序的過程，使其可以適應各種語言和地區而無需進行工程更改。本地化是對特定區域或語言的軟件進行適應的過程，通過添加特定於當地的組件並對文本進行翻譯。」
+
+[^2]: 其他後端可能允許或要求使用其他的格式，例如GetText後端可能允許讀取GetText文件 。
+
+[^3]: 其中一個原因是，我們不想為不需要 I18n 支持的應用增加不必要的負載，因此對於英語，I18n 資料庫應該盡可能的保持簡單，另一個原因是，為所有現存語言的 I18n 相關問題提供全部的解決方案是不可能的，因此，一個允許被完全替換的解決方案更加合適，這樣對特定功能和擴展進行試驗就會更容易。
+
