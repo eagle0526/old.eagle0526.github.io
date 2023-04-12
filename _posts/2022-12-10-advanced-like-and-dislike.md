@@ -35,6 +35,150 @@ layout: post
 
 
 
+
+#### 控制留言喜歡/不喜歡按鈕的JS頁面
+```md
+comment_like_controller.js
+
+> import { Controller } from "@hotwired/stimulus"
+> import { fetchWithoutParams } from "../controllers/lib/fetcher"
+> import { library, dom } from '@fortawesome/fontawesome-svg-core'
+> import { faThumbsUp as regularThumbsUp , faThumbsDown as  regularThumbsUDown } from '@fortawesome/free-regular-svg-icons'
+> import { faThumbsUp as solidThumbsUP, faThumbsDown as solidThumbsDown } from '@fortawesome/free-solid-svg-icons' 
+> 
+> export default class extends Controller {
+> 
+>   static targets = [ 'thumbsUp', "thumbsDown", "commentLikeCount", "commentDislikeCount" ]
+> 
+>   initialize(){    
+>     library.add(regularThumbsUp, regularThumbsUDown, solidThumbsUP, solidThumbsDown, )
+>   }
+>   connect() {
+>     dom.watch()
+> 
+>     
+>     const commentLikeState = this.element.dataset.commentLikeState
+>     if (commentLikeState === 'true') {
+>       // 如果是正讚，讓正讚是solid，倒讚是regular
+>       this.likeButtonSolid()
+>       this.dislikeButtonRegular()
+> 
+>     } else if (commentLikeState === 'false') {
+>       this.dislikeButtonSolid()
+>       this.likeButtonRegular()
+>     }
+>     
+>   }
+> 
+>   like() {        
+> 
+>     const commentId = this.element.dataset.commentId
+>     const token = document.querySelector("meta[name='csrf-token']").content    
+> 
+>     // // 使用者點擊正讚後，傳到後端的東西
+>     fetch((`/comments/${commentId}/like`), {
+>       method: "PATCH",
+>       headers: {
+>         "X-CSRF-Token": token
+>       }
+>     })
+>     .then((resp) => {
+>       return resp.json()
+>     })
+>     .then(({status, likeCommentCount, dislikeCommentCount}) => {
+>       
+>       if (status === "liked comment") {
+>         this.likeButtonSolid()
+>       } else if (status === "delete comment like_state") {        
+>         this.likeButtonRegular()
+>       } else {
+>         // 倒讚Regular        
+>         this.dislikeButtonRegular()
+>         // 正讚Solid
+>         this.likeButtonSolid()
+>       }
+> 
+>       this.setTextContent(likeCommentCount, dislikeCommentCount)
+> 
+>     })
+>     .catch((err) => {
+>       console.log(err);
+>     })    
+> 
+>   }
+> 
+>   dislike() {        
+> 
+>     const commentId = this.element.dataset.commentId
+>     const token = document.querySelector("meta[name='csrf-token']").content
+> 
+>     // 使用者點擊倒讚後，傳到後端的東西
+>     fetch((`/comments/${commentId}/dislike`), {
+>       method: "PATCH",
+>       headers: {
+>         "X-CSRF-Token": token
+>       }
+>     })
+>     .then((resp) => {
+>       return resp.json()
+>     })
+>     .then(({status, likeCommentCount, dislikeCommentCount}) => {
+>       
+>       if (status === "disliked comment") {
+>         this.dislikeButtonSolid()
+>       } else if (status === "delete comment like_state") {        
+>         this.dislikeButtonRegular()
+>       } else {
+>         // 正讚Regular
+>         this.likeButtonRegular()
+>         // 倒讚Solid
+>         this.dislikeButtonSolid()
+>       }
+> 
+>       this.setTextContent(likeCommentCount, dislikeCommentCount)
+> 
+>     })
+>     .catch((err) => {
+>       console.log(err);
+>     })
+>   }
+> 
+> 
+>   // 正讚solid
+>   likeButtonSolid() {
+>     this.thumbsUpTarget.classList.add("fa-solid")
+>     this.thumbsUpTarget.classList.remove("fa-regular")
+>   }
+> 
+>   // 正讚regular
+>   likeButtonRegular() {
+>    this.thumbsUpTarget.classList.remove("fa-solid")
+>    this.thumbsUpTarget.classList.add("fa-regular")
+>   }
+> 
+>   // 倒讚solid
+>   dislikeButtonSolid() {
+>     this.thumbsDownTarget.classList.add("fa-solid")
+>     this.thumbsDownTarget.classList.remove("fa-regular")
+>   }
+> 
+>   // 倒讚regular
+>   dislikeButtonRegular(){
+>     this.thumbsDownTarget.classList.add("fa-regular")
+>     this.thumbsDownTarget.classList.remove("fa-solid")
+>   }
+> 
+> 
+> 
+>   setTextContent(likeCommentCount, dislikeCommentCount) {
+>     this.commentLikeCountTarget.textContent = likeCommentCount
+>     this.commentDislikeCountTarget.textContent = dislikeCommentCount
+>   }
+> 
+> }
+```
+
+
 #### 控制房子喜歡/不喜歡按鈕的js頁面
 ```md
 house_like_controller.js
