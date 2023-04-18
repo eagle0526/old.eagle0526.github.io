@@ -20,132 +20,38 @@ layout: post
 安裝stimulus-carousel
 ------
 
-(1) 輸入下面的指令
+### 輸入下面的指令
 
 
+安裝 Carousel 套件：您可以使用 yarn 或 npm 安裝任何您喜歡的 Carousel 套件。以下以 swiper 為例，您可以在終端機中執行以下命令：
 
-rails 6 的指令
+#### rails 6 的指令
 ```shell
 $ yarn add stimulus-carousel
 ```
 
 
-rails 7 的指令
+#### rails 7 的指令
 ```shell
 $ bin/importmap pin stimulus-carousel
 ```
 
-(2) 在controller.js檔案import插件
-
-```md
-app/javascript/controllers/index.js
-
-> import { Application } from "stimulus"
-> import Carousel from "stimulus-carousel"
-> 
-> const application = Application.start()
-> application.register("carousel", Carousel)
-```
 
 
-(3) 在stylesheets增加兩行指令
-
-```md
-> // In your application.js (for example)
-> import 'swiper/swiper-bundle.min.css'
-> 
->   
-> // Or in your application.scss file
-> @import "~swiper/swiper-bundle"
-```
+產生controller
+------
+創建 Stimulus 控制器：在您的 Rails 7 應用中，創建一個 Stimulus 控制器，例如 carousel_controller.js。您可以在 app/javascript/controllers 目錄下創建此文件，並添加以下程式碼：
 
 
-(4) 在HTML頁面掛上controller、設定屬性
-
-```md
-index.html.erb
-
-> <!-- Slider main container -->
-> <div data-controller="carousel" class="swiper-container">
->   <!-- Additional required wrapper -->
->   <div class="swiper-wrapper">
->     <!-- Slides -->
->     <div class="swiper-slide">Slide 1</div>
->     <div class="swiper-slide">Slide 2</div>
->     <div class="swiper-slide">Slide 3</div>
->   </div>
-> </div>
-```
-
-
-(5) 在controller.js中的scss，新增一個swiper_carousel.scss檔案，這邊可以設定輪播圖的樣式
-```md
-
-<style>
-  .swiper-slide {
-    height: 250px;
-    display: flex;
-    align-items:center;
-    justify-content: center;
-  }
-
-  .pink {
-    background-color: lightpink;
-  }
-
-  .green {
-    background-color: lightgreen;
-  }
-
-  .blue {
-    background-color: lightblue;
-  }
-</style>
-```
-
-
-
-(6) 增加輪播圖上面的箭頭
-
-```md
-index.html.erb
-
-> <div data-controller="carousel" class="swiper-container w-25 my-5"
->     data-carousel-options-value='{
->     "pagination": { "el": ".swiper-pagination", 
->                     "dynamicBullets": "true" },
->     "navigation": { "nextEl": ".swiper-button-next", 
->                     "prevEl": ".swiper-button-prev"}}'>
->   ...
->   <!-- Pagination (... or 1/10 or progress bar) -->
->   <div class="swiper-pagination"></div>
-> 
->   <!-- Navigation buttons (< >) -->
->   <div class="swiper-button-prev"></div>
->   <div class="swiper-button-next"></div>
-> </div> 
-```
-
-
-參考文章：https://betterprogramming.pub/build-a-carousel-with-ruby-on-rails-and-the-stimulus-components-library-22b1b5e1e682
-
-
-
-
-
-
-
-
-
-輸入這一行
+這個指令，可以產生 `carousel_controller.js` 這個檔案
 ```shell
 $ rails g stimulus carousel
 ```
 
+接著我們在這個檔案輸入以下程式碼
 
-會產生一個檔案 app/javascript/controllers/carousel_controller.js ，並在此檔案，這樣設定
 ```js
-// app/javascript/controllers/carousel_controller.js 
+// carousel_controller.js
 
 import { Controller } from "@hotwired/stimulus";
 import { Application } from "@hotwired/stimulus";
@@ -170,53 +76,297 @@ export default class extends Controller {
 ```
 
 
+掛上CDN
+------
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-有一網頁有 rails 7 的輪播圖方法，好像很厲害，但是看不太懂
-這個網頁 - https://www.remark.social/blog/building-image-carousel-rails-7-stimulus-turbo
+接著我們來導入CDN，掛載這個CDN，swiper的CSS才會正常顯示
 
 ```md
-<% @houses.each do |house| %>
+views/layouts/applications.html.erb
 
-<div class="relative" data-controller="carousel">
-  <div class="absolute top-0 bottom-0 left-0 flex items-center">
-    <button data-action="click->carousel#previous" type="button" class="bg-gray-300 rounded-full"><!-- previous icon -->123</button>
-  </div>
-  
-  <div class="absolute top-0 bottom-0 right-0 flex items-center">
-    <button data-action="click->carousel#next" type="button" class="bg-gray-300 rounded-full"><!-- next icon -->next</button>
-  </div>
-
-  <% house.images.each_with_index do |image, idx| %>    
-	<img
-	  class="rounded-md"		 
-	  width="300px"		
-	  src="<%= image.url if image.url %>"
-	>
-	<div data-carousel-target="image" class="<%= idx > 0 ? "hidden" : nil %>">
-      <%=
-        turbo_frame_tag "image-#{image.id}",
-          class: "absolute top-0 left-0 right-0 bottom-0",
-          src: image.url,
-          loading: :lazy
-      %>	  
-	</div>
-  <% end %>
-</div>
-
-<% end %>
-
+<head>
+  ... 省略
+  掛載此CDN
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"/>
+  ... 省略
+</head>
 ```
 
+
+設定HTML
+------
+
+### 1 設定區塊
+
+輸入HTML，我們先用色塊來顯示輪播
+```md
+index.html.erb
+
+> <!-- Slider main container -->
+> <div data-controller="carousel" class="swiper-container">
+>   <!-- Additional required wrapper -->
+>   <div class="swiper-wrapper">
+>     <!-- Slides -->
+>     <div class="swiper-slide">Slide 1</div>
+>     <div class="swiper-slide">Slide 2</div>
+>     <div class="swiper-slide">Slide 3</div>
+>   </div>
+> </div>
+```
+
+照上面輸入的話，會覺得超級怪，因為發現有三個超出畫面的大色塊，是因為我們還沒有把CSS加上去  
+
+### 2 增加色塊的顏色，在div上面掛class
+```md
+index.html.erb
+
+> <!-- Slider main container -->
+> <div data-controller="carousel" class="swiper-container">
+>   <!-- Additional required wrapper -->
+>   <div class="swiper-wrapper">
+>     <!-- Slides -->
+>     <div class="swiper-slide green">Slide 1</div>
+>     <div class="swiper-slide pink">Slide 2</div>
+>     <div class="swiper-slide black">Slide 3</div>
+>   </div>
+> </div>
+```
+
+接著到application.css來寫CSS，我們先增加色塊顏色，還有色塊的高度，讓我們更直觀一點，還有讓色塊的字置中
+```md
+assets/stylesheets/application.css
+
+.swiper-container {    
+   height: 250px;    
+}
+
+
+.black {
+    background-color: blue;
+}
+
+.pink {
+    background-color: pink;
+}
+
+.green {
+    background-color: green;
+}
+
+// 文字置中
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  
+  display: flex;
+  align-items:center;
+  justify-content: center;
+}
+```
+
+
+### 3 增加箭頭、導覽圈圈
+
+使用data-carousel-options-value，可以增加輪播圖的特色，因此我們在這邊新增pagination、navigation
+```md
+> <section class="good">   
+>   <!-- Slider main container -->
+>   <div class="swiper-container slide" data-controller="carousel" 
+>                                         data-carousel-options-value='{
+>                                           "pagination": { "el": ".swiper-pagination", 
+>                                                           "dynamicBullets": "true" },
+>                                           "navigation": { "nextEl": ".swiper-button-next", 
+>                                                           "prevEl": ".swiper-button-prev"}
+>                                           }'>
+>   
+>     <!-- Additional required wrapper -->
+>     <div class="swiper-wrapper">
+>       <!-- Slides -->
+>       <div class="swiper-slide green">Slide 1</div>
+>       <div class="swiper-slide pink">Slide 2</div>
+>       <div class="swiper-slide black">Slide 3</div>
+>     </div>
+>   
+>       <!-- Add Pagination -->
+>     <div >
+>       <div class="swiper-pagination"></div>
+>   
+>       <!-- Add Navigation -->
+>       <div class="swiper-button-next"></div>
+>       <div class="swiper-button-prev"></div>
+>     </div>
+>   
+>   </div>
+> </section>
+```
+
+### 4 讓圖片使用fade模式
+
+不過現在看還是很奇怪對不對，因為圖片還是三張橫排，所以我們現在增加一個特效，讓圖片可以重疊，並且當我按袖邊箭頭的時候，會切換到下一張
+```md
+> <section class="good">   
+>   <!-- Slider main container -->
+>   <div class="swiper-container slide" data-controller="carousel" 
+>                                           data-carousel-options-value='{
+>                                             "pagination": { "el": ".swiper-pagination", 
+>                                                             "dynamicBullets": "true" },
+>                                             "navigation": { "nextEl": ".swiper-button-next", 
+>                                                             "prevEl": ".swiper-button-prev"},
+
+>                                             // 這一行
+>                                             "effect": "fade"
+>                                             }'>
+
+>   
+>     <!-- Additional required wrapper -->
+>     <div class="swiper-wrapper">
+>       <!-- Slides -->
+>       <div class="swiper-slide green">Slide 1</div>
+>       <div class="swiper-slide pink">Slide 2</div>
+>       <div class="swiper-slide black">Slide 3</div>
+>     </div>
+>   
+>       <!-- Add Pagination -->
+>     <div >
+>       <div class="swiper-pagination"></div>
+>   
+>       <!-- Add Navigation -->
+>       <div class="swiper-button-next"></div>
+>       <div class="swiper-button-prev"></div>
+>     </div>
+>   
+>   </div>
+> </section>
+```
+
+
+
+### 5 讓箭頭和導覽圈圈待在圖片裡面
+
+如果今天你不想讓圖片這麼大，想縮小輪播圖的寬度，卻發現當你修改最外層swiper-container這個CSS寬度的時候，會發現箭頭和導覽列沒有被縮小到，這是因為他們兩個目前是絕對定位的情況  
+所以只要幫swiper-container加上相對定位，就可以把他們限制在輪播圖裡面
+```md
+assets/stylesheets/application.css
+
+> .swiper-container {  
+>    height: 250px;
+>    position: relative;
+> }
+```
+
+
+
+
+
+
+
+最終程式碼
+------
+
+```js
+// carousel_controller.js
+
+import { Controller } from "@hotwired/stimulus";
+import { Application } from "@hotwired/stimulus";
+import Carousel from "stimulus-carousel";
+
+const application = Application.start();
+application.register("carousel", Carousel);
+
+// Connects to data-controller="carousel"
+export default class extends Controller {
+  connect() {
+    super.connect();
+    console.log('Do what you want here.');
+
+    // The swiper instance.
+    this.swiper;
+
+    // Default options for every carousels.
+    this.defaultOptions;
+  }
+}
+```
+
+```md
+assets/stylesheets/application.css
+
+> .swiper-container {
+>    /* width: 300px; */
+>    height: 500px;
+>    position: relative;
+> }
+> 
+> 
+> .black {
+>     background-color: blue;
+> }
+> 
+> .pink {
+>     background-color: pink;
+> }
+> 
+> .green {
+>     background-color: green;
+> }
+> 
+> 
+>   
+> .swiper-slide {
+>   background-position: center;
+>   background-size: cover;
+> 
+>   /* height: 250px; */
+>   display: flex;
+>   align-items:center;
+>   justify-content: center;
+> }
+>   
+> 
+> .swiper-pagination {
+>     background-color: aquamarine;
+> }
+> 
+> 
+> 
+> .good {
+>     padding: 0px 200px;
+>     
+> }
+```
+
+
+```md
+index.html.erb
+
+> <section class="good">   
+>   <!-- Slider main container -->
+>   <div class="swiper-container slide" data-controller="carousel" 
+>                                           data-carousel-options-value='{
+>                                             "pagination": { "el": ".swiper-pagination", 
+>                                                             "dynamicBullets": "true" },
+>                                             "navigation": { "nextEl": ".swiper-button-next", 
+>                                                             "prevEl": ".swiper-button-prev"},
+>                                             "effect": "fade"
+>                                             }'>
+>   
+>     <!-- Additional required wrapper -->
+>     <div class="swiper-wrapper">
+>       <!-- Slides -->
+>       <div class="swiper-slide green">Slide 1</div>
+>       <div class="swiper-slide pink">Slide 2</div>
+>       <div class="swiper-slide black">Slide 3</div>
+>     </div>
+>   
+>       <!-- Add Pagination -->
+>     <div >
+>       <div class="swiper-pagination"></div>
+>   
+>       <!-- Add Navigation -->
+>       <div class="swiper-button-next"></div>
+>       <div class="swiper-button-prev"></div>
+>     </div>
+>   
+>   </div>
+> </section>
+```
