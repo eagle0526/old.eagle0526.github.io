@@ -370,3 +370,188 @@ index.html.erb
 >   </div>
 > </section>
 ```
+
+
+
+
+
+
+客制箭頭、導覽列的CSS
+------
+
+由於要客制swiper物件的CSS有點難，文件寫的超模糊，因此記錄下怎麼修改他的CSS
+
+
+
+### 箭頭修改
+
+原先的HTML
+```md
+index.html.erb
+
+>   <!-- Add Navigation -->
+>   <div class="swiper-button-next"></div>
+>   <div class="swiper-button-prev"></div>
+```
+
+上面那樣寫，出現的箭頭樣式，就是swiper預設給你的樣子，如果我今天想要把箭頭樣式改得像reddit那樣，底下有一個色塊，並且把箭頭包住的功能要怎麼修改呢？
+
+
+#### (1) 先修改目前箭頭的樣式
+Ps. swiper 的樣式都有固定的寫法，不能直接普通的CSS就修改他的樣式
+
+```md
+assets/stylesheets/application.css
+
+> .swiper-button-next {    
+>     // 箭頭顏色      
+>     --swiper-theme-color: black;    
+>     // 箭頭大小
+>     --swiper-navigation-size: 30px;    
+> }
+```
+
+#### (2) 箭頭底下增加一個色塊
+
+Ps. 因為剛剛我的箭頭大小設定為30px，因此新增一個60px x 60px 的色塊，並且要記得加上絕對定位，要不然會顯示的很怪
+
+```md
+index.html.erb
+
+> <!-- Add Navigation -->
+> <div class="mr-5 swiper-button-next">
+>   <div class="w-[60px] h-[60px] bg-white absolute opacity-90 rounded-full"></div>
+> </div>
+> 
+> <div class="swiper-button-prev"></div>  
+```
+
+
+#### (3) 調整箭頭的z-index
+
+Ps. 這一步驟很重要，因為如果不改z-index的話，箭頭會被色塊壓在底部，原因是箭頭是:after做出來的
+
+```md
+assets/stylesheets/application.css
+
+> /* 這裡很重要，這樣設定，才可以把箭頭放在白色色塊前面 */
+> .swiper-button-next:after {
+>     z-index: 99;
+> }
+```
+
+
+### 完整程式碼
+```md
+index.html.erb
+
+> <!-- Add Navigation -->
+> <div class="mr-5 swiper-button-next">
+>   <div class="w-[60px] h-[60px] bg-white absolute opacity-90 rounded-full"></div>
+> </div>
+> 
+> <div class="ml-5 swiper-button-prev">
+>   <div class="w-[60px] h-[60px] bg-white absolute opacity-90 rounded-full"></div>
+> </div>  
+```
+
+```md
+assets/stylesheets/application.css
+
+> .swiper-button-next {        
+>     --swiper-theme-color: black;    
+>     --swiper-navigation-size: 30px;    
+> }
+> 
+> .swiper-button-prev {        
+>     --swiper-theme-color: black;    
+>     --swiper-navigation-size: 30px;    
+> }
+> 
+> /* 這裡很重要，這樣設定，才可以把箭頭放在白色色塊前面 */
+> .swiper-button-next:after {
+>     z-index: 99;
+> }
+> 
+> .swiper-button-prev:after {
+>     z-index: 99;
+> }
+```
+
+### 導覽謝修改
+
+原先的HTML長這樣，也是預設的樣式
+```md
+index.html.erb
+  
+> <!-- Add Pagination -->
+> <div class="swiper-pagination"></div>
+```
+
+
+不過這樣有點單調，我想要把導覽列的點改成白色，並且幫導覽列底部加個色塊
+
+#### (1) 加上底部色塊
+
+```md
+assets/stylesheets/application.css
+
+> .swiper-pagination {    
+>     width: 100px;
+>     height: 15px;
+>     border-radius: 25px;
+>     display: flex;
+>     justify-content: center;
+>     align-items: center;        
+>     background-color: gray;
+> }
+```
+
+#### (2) 修改導覽列點點顏色
+```md
+assets/stylesheets/application.css
+
+> .swiper-pagination-bullet {
+>         
+>     /* 點點大小 */
+>     /* --swiper-pagination-bullet-size: 20px; */
+
+>     /* 點點顏色 */ 
+>     --swiper-pagination-color: white;
+> }
+```
+
+### 完整程式碼
+
+```md
+index.html.erb
+
+> <!-- Add Pagination -->
+> <div class="swiper-pagination"></div>
+```
+```md
+assets/stylesheets/application.css
+
+> .swiper-pagination {    
+>     width: 100px;
+>     height: 15px;
+>     border-radius: 25px;
+>     display: flex;
+>     justify-content: center;
+>     align-items: center;        
+>     background-color: gray;
+> }
+> 
+> .swiper-pagination-bullet {
+>         
+>     /* 點點大小 */
+>     /* --swiper-pagination-bullet-size: 20px; */
+> 
+>     /* 點點顏色 */
+>     --swiper-pagination-color: white;
+> 
+> }
+```
+
+swiper文件 : https://swiperjs.com/swiper-api#param-navigation-disabledClass
+
