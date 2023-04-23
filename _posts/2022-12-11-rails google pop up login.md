@@ -207,6 +207,29 @@ views/devise/registrations/new.html.erb
 
 ```
 
+！！！！最重要的地方，變更路徑
+```rb
+Rails.application.routes.draw do
+  # 原本的路徑
+  # devise_for :users
+
+  # 變更後的路徑
+  devise_for :users, controllers: { registrations: 'users/registrations' }
+
+
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+
+  # Defines the root path route ("/")
+  root "home#index"
+end
+
+```
+
+
+
+
+
+
 設定google登入
 ------
 
