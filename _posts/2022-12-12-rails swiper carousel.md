@@ -1,5 +1,5 @@
 ---
-title: Rails 圖片輪播教學
+title: Rails swiper carousel
 author: YeeChen
 date: 2022-12-12
 category: Rails
