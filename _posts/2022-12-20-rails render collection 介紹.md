@@ -93,7 +93,54 @@ PS. 順便說一下為啥後面要有where那一段，因為我們有做子留�
 不過這個效能真的有比較好嗎？我們來把所有終端機的數據全部都列出來看
 
 
+
+效能比較
+-----
+
+
+一篇文章會有很多的留言，我先把所有留言列出來
+```shell
+# console
+
+p = Post.first
+
+p.comments
+Comment Load (0.4ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ?  [["post_id", 12]]
+------  
+ =>                        
+[#<Comment:0x00000001096ff158
+  id: 76,
+  content: "first comment",
+  user_id: 6,
+  post_id: 12,
+  deleted_at: nil,
+  created_at: Mon, 08 May 2023 17:51:17.167900000 UTC +00:00,
+  updated_at: Mon, 08 May 2023 17:51:17.167900000 UTC +00:00,
+  parent_id: nil>,
+ #<Comment:0x0000000108e88b00
+  id: 77,
+  content: "second comment",
+  user_id: 6,
+  post_id: 12,
+  deleted_at: nil,
+  created_at: Mon, 08 May 2023 17:52:19.571892000 UTC +00:00,
+  updated_at: Mon, 08 May 2023 17:52:19.571892000 UTC +00:00,
+  parent_id: nil>,
+ #<Comment:0x0000000108e88998
+  id: 78,
+  content: "third comment",
+  user_id: 6,
+  post_id: 12,
+  deleted_at: nil,
+  created_at: Mon, 08 May 2023 18:01:41.998257000 UTC +00:00,
+  updated_at: Mon, 08 May 2023 18:01:41.998257000 UTC +00:00,
+  parent_id: nil>] 
+```
+
+可以看到目前這一篇文章有三則留言，接下來我們分別用有使用collection和沒有使用的效能列出來
+
 ### 沒用collection的寫法
+
 
 先寫出HTML
 ```html
@@ -112,60 +159,49 @@ PS. 順便說一下為啥後面要有where那一段，因為我們有做子留�
 
 完整數據，但是這邊數據太雜了，我把重要的部分欻出來
 ```md
->Processing by PostsController#show as HTML
->  Parameters: {"id"=>"12"}
->  User Load (0.1ms)  SELECT "users".* FROM "users" WHERE "users"."id" = ? ORDER BY "users"."id" ASC LIMIT ?  [["id", 6], ["LIMIT", 1]]
->  ↳ app/controllers/application_controller.rb:4:in `authenticate_user!'
->  Post Load (0.4ms)  SELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT ?  [["id", 12], ["LIMIT", 1]]
->  ↳ app/controllers/posts_controller.rb:59:in `find_post'
->  Rendering layout layouts/application.html.erb
->  Rendering posts/show.html.erb within layouts/application
->  Rendered comments/_form.html.erb (Duration: 1.2ms | Allocations: 605)
->  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ? AND "comments"."parent_id" IS NULL ORDER BY "comments"."id" DESC  [["post_id", 12]]
->  ↳ app/views/posts/show.html.erb:61
->  Rendered comments/_form.html.erb (Duration: 0.5ms | Allocations: 603)
->  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 75]]
->  ↳ app/views/comments/_comment.html.erb:17
->  Rendered comments/_comment.html.erb (Duration: 2.4ms | Allocations: 1808)
->  Rendered comments/_form.html.erb (Duration: 0.4ms | Allocations: 603)
->  Comment Load (0.0ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 74]]
->  ↳ app/views/comments/_comment.html.erb:17
->  Rendered comments/_comment.html.erb (Duration: 2.1ms | Allocations: 1808)
->  Rendered comments/_form.html.erb (Duration: 0.4ms | Allocations: 603)
->  Comment Load (0.0ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 73]]
->  ↳ app/views/comments/_comment.html.erb:17
->  Rendered comments/_comment.html.erb (Duration: 2.0ms | Allocations: 1808)
->  Rendered posts/show.html.erb within layouts/application (Duration: 10.2ms | Allocations: 7670)
->[Webpacker] Everything's up-to-date. Nothing to do
->  Rendered shared/_navbar.html.erb (Duration: 0.2ms | Allocations: 296)
->  Rendered shared/_flash.html.erb (Duration: 0.1ms | Allocations: 57)
->  Rendered layout layouts/application.html.erb (Duration: 20.7ms | Allocations: 14779)
->Completed 200 OK in 27ms (Views: 20.9ms | ActiveRecord: 0.8ms | Allocations: 16951)
+>   Rendering posts/show.html.erb within layouts/application
+>   Comment Load (0.4ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ?  [["post_id", 12]]
+>   ↳ app/views/posts/show.html.erb:61
+>   Comment Load (0.2ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 76]]
+>   ↳ app/views/comments/_comment.html.erb:17
+>   Rendered comments/_comment.html.erb (Duration: 3.2ms | Allocations: 1177)
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 77]]
+>   ↳ app/views/comments/_comment.html.erb:17
+>   Rendered comments/_comment.html.erb (Duration: 3.1ms | Allocations: 1139)
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 78]]
+>   ↳ app/views/comments/_comment.html.erb:17
+>   Rendered comments/_comment.html.erb (Duration: 1.9ms | Allocations: 1139)
+>   Rendered posts/show.html.erb within layouts/application (Duration: 16.5ms | Allocations: 5253)
+> [Webpacker] Everything's up-to-date. Nothing to do
+>   Rendered shared/_navbar.html.erb (Duration: 0.6ms | Allocations: 296)
+>   Rendered shared/_flash.html.erb (Duration: 0.1ms | Allocations: 57)
+>   Rendered layout layouts/application.html.erb (Duration: 50.0ms | Allocations: 12362)
+> Completed 200 OK in 70ms (Views: 50.6ms | ActiveRecord: 4.4ms | Allocations: 15167)
 ```
 
 重點擷取：該篇文章目前有三則留言，因此這邊有印出三次留言的數據
 ```md
->  Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 75]]
->  ↳ app/views/comments/_comment.html.erb:17
->  Rendered comments/_comment.html.erb (Duration: 2.4ms | Allocations: 1808)
->  Rendered comments/_form.html.erb (Duration: 0.4ms | Allocations: 603)
->  Comment Load (0.0ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 74]]
->  ↳ app/views/comments/_comment.html.erb:17
->  Rendered comments/_comment.html.erb (Duration: 2.1ms | Allocations: 1808)
->  Rendered comments/_form.html.erb (Duration: 0.4ms | Allocations: 603)
->  Comment Load (0.0ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 73]]
->  ↳ app/views/comments/_comment.html.erb:17
->  Rendered comments/_comment.html.erb (Duration: 2.0ms | Allocations: 1808)
->  Rendered posts/show.html.erb within layouts/application (Duration: 10.2ms | Allocations: 7670)
+>   Comment Load (0.4ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ?  [["post_id", 12]]
+>   ↳ app/views/posts/show.html.erb:61
+>   Comment Load (0.2ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 76]]
+>   ↳ app/views/comments/_comment.html.erb:17
+>   Rendered comments/_comment.html.erb (Duration: 3.2ms | Allocations: 1177)
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 77]]
+>   ↳ app/views/comments/_comment.html.erb:17
+>   Rendered comments/_comment.html.erb (Duration: 3.1ms | Allocations: 1139)
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 78]]
+>   ↳ app/views/comments/_comment.html.erb:17
+>   Rendered comments/_comment.html.erb (Duration: 1.9ms | Allocations: 1139)
+>   Rendered posts/show.html.erb within layouts/application (Duration: 16.5ms | Allocations: 5253)
+
+<!-- 此頁面渲染時間 -->
+> Rendered posts/show.html.erb within layouts/application (Duration: 16.5ms | Allocations: 5253)
 
 <!-- 最終時間 -->
-> Completed 200 OK in 27ms (Views: 20.9ms | ActiveRecord: 0.8ms | Allocations: 16951)
+> Completed 200 OK in 70ms (Views: 50.6ms | ActiveRecord: 4.4ms | Allocations: 15167)
 ```
 
-可以看到，大約渲染出一個留言，要花 `1808`，最終渲染該頁面的時間大約是 `16951`。
-
-Ps. 那個_form是我在_form頁面，有放一個text_field表單，也就是使用者可以對留言做回覆，不過這邊可以先忽略
-
+可以看到，大約渲染出一個留言，要花 `1177`，此頁面選染時間 `5253`，最終渲染該頁面的時間大約是 `15167`。
 
 
 ### 用collection的寫法
@@ -184,62 +220,52 @@ Ps. 那個_form是我在_form頁面，有放一個text_field表單，也就是�
 
 完整數據，但是這邊數據太雜了，我把重要的部分欻出來
 ```md
-> Started GET "/posts/12" for ::1 at 2023-05-06 02:39:05 +0800
-> Processing by PostsController#show as HTML
->   Parameters: {"id"=>"12"}
->    (0.1ms)  SELECT sqlite_version(*)
->   ↳ app/controllers/application_controller.rb:4:in `authenticate_user!'
->   User Load (0.5ms)  SELECT "users".* FROM "users" WHERE "users"."id" = ? ORDER BY "users"."id" ASC LIMIT ?  [["id", 6], ["LIMIT", 1]]
->   ↳ app/controllers/application_controller.rb:4:in `authenticate_user!'
->   Post Load (1.5ms)  SELECT "posts".* FROM "posts" WHERE "posts"."id" = ? LIMIT ?  [["id", 12], ["LIMIT", 1]]
->   ↳ app/controllers/posts_controller.rb:59:in `find_post'
->   Rendering layout layouts/application.html.erb
 >   Rendering posts/show.html.erb within layouts/application
->   Rendered comments/_form.html.erb (Duration: 2.9ms | Allocations: 929)
->   Comment Load (1.5ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ? AND "comments"."parent_id" IS NULL ORDER BY "comments"."id" DESC  [["post_id", 12]]
+>   Comment Load (0.6ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ?  [["post_id", 12]]
 >   ↳ app/views/posts/show.html.erb:59
->   Rendered comments/_form.html.erb (Duration: 0.7ms | Allocations: 603)
->   Comment Load (0.2ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 75]]
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 76]]
 >   ↳ app/views/comments/_comment.html.erb:17
->   Rendered comments/_form.html.erb (Duration: 0.6ms | Allocations: 603)
->   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 74]]
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 77]]
 >   ↳ app/views/comments/_comment.html.erb:17
->   Rendered comments/_form.html.erb (Duration: 0.6ms | Allocations: 603)
->   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 73]]
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 78]]
 >   ↳ app/views/comments/_comment.html.erb:17
->   Rendered collection of comments/_comment.html.erb [3 times] (Duration: 10.4ms | Allocations: 5823)
->   Rendered posts/show.html.erb within layouts/application (Duration: 29.8ms | Allocations: 9279)
+>   Rendered collection of comments/_comment.html.erb [3 times] (Duration: 9.1ms | Allocations: 3856)
+>   Rendered posts/show.html.erb within layouts/application (Duration: 65.1ms | Allocations: 6496)
 > [Webpacker] Everything's up-to-date. Nothing to do
->   Rendered shared/_navbar.html.erb (Duration: 1.2ms | Allocations: 792)
+>   Rendered shared/_navbar.html.erb (Duration: 1.1ms | Allocations: 794)
 >   Rendered shared/_flash.html.erb (Duration: 0.6ms | Allocations: 222)
->   Rendered layout layouts/application.html.erb (Duration: 52.0ms | Allocations: 17714)
-> Completed 200 OK in 88ms (Views: 51.9ms | ActiveRecord: 4.5ms | Allocations: 21571)
+>   Rendered layout layouts/application.html.erb (Duration: 78.6ms | Allocations: 14941)
+> Completed 200 OK in 94ms (Views: 80.4ms | ActiveRecord: 1.3ms | Allocations: 17792)
 ```
 
 
 重點擷取：該篇文章目前有三則留言，跟前面沒用collection相比，這邊多了一個很有趣的東西 `[3 times]`
 ```md
->   Comment Load (1.5ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ? AND "comments"."parent_id" IS NULL ORDER BY "comments"."id" DESC  [["post_id", 12]]
+>   Comment Load (0.6ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."post_id" = ?  [["post_id", 12]]
 >   ↳ app/views/posts/show.html.erb:59
->   Rendered comments/_form.html.erb (Duration: 0.7ms | Allocations: 603)
->   Comment Load (0.2ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 75]]
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 76]]
 >   ↳ app/views/comments/_comment.html.erb:17
->   Rendered comments/_form.html.erb (Duration: 0.6ms | Allocations: 603)
->   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 74]]
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 77]]
 >   ↳ app/views/comments/_comment.html.erb:17
->   Rendered comments/_form.html.erb (Duration: 0.6ms | Allocations: 603)
->   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 73]]
+>   Comment Load (0.1ms)  SELECT "comments".* FROM "comments" WHERE "comments"."deleted_at" IS NULL AND "comments"."parent_id" = ?  [["parent_id", 78]]
 >   ↳ app/views/comments/_comment.html.erb:17
->   Rendered collection of comments/_comment.html.erb [3 times] (Duration: 10.4ms | Allocations: 5823)
->   Rendered posts/show.html.erb within layouts/application (Duration: 29.8ms | Allocations: 9279)
+>   Rendered collection of comments/_comment.html.erb [3 times] (Duration: 9.1ms | Allocations: 3856)
+>   Rendered posts/show.html.erb within layouts/application (Duration: 65.1ms | Allocations: 6496)
+
+
+> <!-- 此頁面渲染時間  -->
+> Rendered posts/show.html.erb within layouts/application (Duration: 65.1ms | Allocations: 6496)
 
 <!-- 最終時間 -->
-> Completed 200 OK in 88ms (Views: 51.9ms | ActiveRecord: 4.5ms | Allocations: 21571)
+> Completed 200 OK in 94ms (Views: 80.4ms | ActiveRecord: 1.3ms | Allocations: 17792)
 ```
 
-可以看到，大約渲染出一個留言，要花 `5823 / 3 = 1941`，並且可以看到有一行有 `3 times`，那個東西代表的是你渲染東西的次數，因為今天這一篇文章有3則留言，也就是迴圈裡面有3個物件，因此會顯示 `3 times`，最終渲染該頁面的時間大約是 `21571`。
-
-
-
-疑！？？這樣用collection的時間比普通渲染還要久欸
-
+可以看到有一行有 `3 times`，那個東西代表的是你渲染東西的次數，因為今天這一篇文章有3則留言，也就是迴圈裡面有3個物件，因此會顯示 `3 times`，因此一個留言渲染出來的時間為 `3856 / 3 = 1285`，此頁面渲染時間 `6496` ，最終渲染該頁面的時間大約是 `17792`。  
+   
+   
+   
+> ---   
+> 疑！？？這樣用collection的時間比普通渲染還要久欸?????
+>  
+> ---
+{: .block-warning}
