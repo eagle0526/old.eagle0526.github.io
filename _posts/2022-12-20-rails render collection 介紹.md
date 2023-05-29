@@ -264,8 +264,8 @@ Comment Load (0.4ms)  SELECT "comments".* FROM "comments" WHERE "comments"."dele
    
    
    
-> ---   
-> 疑！？？這樣用collection的時間比普通渲染還要久欸?????
->  
-> ---
+> ---      
+> 疑！？？這樣用collection的時間比普通渲染還要久欸?????   
+>    
+> ---    
 {: .block-warning}
